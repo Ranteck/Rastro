@@ -129,12 +129,14 @@ test("solo se leen los transcripts del proyecto actual y las líneas rotas se av
 
 test("un token que cruza el carácter 120 no se filtra al patrón ni al LLM", async () => {
   const token = `ghp_${"d".repeat(36)}`;
-  const texto = `${"armá el reporte semanal de avance ".repeat(3)}con el token ${token} para el deploy`;
-  assert.ok(texto.indexOf(token) < 120 && texto.indexOf(token) + token.length > 120);
+  const texto = `${"armá el reporte semanal de avance ".repeat(2)}con el token de deploy ${token} para el deploy`;
+  // Con 25+ caracteres del token antes del corte, cortar antes de redactar dejaría un `ghp_...` que sí es reconocible.
+  assert.ok(texto.indexOf(token) + 4 + 25 <= 120 && texto.indexOf(token) + token.length > 120);
   const prompts = ["2026-10-06", "2026-10-07", "2026-10-08"].map((d) => ({ en: new Date(`${d}T10:00:00-03:00`), texto, sesion: "s" }));
   const patrones = patronesDePrompts(prompts, u, ZONA);
   assert.equal(patrones.length, 1);
-  assert.ok(!patrones[0]?.patron.includes(token.slice(0, 10)));
+  assert.ok(patrones[0]?.patron.includes("[redactado]"));
+  assert.ok(!patrones[0]?.patron.includes("ghp_"));
   const r = crearRepo();
   escribirConfig(r.dir, config);
   r.escribir(".gitignore", ".rastro/\n");
@@ -145,8 +147,8 @@ test("un token que cruza el carácter 120 no se filtra al patrón ni al LLM", as
   });
   const { snapshot } = await generarSnapshot({ repo: r.dir, config, llm, ahora: new Date(), fuentes: { comandos: [], prompts } });
   assert.equal(snapshot.sugerencias.length, 1);
-  assert.ok(!JSON.stringify(snapshot).includes(token.slice(0, 10)));
-  assert.ok(llm.prompts.every((p) => !p.includes(token.slice(0, 10))));
+  assert.ok(!JSON.stringify(snapshot).includes("ghp_"));
+  assert.ok(llm.prompts.every((p) => !p.includes("ghp_")));
 });
 
 test("fuentes ilegibles (historial que es un directorio, transcript que es un directorio) no abortan", async () => {
