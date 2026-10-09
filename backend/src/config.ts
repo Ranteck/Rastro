@@ -1,14 +1,36 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { homedir } from "node:os";
 import { join } from "node:path";
-import { arr, bool, ErrorValidacion, lit, num, obj, slug, str, type Infer } from "./contract/validar.ts";
+import { arr, bool, ErrorValidacion, lit, num, obj, slug, str, type Check, type Infer } from "./contract/validar.ts";
 import { ErrorUsuario } from "./errores.ts";
+
+const zonaHoraria: Check<string> = (v, r) => {
+  const zona = str(v, r);
+  try {
+    new Intl.DateTimeFormat("en", { timeZone: zona });
+  } catch {
+    throw new ErrorValidacion(r, "se esperaba una zona horaria IANA, como America/Argentina/Buenos_Aires");
+  }
+  return zona;
+};
+
+const urlHttp: Check<string> = (v, r) => {
+  const texto = str(v, r);
+  let protocolo: string | null = null;
+  try {
+    protocolo = new URL(texto).protocol;
+  } catch {
+    // Texto que no parsea como URL: se rechaza abajo con el mismo mensaje.
+  }
+  if (protocolo !== "http:" && protocolo !== "https:") throw new ErrorValidacion(r, "se esperaba una URL http o https");
+  return texto;
+};
 
 const checkConfig = obj({
   persona: obj({ id: slug, nombre: str, equipo: str }),
-  zonaHoraria: str,
+  zonaHoraria,
   conectores: arr(lit("central", "notion")),
-  central: obj({ url: str }),
+  central: obj({ url: urlHttp }),
   notion: obj({ modo: lit("mock", "claude") }),
   compartir: obj({ sugerencias: bool }),
   umbrales: obj({
