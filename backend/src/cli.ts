@@ -19,6 +19,7 @@ Uso:
 const comandos: Readonly<Record<string, () => Promise<Comando>>> = {
   init: async () => (await import("./init.ts")).cmdInit,
   hook: async () => (await import("./hooks.ts")).cmdHook,
+  daily: async () => (await import("./daily.ts")).cmdDaily,
 };
 
 export async function main(argv: string[]): Promise<number> {
