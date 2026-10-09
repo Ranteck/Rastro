@@ -51,10 +51,17 @@ test("una barra invertida dentro del secreto no deja cola", () => {
   assert.equal(redactar("PASSWORD=ab\\cd"), "PASSWORD=[redactado]");
 });
 
-test("una asignación vacía dentro de JSON no consume las comillas siguientes", () => {
-  const r = redactar('{"m":"API_KEY=","x":"y"}');
-  assert.equal(r, '{"m":"API_KEY=[redactado]","x":"y"}');
-  JSON.parse(r);
+test("un valor entre comillas puede abarcar varias líneas", () => {
+  const pem = 'KEY="-----BEGIN PRIVATE KEY-----\nabc\ndef\n-----END PRIVATE KEY-----" ok';
+  assert.equal(redactar(pem), "KEY=[redactado] ok");
+});
+
+test("lo pegado a la comilla de cierre también se redacta", () => {
+  assert.equal(redactar('TOKEN="abc"def x'), "TOKEN=[redactado] x");
+});
+
+test("una comilla sin cerrar en varias líneas redacta solo hasta el fin de su línea", () => {
+  assert.equal(redactar('a\nTOKEN="abc def\nok\nfin'), "a\nTOKEN=[redactado]\nok\nfin");
 });
 
 test("no toca texto sin secretos", () => {
