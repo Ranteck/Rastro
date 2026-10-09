@@ -120,6 +120,16 @@ test("un TODO en markdown, en un string, en una regex o en un test no cuenta", (
   assert.equal(sin("src/a.py", "# TODO: algo"), 1);
 });
 
+test("el marcador cuenta solo si empieza un comentario real, no si está dentro de un string", () => {
+  const c = commit({ sha: "eeeeeee4" });
+  const cuenta = (archivo: string, texto: string): number => deTipo(entrada({ commitsPeriodo: [c], lineasAgregadas: agregadas(archivo, texto) }), "todo-nuevo").length;
+  assert.equal(cuenta("src/central/demo.ts", `      texto: 'Se agregó un TODO/FIXME: "// TODO: reintentos".',`), 0);
+  assert.equal(cuenta("src/a.ts", 'const s = "a // TODO b";'), 0);
+  assert.equal(cuenta("src/a.ts", "const x = 1; // TODO arreglar"), 1);
+  assert.equal(cuenta("src/a.ts", "  // FIXME algo"), 1);
+  assert.equal(cuenta("src/a.py", "# TODO"), 1);
+});
+
 test("el TODO nuevo se redacta antes de cortarlo a 80 caracteres", () => {
   const c = commit({ sha: "eeeeeee4" });
   const token = `ghp_${"a".repeat(36)}`;
