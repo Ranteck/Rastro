@@ -1,0 +1,69 @@
+import { test } from "node:test";
+import assert from "node:assert/strict";
+import { lineasAgregadas, recolectarGit, urlBaseDe } from "../src/git.ts";
+import { crearRepo } from "./helpers/repo.ts";
+
+test("los commits de una rama mergeada conservan su rama y se marca la rama como mergeada", () => {
+  const r = crearRepo();
+  r.escribir("README.md", "hola\n");
+  r.commit("inicio", "2026-10-09T10:00:00-03:00");
+  r.git("checkout", "-q", "-b", "feat/pendientes");
+  r.escribir("src/a.ts", "export const a = 1;\n");
+  const enRama = r.commit("[Pendientes] detector", "2026-10-09T11:00:00-03:00");
+  r.git("checkout", "-q", "main");
+  r.git("merge", "-q", "--no-ff", "feat/pendientes", "-m", "Merge branch 'feat/pendientes'");
+
+  const datos = recolectarGit(r.dir, "2026-10-08");
+  const c = datos.commits.find((x) => x.sha === enRama);
+  assert.equal(c?.rama, "feat/pendientes");
+  assert.deepEqual(c?.archivos, ["src/a.ts"]);
+  assert.equal(c?.asunto, "[Pendientes] detector");
+  assert.equal(datos.ramaPrincipal, "main");
+  assert.equal(datos.ramas.find((x) => x.nombre === "feat/pendientes")?.mergeada, true);
+  assert.ok(datos.commits.some((x) => x.padres.length === 2 && x.rama === "main"));
+  assert.equal(datos.urlBase, null);
+});
+
+test("un commit hecho en main antes de bifurcar la rama de feature conserva la rama principal", () => {
+  const r = crearRepo();
+  r.escribir("README.md", "hola\n");
+  const enMain = r.commit("inicio en main", "2026-10-09T10:00:00-03:00");
+  r.git("checkout", "-q", "-b", "feat/nueva");
+  r.escribir("src/b.ts", "export const b = 1;\n");
+  const enRama = r.commit("trabajo en la rama", "2026-10-09T11:00:00-03:00");
+
+  const datos = recolectarGit(r.dir, "2026-10-08");
+  assert.equal(datos.commits.find((x) => x.sha === enMain)?.rama, "main");
+  assert.equal(datos.commits.find((x) => x.sha === enRama)?.rama, "feat/nueva");
+});
+
+test("un repo sin commits no rompe", () => {
+  const datos = recolectarGit(crearRepo().dir, "2026-10-01");
+  assert.deepEqual(datos.commits, []);
+  assert.deepEqual(datos.ramas, []);
+  assert.equal(datos.ramaPrincipal, "main");
+});
+
+test("la URL base nunca conserva credenciales", () => {
+  assert.equal(urlBaseDe("git@github.com:flock/rastro.git"), "https://github.com/flock/rastro");
+  assert.equal(urlBaseDe("https://usuario:ghp_secreto@github.com/flock/rastro.git"), "https://github.com/flock/rastro");
+  assert.equal(urlBaseDe("/ruta/local/repo"), null);
+});
+
+test("el token del remoto no llega a los datos recolectados", () => {
+  const r = crearRepo();
+  r.commit("inicio", "2026-10-09T10:00:00-03:00");
+  r.git("remote", "add", "origin", "https://usuario:ghp_secreto@github.com/flock/rastro.git");
+  const datos = recolectarGit(r.dir, "2026-10-08");
+  assert.equal(datos.urlBase, "https://github.com/flock/rastro");
+  assert.ok(!JSON.stringify(datos).includes("ghp_secreto"));
+});
+
+test("las líneas agregadas de un commit", () => {
+  const r = crearRepo();
+  r.escribir("a.ts", "uno\n");
+  r.commit("uno", "2026-10-09T10:00:00-03:00");
+  r.escribir("a.ts", "uno\n// TODO: dos\n");
+  const sha = r.commit("dos", "2026-10-09T10:05:00-03:00");
+  assert.deepEqual(lineasAgregadas(r.dir, sha), ["// TODO: dos"]);
+});
