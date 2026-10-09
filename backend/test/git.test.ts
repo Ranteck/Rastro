@@ -111,3 +111,21 @@ test("el diff se redacta antes de truncarlo, así un token cortado no se filtra"
   const corte = completo.indexOf("[redactado]") + 3;
   assert.ok(!diffResumido(r.dir, sha, corte).includes("ghp_"));
 });
+
+test("el diff omite el contenido de archivos de secretos y conserva su nombre", () => {
+  const r = crearRepo();
+  r.escribir("a.ts", "uno\n");
+  r.commit("uno", "2026-10-09T10:00:00-03:00");
+  r.escribir("a.ts", "uno\ndos\n");
+  r.escribir(".env.local", "DB=valor-secreto-1\n");
+  r.escribir("certs/server.pem", "valor-secreto-2\n");
+  r.escribir("certs/server.key", "valor-secreto-3\n");
+  r.escribir("id_ed25519", "valor-secreto-4\n");
+  const sha = r.commit("dos", "2026-10-09T10:05:00-03:00");
+  const d = diffResumido(r.dir, sha, 100_000);
+  assert.ok(!d.includes("valor-secreto"));
+  for (const nombre of [".env.local", "certs/server.pem", "certs/server.key", "id_ed25519"]) {
+    assert.ok(d.includes(`diff --git a/${nombre} b/${nombre}\n[contenido omitido]`), nombre);
+  }
+  assert.ok(d.includes("+dos"));
+});

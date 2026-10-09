@@ -67,3 +67,15 @@ test("una comilla sin cerrar en varias líneas redacta solo hasta el fin de su l
 test("no toca texto sin secretos", () => {
   assert.equal(redactar("git commit -m 'arreglo el parser'"), "git commit -m 'arreglo el parser'");
 });
+
+test("redacta un bloque de clave privada PEM completo", () => {
+  const pem = "-----BEGIN RSA PRIVATE KEY-----\nMIIEabc\ndef==\n-----END RSA PRIVATE KEY-----";
+  assert.equal(redactar(`antes\n${pem}\ndespues`), "antes\n[redactado]\ndespues");
+  assert.equal(redactar("-----BEGIN PRIVATE KEY-----\nabc\n-----END PRIVATE KEY-----"), "[redactado]");
+});
+
+test("redacta las credenciales de una URL y conserva el resto", () => {
+  assert.equal(redactar("git clone https://usuario:hunter2@github.com/x/y.git"), "git clone https://[redactado]@github.com/x/y.git");
+  assert.equal(redactar("postgres://app:p@ss@db:5432/x"), "postgres://[redactado]@db:5432/x");
+  assert.equal(redactar("https://github.com/x/y y http://localhost:4317/api"), "https://github.com/x/y y http://localhost:4317/api");
+});

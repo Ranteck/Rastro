@@ -1,6 +1,7 @@
 export const REDACTADO = "[redactado]";
 
 const TOKENS: readonly RegExp[] = [
+  /-----BEGIN [A-Z ]*PRIVATE KEY-----[\s\S]*?-----END [A-Z ]*PRIVATE KEY-----/g,
   /\bsk-[A-Za-z0-9_-]{10,}/g,
   /\bgh[pousr]_[A-Za-z0-9]{20,}/g,
   /\bAKIA[0-9A-Z]{16}\b/g,
@@ -27,5 +28,7 @@ const ASIGNACIONES = new RegExp(String.raw`\b((?:[A-Za-z_][A-Za-z0-9_]*)?(?:KEY|
 export function redactar(texto: string): string {
   let r = texto;
   for (const re of TOKENS) r = r.replace(re, REDACTADO);
+  // El grupo de la contraseña llega hasta la última "@" antes de la ruta: una contraseña con "@" crudo no deja cola.
+  r = r.replace(/\b([A-Za-z][A-Za-z0-9+.-]*:\/\/)[^\s/@]+:[^\s/]*@/g, `$1${REDACTADO}@`);
   return r.replace(ASIGNACIONES, (_m, nombre: string) => `${nombre}=${REDACTADO}`);
 }

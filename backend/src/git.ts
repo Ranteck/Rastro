@@ -118,8 +118,22 @@ export function lineasAgregadas(repo: string, sha: string): LineaAgregada[] {
   return res;
 }
 
+const RE_ARCHIVO_SECRETO = /(?:^|\/)(?:\.env[^/]*|[^/]*\.pem|[^/]*\.key|id_[^/]*)$/;
+
+/** Conserva el encabezado de los archivos de secretos y descarta su contenido. */
+function sinContenidoSecreto(diff: string): string {
+  return diff
+    .split(/^(?=diff --git )/m)
+    .map((bloque) => {
+      const [encabezado = ""] = bloque.split("\n", 1);
+      const ruta = /^diff --git a\/.+ b\/(.+)$/.exec(encabezado)?.[1];
+      return ruta !== undefined && RE_ARCHIVO_SECRETO.test(ruta) ? `${encabezado}\n[contenido omitido]\n` : bloque;
+    })
+    .join("");
+}
+
 export function diffResumido(repo: string, sha: string, maxBytes: number): string {
   // Se redacta todo el diff antes de cortarlo: un token partido por el corte ya no coincide con ningún patrón.
-  const d = redactar(git(repo, ["show", "--format=", "--stat", "--patch", "--unified=1", "--no-color", sha]));
+  const d = redactar(sinContenidoSecreto(git(repo, ["show", "--format=", "--stat", "--patch", "--unified=1", "--no-color", sha])));
   return d.length > maxBytes ? `${d.slice(0, maxBytes)}\n[diff truncado]` : d;
 }
