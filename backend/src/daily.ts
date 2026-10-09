@@ -339,6 +339,10 @@ export function textoDelDia(s: Snapshot): string {
     l.push("", "Pendientes:");
     for (const p of s.pendientes) l.push(`  - [${p.tipo}] ${p.texto} → ${p.proximoPaso}`);
   }
+  if (s.desvios.tareasSinActividad.length > 0) {
+    const nombres = s.desvios.tareasSinActividad.map((slug) => s.plan?.tareas.find((t) => t.slug === slug)?.nombre ?? slug);
+    l.push("", `Sin actividad: ${nombres.join(", ")}`);
+  }
   if (s.resumen === null) {
     l.push("", "Sin resumen (LLM no disponible).");
   } else {

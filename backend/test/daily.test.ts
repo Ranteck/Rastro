@@ -1,11 +1,11 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { mkdtempSync, writeFileSync } from "node:fs";
+import { mkdtempSync, readFileSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { configPorDefecto, escribirConfig } from "../src/config.ts";
-import { validarSnapshot } from "../src/contract/snapshot.ts";
-import { generarSnapshot } from "../src/daily.ts";
+import { validarSnapshot, type Snapshot } from "../src/contract/snapshot.ts";
+import { generarSnapshot, textoDelDia } from "../src/daily.ts";
 import { agregarEvento } from "../src/eventos.ts";
 import { ddmm, fechaLocal, lunesDe } from "../src/fechas.ts";
 import { leerTranscript, tituloDeSesion } from "../src/fuentes/claudeCode.ts";
@@ -190,4 +190,14 @@ test("las líneas ilegibles de un transcript se saltean y se cuentan", () => {
   assert.deepEqual(leerTranscript(archivo), { titulo: "Último", ilegibles: 2 });
   assert.equal(tituloDeSesion(archivo), "Último");
   assert.equal(tituloDeSesion(join(dir, "no-existe.jsonl")), null);
+});
+
+test("el texto del día lista las tareas sin actividad también sin resumen", () => {
+  const s = validarSnapshot(JSON.parse(readFileSync(new URL("../../frontend/ejemplos/persona-denis.json", import.meta.url), "utf8"))) as Snapshot;
+  const nombre = s.plan?.tareas.find((t) => t.slug === "repeticiones")?.nombre;
+  assert.ok(nombre !== undefined);
+  for (const resumen of [s.resumen, null]) {
+    assert.match(textoDelDia({ ...s, resumen }), new RegExp(`^Sin actividad: ${nombre}$`, "m"));
+  }
+  assert.doesNotMatch(textoDelDia({ ...s, desvios: { ...s.desvios, tareasSinActividad: [] } }), /Sin actividad/);
 });

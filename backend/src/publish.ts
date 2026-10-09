@@ -27,6 +27,7 @@ export function paraCompartir(s: Snapshot, config: Config): Snapshot {
 /** Spec "muestra el contenido": lista las líneas que van a salir, no solo cantidades. */
 export function vistaPrevia(s: Snapshot, destinos: readonly string[]): string {
   const bitacora = s.bitacora.map((e) => `    ${e.hora} [${e.tarea ?? "sin tarea"}] ${e.texto}`);
+  const resumen = s.resumen === null ? [] : [...s.resumen.hice, ...s.resumen.avance, ...s.resumen.sigue, ...s.resumen.bloqueos].map((l) => `    ${l}`);
   const pendientes = s.pendientes.map((p) => `    ${p.tipo}: ${p.texto}`);
   const sugerencias = s.sugerencias.map((g) => `    ${g.fuente}: ${g.patron} -> ${g.propuesta.tipo}: ${g.propuesta.contenido}`);
   return [
@@ -35,6 +36,7 @@ export function vistaPrevia(s: Snapshot, destinos: readonly string[]): string {
     `- Plan: ${s.plan === null ? "sin plan" : `${s.plan.tareas.length} tareas`} · Resumen: ${s.resumen === null ? "no" : "sí"}`,
     `- Bitácora (${s.bitacora.length}):`,
     ...bitacora,
+    ...(resumen.length === 0 ? [] : ["- Resumen (hice, avance, sigue, bloqueos):", ...resumen]),
     `- Pendientes (${s.pendientes.length}):`,
     ...pendientes,
     `- Sugerencias (${s.sugerencias.length}):`,

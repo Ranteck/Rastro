@@ -122,6 +122,15 @@ test("la vista previa lista las líneas que van a salir, no solo cantidades", ()
   assert.ok(conSugerencias.includes(s.sugerencias[0]?.patron ?? "\0"));
 });
 
+test("la vista previa lista también las líneas del resumen cuando hay resumen", () => {
+  const s = snapshot();
+  const r = s.resumen;
+  assert.ok(r !== null);
+  const texto = vistaPrevia(paraCompartir(s, config), ["central"]);
+  for (const linea of [...r.hice, ...r.avance, ...r.sigue, ...r.bloqueos]) assert.ok(texto.includes(linea), linea);
+  assert.ok(!vistaPrevia({ ...s, resumen: null }, ["central"]).includes(r.hice[0] ?? "\0"));
+});
+
 test("un secreto en la bitácora no sale por ningún conector", async (t) => {
   const s = snapshot();
   const primera = s.bitacora[0];
