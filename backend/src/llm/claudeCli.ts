@@ -25,7 +25,8 @@ export const ejecutarProceso: Ejecutor = (bin, args, entrada, timeoutMs, cwd) =>
       stderr += d;
     });
     hijo.on("error", (e) => {
-      reject(e.name === "AbortError" ? new ErrorLlm(`claude superó el timeout de ${timeoutMs} ms`, { cause: e }) : e); // ENOENT si claude no está instalado
+      // ENOENT si claude no está instalado
+      reject(e.name === "AbortError" ? new ErrorLlm(`claude superó el timeout de ${timeoutMs} ms`, { cause: e }) : e);
     });
     hijo.stdin.on("error", reject); // EPIPE si el proceso murió antes de leer el prompt
     hijo.on("close", (codigo) => resolve({ codigo, stdout, stderr }));

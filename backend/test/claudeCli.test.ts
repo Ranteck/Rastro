@@ -1,7 +1,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { obj, str } from "../src/contract/validar.ts";
-import { ClaudeCli, type Ejecutor } from "../src/llm/claudeCli.ts";
+import { ClaudeCli, ejecutarProceso, type Ejecutor } from "../src/llm/claudeCli.ts";
 import { ErrorLlm, type PedidoLlm } from "../src/llm/llm.ts";
 
 const pedido: PedidoLlm<{ respuesta: string }> = {
@@ -62,4 +62,16 @@ test("una salida que no cumple el esquema cuenta como falla", async () => {
 
 test("si el binario de claude no existe, ErrorLlm", async () => {
   await assert.rejects(new ClaudeCli({ modelo: "haiku", binario: "/no/existe/claude" }).completar(pedido), ErrorLlm);
+});
+
+test("ejecutarProceso corta el proceso al vencer el timeout", async () => {
+  await assert.rejects(
+    ejecutarProceso(process.execPath, ["-e", "setTimeout(()=>{},5000)"], "", 100),
+    (e) => e instanceof ErrorLlm && /timeout/.test(e.message),
+  );
+});
+
+test("ejecutarProceso entrega el prompt por stdin y devuelve stdout", async () => {
+  const r = await ejecutarProceso(process.execPath, ["-e", "process.stdin.pipe(process.stdout)"], "hola", 5000);
+  assert.deepEqual(r, { codigo: 0, stdout: "hola", stderr: "" });
 });
