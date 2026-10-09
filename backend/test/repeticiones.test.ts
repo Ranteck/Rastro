@@ -124,5 +124,46 @@ test("solo se leen los transcripts del proyecto actual y las líneas rotas se av
   assert.deepEqual(prompts.map((p) => p.texto), ["pedido de este proyecto"]);
   assert.equal(comandos.length, 1);
   assert.equal(avisos.length, 2);
-  assert.deepEqual(transcriptsRecientes(join(proyectos, "no-existe"), ahora), []);
+  assert.deepEqual(transcriptsRecientes(join(proyectos, "no-existe"), ahora), { rutas: [], ilegibles: 0 });
+});
+
+test("un token que cruza el carácter 120 no se filtra al patrón ni al LLM", async () => {
+  const token = `ghp_${"d".repeat(36)}`;
+  const texto = `${"armá el reporte semanal de avance ".repeat(3)}con el token ${token} para el deploy`;
+  assert.ok(texto.indexOf(token) < 120 && texto.indexOf(token) + token.length > 120);
+  const prompts = ["2026-10-06", "2026-10-07", "2026-10-08"].map((d) => ({ en: new Date(`${d}T10:00:00-03:00`), texto, sesion: "s" }));
+  const patrones = patronesDePrompts(prompts, u, ZONA);
+  assert.equal(patrones.length, 1);
+  assert.ok(!patrones[0]?.patron.includes(token.slice(0, 10)));
+  const r = crearRepo();
+  escribirConfig(r.dir, config);
+  r.escribir(".gitignore", ".rastro/\n");
+  r.commit("inicio");
+  const llm = new FakeLlm({
+    bitacora: { entradas: [], resumen: { hice: [], avance: [], sigue: [], bloqueos: [] } },
+    sugerencias: { propuestas: [{ id: "0", tipo: "skill", contenido: "skill", porque: "Se repitió 3 veces." }] },
+  });
+  const { snapshot } = await generarSnapshot({ repo: r.dir, config, llm, ahora: new Date(), fuentes: { comandos: [], prompts } });
+  assert.equal(snapshot.sugerencias.length, 1);
+  assert.ok(!JSON.stringify(snapshot).includes(token.slice(0, 10)));
+  assert.ok(llm.prompts.every((p) => !p.includes(token.slice(0, 10))));
+});
+
+test("fuentes ilegibles (historial que es un directorio, transcript que es un directorio) no abortan", async () => {
+  const base = mkdtempSync(join(tmpdir(), "rastro-ilegibles-"));
+  const repo = "/home/x/Proyectos/App";
+  const proyectos = join(base, "projects");
+  mkdirSync(join(proyectos, dirDeProyecto(repo), "roto.jsonl"), { recursive: true });
+  const zsh = join(base, "zsh_dir");
+  mkdirSync(zsh);
+  const cfg = { ...config, fuentes: { zshHistory: zsh, claudeProjects: proyectos } };
+  const avisos: string[] = [];
+  const fuentes = leerFuentes(cfg, repo, new Date(), avisos);
+  assert.deepEqual(fuentes, { comandos: [], prompts: [] });
+  assert.equal(avisos.length, 2);
+  const r = crearRepo();
+  escribirConfig(r.dir, config);
+  r.commit("inicio");
+  const { snapshot } = await generarSnapshot({ repo: r.dir, config, llm: null, ahora: new Date(), fuentes });
+  assert.equal(snapshot.sugerencias.length, 0);
 });

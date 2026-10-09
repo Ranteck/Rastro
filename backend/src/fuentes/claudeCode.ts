@@ -65,13 +65,27 @@ export function dirDeProyecto(repo: string): string {
   return repo.replace(/[^a-zA-Z0-9]/g, "-");
 }
 
-/** Transcripts (`<dir>/<sesion>.jsonl`) modificados desde `desde`. */
-export function transcriptsRecientes(dir: string, desde: Date): string[] {
-  if (!existsSync(dir)) return [];
-  return readdirSync(dir, { withFileTypes: true })
-    .filter((f) => f.isFile() && f.name.endsWith(".jsonl"))
-    .map((f) => join(dir, f.name))
-    .filter((ruta) => statSync(ruta).mtime >= desde);
+/** Transcripts (`<dir>/<sesion>.jsonl`) modificados desde `desde`; los que no se pueden consultar se cuentan. */
+export function transcriptsRecientes(dir: string, desde: Date): { rutas: string[]; ilegibles: number } {
+  const rutas: string[] = [];
+  let ilegibles = 0;
+  let entradas;
+  try {
+    entradas = readdirSync(dir, { withFileTypes: true });
+  } catch (e) {
+    // Sin directorio de proyecto todavía no hay nada que leer; cualquier otro error (permisos) se cuenta.
+    return { rutas, ilegibles: (e as NodeJS.ErrnoException).code === "ENOENT" ? 0 : 1 };
+  }
+  for (const f of entradas) {
+    if (!f.name.endsWith(".jsonl")) continue;
+    const ruta = join(dir, f.name);
+    try {
+      if (statSync(ruta).mtime >= desde) rutas.push(ruta);
+    } catch {
+      ilegibles++; // Borrado o sin permisos entre el listado y la consulta: se sigue con el resto.
+    }
+  }
+  return { rutas, ilegibles };
 }
 
 /** El título que Claude Code le pone a la sesión (línea "ai-title" del transcript); el último gana. */

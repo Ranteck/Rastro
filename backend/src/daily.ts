@@ -191,8 +191,15 @@ export function leerFuentes(config: Config, repo: string, ahora: Date, avisos: s
   const desde = new Date(ahora.getTime() - DIAS_DE_HISTORIA * 86_400_000);
   const zsh = expandirHome(config.fuentes.zshHistory);
   let comandos: Comando[] = [];
-  if (existsSync(zsh)) {
-    const r = parsearHistorialZsh(readFileSync(zsh));
+  let contenidoZsh: Buffer | null = null;
+  try {
+    contenidoZsh = readFileSync(zsh);
+  } catch (e) {
+    // Sin historial no hay nada que leer; un directorio o falta de permisos se avisa y se sigue.
+    if ((e as NodeJS.ErrnoException).code !== "ENOENT") avisos.push("No se pudo leer el historial de zsh.");
+  }
+  if (contenidoZsh !== null) {
+    const r = parsearHistorialZsh(contenidoZsh);
     comandos = r.comandos.filter((c) => c.en >= desde);
     if (r.descartadas > 0) avisos.push(`${r.descartadas} líneas del historial de zsh no tienen fecha: con \`setopt EXTENDED_HISTORY\` empiezan a contar.`);
   }
@@ -200,8 +207,17 @@ export function leerFuentes(config: Config, repo: string, ahora: Date, avisos: s
   let ilegibles = 0;
   // Solo el proyecto actual: leer las sesiones de otros proyectos sería vigilancia, no bitácora.
   const dirProyecto = join(expandirHome(config.fuentes.claudeProjects), dirDeProyecto(repo));
-  for (const t of transcriptsRecientes(dirProyecto, desde)) {
-    const r = promptsDeTranscript(readFileSync(t, "utf8"));
+  const recientes = transcriptsRecientes(dirProyecto, desde);
+  ilegibles += recientes.ilegibles;
+  for (const t of recientes.rutas) {
+    let contenido: string;
+    try {
+      contenido = readFileSync(t, "utf8");
+    } catch {
+      ilegibles++; // Un transcript que no se puede abrir no frena el resto.
+      continue;
+    }
+    const r = promptsDeTranscript(contenido);
     prompts.push(...r.prompts.filter((p) => p.en >= desde));
     ilegibles += r.descartadas;
   }

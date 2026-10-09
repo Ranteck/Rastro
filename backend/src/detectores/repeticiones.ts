@@ -1,6 +1,7 @@
 import { fechaLocal, type Fecha } from "../fechas.ts";
 import type { PromptUsuario } from "../fuentes/claudeCode.ts";
 import type { Comando } from "../fuentes/zsh.ts";
+import { redactar } from "../redactar.ts";
 import { normalizar } from "../texto.ts";
 
 export type Umbrales = { veces: number; dias: number; ventanaMin: number };
@@ -86,7 +87,8 @@ export function patronesDePrompts(prompts: readonly PromptUsuario[], u: Umbrales
     const dia = fechaLocal(p.en, zona);
     const grupo = grupos.find((g) => jaccard(g.palabras, palabras) >= 0.8);
     if (grupo === undefined) {
-      grupos.push({ palabras, ejemplo: p.texto, ocurrencias: 1, dias: new Set([dia]) });
+      grupos.push({ palabras, ejemplo: redactar(p.texto).replace(/\s+/g, " ").trim().slice(0, 120), // Se redacta antes de cortar: un token cortado a mitad no matchea.
+        ocurrencias: 1, dias: new Set([dia]) });
     } else {
       grupo.ocurrencias++;
       grupo.dias.add(dia);
@@ -96,5 +98,5 @@ export function patronesDePrompts(prompts: readonly PromptUsuario[], u: Umbrales
     .filter((g) => g.ocurrencias >= u.veces && g.dias.size >= u.dias)
     .sort((a, b) => b.ocurrencias - a.ocurrencias)
     .slice(0, MAX_PATRONES)
-    .map((g): Patron => ({ fuente: "claude-code", patron: g.ejemplo.replace(/\s+/g, " ").trim().slice(0, 120), ocurrencias: g.ocurrencias, dias: g.dias.size }));
+    .map((g): Patron => ({ fuente: "claude-code", patron: g.ejemplo, ocurrencias: g.ocurrencias, dias: g.dias.size }));
 }
