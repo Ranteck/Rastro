@@ -1,4 +1,6 @@
 import type { Vistas } from "../app.ts";
+import { vistaEquipo } from "./equipo.ts";
+import { vistaPendientes } from "./pendientes.ts";
 
-/** T3 a T5 registran acá Equipo, Mi día, Pendientes, Plan y Sugerencias. */
-export const vistas: Vistas = { persona: {} };
+/** T4 y T5 registran acá Mi día, Plan y Sugerencias. */
+export const vistas: Vistas = { equipo: vistaEquipo, persona: { pendientes: vistaPendientes } };
