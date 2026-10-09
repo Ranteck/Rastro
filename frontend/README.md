@@ -2,6 +2,16 @@
 
 Estado: borrador · Fecha: 2026-10-09 · Contrato: `intent/spec.md`, sección "Contrato" (`schemaVersion: 1`)
 
+## Cómo correrlo
+
+```sh
+npm install           # dependencias
+npm run dev           # dev server; reenvía /api al central en 127.0.0.1:4317 (rastro serve)
+npm run dev:ejemplos  # dev server sin central, con los JSON de ejemplos/
+npm run check         # typecheck + tests + build
+npm run build         # deja dist/, que `rastro serve` sirve tal cual
+```
+
 ## Qué es
 
 Rastro arma la memoria del equipo sola: cruza lo que pasó en el código con el plan y muestra qué está
