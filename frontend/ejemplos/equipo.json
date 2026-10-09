@@ -1,0 +1,25 @@
+{
+  "equipo": [
+    {
+      "persona": { "id": "denis", "nombre": "Denis", "equipo": "AI Day" },
+      "repo": "rastro",
+      "ultimoUpdate": "2026-10-09T18:30:00-03:00",
+      "tareasHechas": 1, "tareasTotales": 4,
+      "pendientesAbiertos": 3, "fueraDelPlanPct": 25, "alerta": false
+    },
+    {
+      "persona": { "id": "lucia", "nombre": "Lucía Gómez", "equipo": "AI Day" },
+      "repo": "portal-clientes",
+      "ultimoUpdate": "2026-10-09T17:45:00-03:00",
+      "tareasHechas": 3, "tareasTotales": 5,
+      "pendientesAbiertos": 2, "fueraDelPlanPct": 10, "alerta": false
+    },
+    {
+      "persona": { "id": "tomas", "nombre": "Tomás Ríos", "equipo": "AI Day" },
+      "repo": "pipeline-datos",
+      "ultimoUpdate": "2026-10-09T16:05:00-03:00",
+      "tareasHechas": 0, "tareasTotales": 3,
+      "pendientesAbiertos": 4, "fueraDelPlanPct": 70, "alerta": true
+    }
+  ]
+}

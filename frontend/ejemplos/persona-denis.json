@@ -1,0 +1,128 @@
+{
+  "schemaVersion": 1,
+  "generadoEn": "2026-10-09T18:30:00-03:00",
+  "persona": { "id": "denis", "nombre": "Denis", "equipo": "AI Day" },
+  "repo": { "nombre": "rastro", "url": "https://github.com/ejemplo/rastro" },
+  "periodo": { "desde": "2026-10-09", "hasta": "2026-10-09" },
+  "plan": {
+    "semana": "2026-10-05",
+    "entregable": "Demo de Rastro en el AI Day con pendientes y bitácora reales sobre su propio repo.",
+    "tareas": [
+      { "slug": "bitacora", "nombre": "Bitácora", "objetivo": "Registrar el trabajo del día con evidencia.", "estado": "hecha" },
+      { "slug": "pendientes", "nombre": "Pendientes", "objetivo": "Detectar lo resuelto en código que nadie cerró.", "estado": "pendiente" },
+      { "slug": "repeticiones", "nombre": "Repeticiones", "objetivo": "Sugerir automatizaciones a partir de lo repetido.", "estado": "pendiente" },
+      { "slug": "central", "nombre": "Central", "objetivo": "Recibir lo que publica cada persona.", "estado": "pendiente" },
+      { "slug": "jira", "nombre": "Jira", "objetivo": "Leer tareas desde Jira.", "estado": "sacada" }
+    ]
+  },
+  "bitacora": [
+    {
+      "fecha": "2026-10-09", "hora": "17:52", "tarea": "pendientes", "rama": "feat/pendientes",
+      "texto": "Se incorporó la detección de tareas resueltas en código que siguen abiertas en el plan.",
+      "vinculo": "nombre",
+      "evidencia": [
+        { "tipo": "commit", "ref": "9f3c2ab", "url": "https://github.com/ejemplo/rastro/commit/9f3c2ab" },
+        { "tipo": "rama", "ref": "feat/pendientes" }
+      ]
+    },
+    {
+      "fecha": "2026-10-09", "hora": "16:10", "tarea": "central", "rama": "main",
+      "texto": "Se corrigió la validación de snapshots para rechazar campos que el contrato no admite.",
+      "vinculo": "inferido",
+      "razon": "El commit toca la validación del endpoint de publicación del central.",
+      "evidencia": [
+        { "tipo": "commit", "ref": "4e81d07", "url": "https://github.com/ejemplo/rastro/commit/4e81d07" }
+      ]
+    },
+    {
+      "fecha": "2026-10-09", "hora": "14:35", "tarea": null, "rama": "main",
+      "texto": "Se ajustó la configuración de TypeScript para ejecutar los tests sin compilar.",
+      "vinculo": "sin-tarea",
+      "evidencia": [
+        { "tipo": "commit", "ref": "b27a90e", "url": "https://github.com/ejemplo/rastro/commit/b27a90e" }
+      ]
+    },
+    {
+      "fecha": "2026-10-09", "hora": "11:20", "tarea": "bitacora", "rama": "feat/bitacora",
+      "texto": "Se completó la bitácora del día con links a cada commit y rama.",
+      "vinculo": "nombre",
+      "evidencia": [
+        { "tipo": "commit", "ref": "1c55f3d", "url": "https://github.com/ejemplo/rastro/commit/1c55f3d" },
+        { "tipo": "sesion", "ref": "a95c1710" }
+      ]
+    }
+  ],
+  "pendientes": [
+    {
+      "tipo": "resuelto-sin-cerrar", "tarea": "pendientes",
+      "texto": "La rama feat/pendientes está mergeada a main, pero la tarea Pendientes sigue abierta en el plan.",
+      "evidencia": [
+        { "tipo": "commit", "ref": "9f3c2ab", "url": "https://github.com/ejemplo/rastro/commit/9f3c2ab" }
+      ],
+      "proximoPaso": "Tildar Pendientes en el plan."
+    },
+    {
+      "tipo": "todo-nuevo", "tarea": "central",
+      "texto": "Se agregó un TODO en la validación del central: \"limitar tamaño del body\".",
+      "evidencia": [
+        { "tipo": "commit", "ref": "4e81d07", "url": "https://github.com/ejemplo/rastro/commit/4e81d07" }
+      ],
+      "proximoPaso": "Resolver el TODO o sumarlo como tarea al plan."
+    },
+    {
+      "tipo": "codigo-sin-doc", "tarea": "central",
+      "texto": "Cambió la API del central y no se actualizó README ni docs/.",
+      "evidencia": [
+        { "tipo": "commit", "ref": "4e81d07", "url": "https://github.com/ejemplo/rastro/commit/4e81d07" },
+        { "tipo": "doc", "ref": "README.md" }
+      ],
+      "proximoPaso": "Documentar POST /api/publish en el README."
+    }
+  ],
+  "desvios": { "fueraDelPlanPct": 25, "alerta": false, "tareasSinActividad": ["repeticiones"] },
+  "resumen": {
+    "hice": ["Se completó la bitácora del día con evidencia por commit y rama."],
+    "avance": [
+      "Se incorporó la detección de tareas resueltas sin cerrar.",
+      "Se corrigió la validación de snapshots en el central."
+    ],
+    "sigue": [
+      "Tildar Pendientes en el plan: la rama ya está mergeada.",
+      "Repeticiones no tuvo actividad esta semana."
+    ],
+    "bloqueos": []
+  },
+  "sugerencias": [
+    {
+      "fuente": "claude-code",
+      "patron": "armá el update de la daily con lo que hice hoy",
+      "ocurrencias": 6, "dias": 4,
+      "propuesta": {
+        "tipo": "skill",
+        "contenido": "rastro daily && rastro publish --yes",
+        "porque": "Pediste lo mismo 6 veces en 4 días; Rastro ya genera ese resumen al final del día."
+      }
+    },
+    {
+      "fuente": "zsh",
+      "patron": "git fetch origin → git rebase origin/main → npm test",
+      "ocurrencias": 5, "dias": 3,
+      "propuesta": {
+        "tipo": "alias",
+        "contenido": "alias sync-test='git fetch origin && git rebase origin/main && npm test'",
+        "porque": "La misma secuencia de tres comandos aparece 5 veces en 3 días, siempre en ese orden."
+      }
+    }
+  ],
+  "gantt": {
+    "mock": true,
+    "barras": [
+      { "tarea": "bitacora", "plan": { "desde": "2026-10-05", "hasta": "2026-10-07" }, "real": { "desde": "2026-10-06", "hasta": "2026-10-09" } },
+      { "tarea": "pendientes", "plan": { "desde": "2026-10-07", "hasta": "2026-10-09" }, "real": { "desde": "2026-10-09", "hasta": "2026-10-09" } },
+      { "tarea": "repeticiones", "plan": { "desde": "2026-10-08", "hasta": "2026-10-09" }, "real": null },
+      { "tarea": "central", "plan": { "desde": "2026-10-08", "hasta": "2026-10-09" }, "real": { "desde": "2026-10-09", "hasta": "2026-10-09" } },
+      { "tarea": "config-typescript", "plan": null, "real": { "desde": "2026-10-09", "hasta": "2026-10-09" } }
+    ]
+  },
+  "costo": { "llamadas": 4, "usd": 0.0812, "tokens": 18450 }
+}
