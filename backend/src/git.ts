@@ -41,7 +41,7 @@ export function urlBaseDe(remoto: string): string | null {
   const ssh = /^git@([^:]+):(.+?)(?:\.git)?$/.exec(remoto);
   if (ssh !== null) return `https://${ssh[1]}/${ssh[2]}`;
   // El grupo opcional descarta "usuario:token@" para que las credenciales nunca lleguen a la evidencia.
-  const https = /^https?:\/\/(?:[^@/]+@)?(.+?)(?:\.git)?\/?$/.exec(remoto);
+  const https = /^https?:\/\/(?:[^/]*@)?(.+?)(?:\.git)?\/?$/.exec(remoto);
   return https === null ? null : `https://${https[1]}`;
 }
 

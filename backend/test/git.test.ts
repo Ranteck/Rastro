@@ -57,6 +57,7 @@ test("un repo sin commits no rompe", () => {
 test("la URL base nunca conserva credenciales", () => {
   assert.equal(urlBaseDe("git@github.com:flock/rastro.git"), "https://github.com/flock/rastro");
   assert.equal(urlBaseDe("https://usuario:ghp_secreto@github.com/flock/rastro.git"), "https://github.com/flock/rastro");
+  assert.equal(urlBaseDe("https://u:p@ss@github.com/flock/rastro.git"), "https://github.com/flock/rastro");
   assert.equal(urlBaseDe("/ruta/local/repo"), null);
 });
 
