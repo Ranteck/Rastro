@@ -40,7 +40,7 @@ Desde otro repo, llamá a la ruta absoluta de `backend/bin/rastro.js`. Otras opc
 
 `.rastro/config.json` (lo crea `init`): persona, zona horaria, conectores (`central`, `notion`), umbrales de pendientes, desvíos y repeticiones, y el LLM (`claude-cli` con `haiku` por defecto, o `ninguno`).
 
-`notion.modo` es `mock` (por defecto: escribe `.rastro/notion-preview.md`) o `claude` (publica en la página Daily con `claude -p`, usando la skill daily-flock instalada en `~/.claude/skills/daily-flock`). En modo `claude`, `claude -p` corre solo con la skill daily-flock y las dos herramientas de Notion (`notion-fetch` y `notion-update-page`), y cuesta unos centavos por publicación.
+`notion.modo` es `mock` (por defecto: escribe `.rastro/notion-preview.md`) o `claude` (publica en la página Daily con `claude -p`, usando la skill daily-flock instalada en `~/.claude/skills/daily-flock`). En modo `claude`, `claude -p` corre solo con la skill daily-flock y las dos herramientas de Notion (`notion-fetch` y `notion-update-page`), y cuesta unos centavos por publicación. `notion.pagina` (opcional) es el id de una página de Notion (32 caracteres hexadecimales, con o sin guiones): en modo `claude`, publica al final de esa página en vez de la Daily.
 
 ## Limitaciones conocidas
 

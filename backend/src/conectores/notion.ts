@@ -69,19 +69,26 @@ export class ConectorNotionClaude implements Conector {
   readonly #modelo: string;
   readonly #ejecutar: Ejecutor;
   readonly #home: string;
+  readonly #pagina: string | undefined;
 
-  constructor(o: { modelo: string; ejecutar?: Ejecutor; home?: string }) {
+  constructor(o: { modelo: string; ejecutar?: Ejecutor; home?: string; pagina?: string }) {
     this.#modelo = o.modelo;
+    this.#pagina = o.pagina;
     this.#ejecutar = o.ejecutar ?? ejecutarProceso;
     this.#home = o.home ?? homedir();
   }
 
   async publicar(s: Snapshot): Promise<string> {
     const entradas = entradasDailyFlock(s);
-    if (entradas.trim() === "") return "nada para publicar en la Daily de Notion";
+    const destino = this.#pagina === undefined ? "la Daily de Notion" : `la página ${this.#pagina} de Notion`;
+    if (entradas.trim() === "") return `nada para publicar en ${destino}`;
+    const instruccion =
+      this.#pagina === undefined
+        ? "Usá la skill daily-flock (Flujo A: registrar entradas) para agregar a la página Daily estas entradas, respetando la fecha y la hora de cada una. No agregues nada más ni cambies lo que ya está."
+        : `Usá notion-fetch para leer la página ${this.#pagina} y, con notion-update-page, agregá al final estas entradas tal cual (formato de la Daily de daily-flock). No toques ninguna otra página ni cambies lo que ya está.`;
     const prompt = redactar(
       [
-        "Usá la skill daily-flock (Flujo A: registrar entradas) para agregar a la página Daily estas entradas, respetando la fecha y la hora de cada una. No agregues nada más ni cambies lo que ya está.",
+        instruccion,
         "",
         entradas,
       ].join("\n"),
@@ -108,6 +115,6 @@ export class ConectorNotionClaude implements Conector {
     } finally {
       rmSync(cwd, { recursive: true, force: true });
     }
-    return "registrado en la Daily de Notion con daily-flock";
+    return `registrado en ${destino} con claude`;
   }
 }

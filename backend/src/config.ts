@@ -1,7 +1,7 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { homedir } from "node:os";
 import { join } from "node:path";
-import { arr, bool, ErrorValidacion, lit, num, obj, slug, str, type Check, type Infer } from "./contract/validar.ts";
+import { arr, bool, ErrorValidacion, lit, num, obj, patron, slug, str, type Check, type Infer } from "./contract/validar.ts";
 import { ErrorUsuario } from "./errores.ts";
 
 const zonaHoraria: Check<string> = (v, r) => {
@@ -31,7 +31,7 @@ const checkConfig = obj({
   zonaHoraria,
   conectores: arr(lit("central", "notion")),
   central: obj({ url: urlHttp }),
-  notion: obj({ modo: lit("mock", "claude") }),
+  notion: obj({ modo: lit("mock", "claude") }, { pagina: patron(/^[0-9a-f]{8}-?[0-9a-f]{4}-?[0-9a-f]{4}-?[0-9a-f]{4}-?[0-9a-f]{12}$/i, "un id de página de Notion: 32 caracteres hexadecimales, con o sin guiones") }),
   compartir: obj({ sugerencias: bool }),
   umbrales: obj({
     ramaQuietaDias: num,
