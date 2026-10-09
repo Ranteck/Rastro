@@ -43,3 +43,12 @@ test("rechaza un campo requerido ausente", () => {
   delete raw["costo"];
   assert.throws(() => validarSnapshot(raw), /snapshot\.costo/);
 });
+
+test("rechaza claves heredadas de Object.prototype como campos extra", () => {
+  assert.throws(
+    () => validarSnapshot({ ...ejemplo(), constructor: 1 }),
+    (e: unknown) => e instanceof ErrorValidacion && e.ruta === "snapshot.constructor",
+  );
+  const conProto = JSON.parse(readFileSync(new URL("../../frontend/ejemplos/persona-denis.json", import.meta.url), "utf8").replace(/^\{/, '{"__proto__":1,')) as unknown;
+  assert.throws(() => validarSnapshot(conProto), (e: unknown) => e instanceof ErrorValidacion && e.ruta === "snapshot.__proto__");
+});

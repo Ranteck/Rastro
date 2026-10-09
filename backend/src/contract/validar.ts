@@ -82,7 +82,7 @@ export function obj<F extends Forma, O extends Forma = Record<never, never>>(
   return (v, r) => {
     const reg = comoRegistro(v, r);
     for (const k of Object.keys(reg)) {
-      if (!(k in requeridos) && !(opcionales !== undefined && k in opcionales)) throw new ErrorValidacion(`${r}.${k}`, "campo no admitido");
+      if (!Object.hasOwn(requeridos, k) && !(opcionales !== undefined && Object.hasOwn(opcionales, k))) throw new ErrorValidacion(`${r}.${k}`, "campo no admitido");
     }
     return construir(reg, r, requeridos, opcionales ?? ({} as O));
   };
