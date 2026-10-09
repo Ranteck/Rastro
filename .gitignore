@@ -1,5 +1,10 @@
 node_modules/
 .rastro/
 frontend/dist/
+# Imágenes de Pinterest con derechos de terceros: el repo es público, solo se versiona el índice.
+frontend/referencias/img/
 .remember/
 .superpowers/
+# Scratch local de impeccable (página de decisión y bocetos descartables).
+.impeccable/questions/
+.impeccable/mocks/
