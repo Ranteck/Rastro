@@ -35,7 +35,7 @@ function apiDoble(over: Partial<Api> = {}): Api {
 
 let raiz: HTMLElement;
 beforeEach(() => {
-  vi.stubGlobal("matchMedia", (consulta: string) => ({ matches: false, media: consulta }));
+  vi.stubGlobal("matchMedia", (consulta: string) => ({ matches: false, media: consulta, addEventListener: vi.fn() }));
   document.body.innerHTML = '<div id="app"></div>';
   raiz = document.getElementById("app") as HTMLElement;
 });

@@ -2,10 +2,15 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { montarShell } from "../src/shell.ts";
 import { alternarTema, iniciarTema, temaActual } from "../src/tema.ts";
 
+let avisarCambio: () => void = () => {};
+
 function simularSistema(oscuro: boolean): void {
   vi.stubGlobal("matchMedia", (consulta: string) => ({
     matches: oscuro && consulta.includes("dark"),
     media: consulta,
+    addEventListener: (_: string, escucha: () => void) => {
+      avisarCambio = escucha;
+    },
   }));
 }
 
@@ -78,5 +83,30 @@ describe("shell", () => {
     boton?.click();
     expect(boton?.getAttribute("aria-pressed")).toBe("true");
     expect(document.documentElement.dataset["theme"]).toBe("dark");
+  });
+
+  it("sin elección manual, el botón sigue los cambios del sistema", () => {
+    simularSistema(false);
+    const raiz = document.createElement("div");
+    document.body.append(raiz);
+    montarShell(raiz);
+    const boton = raiz.querySelector(".boton-tema");
+    expect(boton?.getAttribute("aria-pressed")).toBe("false");
+    simularSistema(true);
+    // El stub nuevo reemplaza matchMedia: el listener viejo consulta el sistema actualizado.
+    avisarCambio();
+    expect(boton?.getAttribute("aria-pressed")).toBe("true");
+  });
+
+  it("con elección manual ignora los cambios del sistema", () => {
+    simularSistema(false);
+    const raiz = document.createElement("div");
+    document.body.append(raiz);
+    montarShell(raiz);
+    const boton = raiz.querySelector<HTMLButtonElement>(".boton-tema");
+    boton?.click();
+    simularSistema(false);
+    avisarCambio();
+    expect(boton?.getAttribute("aria-pressed")).toBe("true");
   });
 });

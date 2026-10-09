@@ -39,8 +39,8 @@ body {
 }
 
 ::selection {
-  background: var(--sello);
-  color: var(--sello-tinta);
+  background: var(--tinta);
+  color: var(--papel);
 }
 
 .display {
@@ -75,7 +75,7 @@ body {
   margin: 0;
 }
 
-/* Lámina de anuario: las cruces de registro viven en el padding, así que nunca tapan contenido. */
+/* Lámina de anuario (.sello y .placa-alerta solo fijan background-color para no pisar las cruces): las cruces de registro viven en el padding, así que nunca tapan contenido. */
 .lamina {
   position: relative;
   padding: calc(var(--cruz) * 2);
@@ -93,7 +93,7 @@ body {
 }
 
 .placa-alerta {
-  background: var(--placa);
+  background-color: var(--placa);
   color: var(--placa-texto);
 }
 
@@ -102,7 +102,7 @@ body {
 }
 
 .sello {
-  background: var(--sello);
+  background-color: var(--sello);
   color: var(--sello-tinta);
 }
 
@@ -153,8 +153,7 @@ button {
 }
 
 .boton-tema:hover {
-  background: var(--sello);
-  color: var(--sello-tinta);
+  border-color: var(--tinta);
 }
 
 button.boton,
@@ -176,8 +175,7 @@ a.boton {
 }
 
 .boton:hover {
-  background: var(--sello);
-  color: var(--sello-tinta);
+  border-color: var(--tinta);
 }
 
 .navegacion {

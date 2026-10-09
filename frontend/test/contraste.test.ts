@@ -41,6 +41,8 @@ const pares: [string, string][] = [
   ["alerta", "papel-frio"],
   ["placa-texto", "placa"],
   ["sello-tinta", "sello"],
+  // --alerta no se mide sobre el sello: el sello es solo para "resuelto sin cerrar" y la alerta vive en placa.
+  ["tinta-secundaria", "sello"],
 ];
 
 const temas: Record<string, Record<string, string>> = {

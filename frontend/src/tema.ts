@@ -39,6 +39,13 @@ export function iniciarTema(): Tema {
   return temaActual();
 }
 
+/** Avisa cuando el sistema cambia de tema, mientras no haya elección manual. */
+export function seguirSistema(alCambiar: (tema: Tema) => void): void {
+  window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => {
+    if (!esTema(document.documentElement.dataset["theme"])) alCambiar(delSistema());
+  });
+}
+
 export function alternarTema(): Tema {
   const siguiente: Tema = temaActual() === "dark" ? "light" : "dark";
   document.documentElement.dataset["theme"] = siguiente;

@@ -11,7 +11,7 @@
         var tema = localStorage.getItem("rastro.tema");
         if (tema === "light" || tema === "dark") document.documentElement.dataset.theme = tema;
       } catch (e) {
-        // Sin localStorage (modo privado, bloqueado) se sigue al sistema; tema.ts avisa del mismo modo.
+        // Sin localStorage (modo privado, bloqueado) se sigue al sistema; tema.ts hace el mismo fallback.
       }
     </script>
   </head>

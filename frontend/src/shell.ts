@@ -1,6 +1,6 @@
 import { ETIQUETAS_VISTA, VISTAS_PERSONA, hashDe, type Ruta } from "./router.ts";
 import { h } from "./ui/dom.ts";
-import { alternarTema, iniciarTema, type Tema } from "./tema.ts";
+import { alternarTema, iniciarTema, seguirSistema, type Tema } from "./tema.ts";
 
 function crearBotonTema(): HTMLButtonElement {
   const boton = document.createElement("button");
@@ -11,6 +11,7 @@ function crearBotonTema(): HTMLButtonElement {
     boton.setAttribute("aria-pressed", String(tema === "dark"));
   };
   pintar(iniciarTema());
+  seguirSistema(pintar);
   boton.addEventListener("click", () => pintar(alternarTema()));
   return boton;
 }
