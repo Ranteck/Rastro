@@ -6,6 +6,7 @@ import { vincularPorNombre, type Vinculo } from "./detectores/vinculo.ts";
 import { agregarEvento } from "./eventos.ts";
 import { fechaLocal, sumarDias } from "./fechas.ts";
 import { commitsDe, git, raizDelRepo } from "./git.ts";
+import type { Tarea } from "./contract/snapshot.ts";
 import { parsearPlan } from "./plan.ts";
 
 export function hookCommit(repo: string, ahora: Date): string | null {
@@ -13,6 +14,18 @@ export function hookCommit(repo: string, ahora: Date): string | null {
   const rama = git(repo, ["rev-parse", "--abbrev-ref", "HEAD"]).trim();
   agregarEvento(rutas(repo).eventos, { tipo: "commit", sha, rama, en: ahora.toISOString() });
   return avisoDeDesvio(repo, rama, ahora);
+}
+
+/** `commits` va del más nuevo al más viejo. Los anteriores no traen su rama: se vinculan solo por mensaje, para no atribuirles la rama de HEAD. */
+export function vincularCommitsDeHoy(
+  commits: readonly { asunto: string; cuerpo: string }[],
+  rama: string,
+  tareas: readonly Tarea[],
+): { vinculo: Vinculo }[] {
+  return commits.map((c, i) => {
+    const tarea = vincularPorNombre({ rama: i === 0 ? rama : "", asunto: c.asunto, cuerpo: c.cuerpo }, tareas);
+    return { vinculo: tarea === null ? { tarea: null, tipo: "sin-tarea" } : { tarea, tipo: "nombre" } };
+  });
 }
 
 /** REQ-8: una línea de aviso si el commit recién hecho no tiene tarea y el día ya supera el umbral. */
@@ -28,12 +41,7 @@ export function avisoDeDesvio(repo: string, rama: string, ahora: Date): string |
   );
   const ultimo = deHoy[0];
   if (ultimo === undefined) return null;
-  // Los commits anteriores no traen su rama: se vinculan solo por mensaje, para no atribuirles la rama de HEAD.
-  const vinculados = deHoy.map((c) => {
-    const tarea = vincularPorNombre({ rama: c === ultimo ? rama : "", asunto: c.asunto, cuerpo: c.cuerpo }, plan.tareas);
-    const vinculo: Vinculo = tarea === null ? { tarea: null, tipo: "sin-tarea" } : { tarea, tipo: "nombre" };
-    return { vinculo };
-  });
+  const vinculados = vincularCommitsDeHoy(deHoy, rama, plan.tareas);
   const [vinculoUltimo] = vinculados;
   if (vinculoUltimo?.vinculo.tipo !== "sin-tarea") return null;
   const { fueraDelPlanPct } = calcularDesvios({ plan, commitsPeriodo: vinculados, commitsSemana: vinculados, umbralPct: config.umbrales.fueraDelPlanPct });

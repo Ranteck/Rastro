@@ -5,7 +5,7 @@ import { chmodSync, existsSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { leerEventos } from "../src/eventos.ts";
 import { ddmm, fechaLocal, lunesDe } from "../src/fechas.ts";
-import { avisoDeDesvio, hookSesion } from "../src/hooks.ts";
+import { avisoDeDesvio, hookSesion, vincularCommitsDeHoy } from "../src/hooks.ts";
 import { BIN_RASTRO, inicializar } from "../src/init.ts";
 import { crearRepo, ENV_GIT } from "./helpers/repo.ts";
 
@@ -82,7 +82,7 @@ test("el post-commit avisa cuando el día ya se fue del plan", () => {
   assert.match(res.stderr, /4 de 5 commits de hoy están fuera del plan \(80%\)/);
 });
 
-test("los commits de otra rama no se atribuyen a la rama de HEAD", () => {
+test("el aviso depende de la rama del último commit, no de los anteriores", () => {
   const r = crearRepo();
   inicializar(r.dir, { equipo: "QA", binRastro: BIN_RASTRO });
   const hoy = fechaLocal(new Date(), "America/Argentina/Buenos_Aires");
@@ -96,4 +96,14 @@ test("los commits de otra rama no se atribuyen a la rama de HEAD", () => {
   assert.equal(avisoDeDesvio(r.dir, "feat/pendientes", ahora), null);
   // Con otra rama, el último queda fuera y los dos de main siguen contando como fuera del plan.
   assert.match(avisoDeDesvio(r.dir, "feat/otra", ahora) ?? "", /3 de 3 commits de hoy están fuera del plan \(100%\)/);
+});
+
+test("solo el commit más nuevo se vincula por la rama de HEAD", () => {
+  const tareas = [{ slug: "pendientes", nombre: "Pendientes", objetivo: "Detectar", estado: "pendiente" as const }];
+  const nuevoYViejo = [
+    { asunto: "fix nuevo", cuerpo: "" },
+    { asunto: "fix viejo, hecho en otra rama", cuerpo: "" },
+  ];
+  const vinculos = vincularCommitsDeHoy(nuevoYViejo, "feat/pendientes", tareas).map((c) => c.vinculo);
+  assert.deepEqual(vinculos, [{ tarea: "pendientes", tipo: "nombre" }, { tarea: null, tipo: "sin-tarea" }]);
 });
