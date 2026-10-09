@@ -5,7 +5,7 @@ import { validarSnapshot } from "../src/contract/snapshot.ts";
 import { ErrorValidacion } from "../src/contract/validar.ts";
 
 const ejemplo = (): Record<string, unknown> =>
-  JSON.parse(readFileSync(new URL("../frontend/ejemplos/persona-denis.json", import.meta.url), "utf8")) as Record<string, unknown>;
+  JSON.parse(readFileSync(new URL("../../frontend/ejemplos/persona-denis.json", import.meta.url), "utf8")) as Record<string, unknown>;
 
 test("el ejemplo de frontend cumple el contrato", () => {
   const s = validarSnapshot(ejemplo());
