@@ -437,3 +437,200 @@ a.persona-lamina:hover {
     grid-column: 1 / -1;
   }
 }
+
+/* Plan */
+.plan-cabecera .titulo {
+  max-width: 28ch;
+  margin-bottom: 16px;
+  text-wrap: balance;
+}
+
+.plan-cabecera p {
+  margin: 0 0 48px;
+}
+
+.plan-desvio {
+  display: flex;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  gap: 16px 32px;
+  margin-bottom: 48px;
+}
+
+.plan-desvio .fuera-del-plan {
+  justify-self: auto;
+}
+
+.plan-desvio > .cuerpo {
+  margin: 0;
+}
+
+.plan-tareas {
+  margin: 0 0 64px;
+  padding: 0;
+  list-style: none;
+  border-top: 1px solid var(--tinta);
+}
+
+.plan-tarea {
+  display: grid;
+  grid-template-columns: 32px minmax(0, 1fr) auto;
+  gap: 16px;
+  align-items: baseline;
+  padding: 16px 0;
+  border-bottom: 1px solid var(--hairline);
+}
+
+.plan-marca {
+  font-family: var(--fuente-mono);
+  text-align: center;
+}
+
+.plan-tarea p {
+  margin: 0;
+}
+
+.plan-tarea-nombre {
+  font-weight: 500;
+}
+
+/* Gantt: una columna por día; las barras se ubican con grid-column desde los datos. */
+.gantt-titulo {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.gantt-titulo h2 {
+  margin: 0;
+}
+
+.gantt-leyenda {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 32px;
+  margin: 0 0 24px;
+  padding: 0;
+  list-style: none;
+}
+
+.gantt-leyenda-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.gantt-muestra {
+  display: inline-block;
+  width: 32px;
+  height: 12px;
+}
+
+.gantt-tabla {
+  border-top: 1px solid var(--tinta);
+}
+
+.gantt-fila {
+  display: grid;
+  grid-template-columns: minmax(160px, 240px) minmax(0, 1fr);
+  gap: 24px;
+  align-items: center;
+  padding: 16px 0;
+  border-bottom: 1px solid var(--hairline);
+}
+
+.gantt-cabecera {
+  padding: 8px 0;
+}
+
+.gantt-pista {
+  display: grid;
+  grid-template-columns: repeat(var(--dias), minmax(0, 1fr));
+  gap: 6px 0;
+}
+
+.gantt-dia {
+  grid-row: 1;
+  font-size: 13px;
+}
+
+.gantt-tarea p {
+  margin: 0;
+}
+
+.gantt-leyenda-fantasma {
+  margin-top: 4px;
+}
+
+.gantt-barra {
+  height: 14px;
+  box-sizing: border-box;
+}
+
+.gantt-barra-plan {
+  grid-row: 1;
+  border: 1px solid var(--tinta);
+  background: transparent;
+}
+
+.gantt-barra-real {
+  grid-row: 2;
+  background: var(--tinta);
+}
+
+.gantt-barra-fantasma {
+  border: 2px dashed var(--tinta);
+  background: transparent;
+}
+
+.gantt-fantasma .gantt-barra-real {
+  grid-row: 1;
+}
+
+@media (max-width: 720px) {
+  .gantt-fila {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+}
+
+/* Sugerencias */
+.laminas-sugerencias {
+  align-items: start;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 440px), 1fr));
+}
+
+.sugerencia p {
+  margin: 0;
+}
+
+.sugerencia-patron {
+  font-size: 17px;
+  font-weight: 500;
+}
+
+.sugerencia-tipo {
+  margin-top: 24px;
+}
+
+.sugerencia-porque {
+  margin-top: 4px;
+  max-width: 60ch;
+}
+
+.sugerencia-codigo {
+  margin: 16px 0 0;
+  padding: 12px 16px;
+  overflow-x: auto;
+  border: 1px solid var(--tinta);
+  font-family: var(--fuente-mono);
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+.sugerencia-acciones {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
