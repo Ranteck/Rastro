@@ -1,4 +1,4 @@
-import { existsSync, readFileSync, statSync } from "node:fs";
+import { existsSync, readFileSync, realpathSync, statSync } from "node:fs";
 import { createServer, type IncomingMessage, type Server, type ServerResponse } from "node:http";
 import { extname, join, resolve, sep } from "node:path";
 import { filaDe } from "../contract/equipo.ts";
@@ -46,7 +46,7 @@ export function crearCentral(o: Opciones): Server {
 }
 
 async function atender(req: IncomingMessage, res: ServerResponse, o: Opciones): Promise<void> {
-  const ruta = new URL(req.url ?? "/", "http://central").pathname;
+  const ruta = rutaDe(req.url ?? "/");
   if (req.method === "POST" && ruta === "/api/publish") {
     const snapshot = validarCuerpo(await leerCuerpo(req));
     o.almacen.guardar(snapshot);
@@ -72,6 +72,14 @@ async function atender(req: IncomingMessage, res: ServerResponse, o: Opciones): 
   }
   if (ruta.startsWith("/api/")) throw new ErrorPedido(404, "ruta no encontrada");
   servirEstatico(res, o.estaticos, decodificar(ruta));
+}
+
+function rutaDe(url: string): string {
+  try {
+    return new URL(url, "http://central").pathname;
+  } catch {
+    throw new ErrorPedido(400, "ruta inválida");
+  }
 }
 
 function decodificar(s: string): string {
@@ -125,8 +133,12 @@ function servirEstatico(res: ServerResponse, raiz: string, ruta: string): void {
   // Las rutas sin extensión van a index.html para que la UI pueda tener su propio ruteo.
   if (archivo === base || extname(archivo) === "") archivo = join(base, "index.html");
   if (!existsSync(archivo) || !statSync(archivo).isFile()) throw new ErrorPedido(404, "no encontrado");
+  // Un enlace simbólico dentro de dist no puede sacar archivos de afuera: se compara la ruta real.
+  const real = realpathSync(archivo);
+  const baseReal = realpathSync(base);
+  if (!real.startsWith(baseReal + sep)) throw new ErrorPedido(404, "no encontrado");
   res.writeHead(200, { "content-type": TIPOS[extname(archivo)] ?? "application/octet-stream" });
-  res.end(readFileSync(archivo));
+  res.end(readFileSync(real));
 }
 
 function responderJson(res: ServerResponse, estado: number, cuerpo: unknown): void {

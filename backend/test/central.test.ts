@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { mkdirSync, mkdtempSync, readFileSync, writeFileSync } from "node:fs";
+import { mkdirSync, mkdtempSync, readFileSync, symlinkSync, writeFileSync } from "node:fs";
 import { request } from "node:http";
 import type { AddressInfo } from "node:net";
 import { tmpdir } from "node:os";
@@ -68,16 +68,21 @@ test("rutas hostiles nunca salen de sus directorios", async (t) => {
   mkdirSync(dist);
   writeFileSync(join(dist, "index.html"), "<h1>ui</h1>");
   writeFileSync(join(padre, "secreto.txt"), "CENTINELA-FUERA-DE-DIST");
+  symlinkSync(join(padre, "secreto.txt"), join(dist, "enlace.txt"));
+  symlinkSync(padre, join(dist, "dirlink"));
   const c = await levantar(dist);
   t.after(c.cerrar);
   assert.deepEqual(await getCrudo(c.port, "/"), { estado: 200, cuerpo: "<h1>ui</h1>" });
-  for (const ruta of ["/../secreto.txt", "/../../secreto.txt", "/..%2fsecreto.txt", "/%2e%2e/secreto.txt", "/..%2f..%2fsecreto.txt", "/..%2f..%2fetc%2fpasswd"]) {
+  for (const ruta of ["/../secreto.txt", "/../../secreto.txt", "/..%2fsecreto.txt", "/%2e%2e/secreto.txt", "/..%2f..%2fsecreto.txt", "/..%2f..%2fetc%2fpasswd", "//", "/enlace.txt", "/dirlink/secreto.txt"]) {
     const r = await getCrudo(c.port, ruta);
     assert.ok(!r.cuerpo.includes("CENTINELA"), `${ruta} filtró un archivo de afuera`);
     assert.ok(!r.cuerpo.includes("root:"), `${ruta} filtró un archivo de afuera`);
     assert.ok([400, 404].includes(r.estado) || r.cuerpo === "<h1>ui</h1>", `${ruta} dio ${r.estado}`);
   }
   assert.equal((await getCrudo(c.port, "/..%2fsecreto.txt")).estado, 404);
+  assert.equal((await getCrudo(c.port, "/enlace.txt")).estado, 404);
+  assert.equal((await getCrudo(c.port, "/dirlink/secreto.txt")).estado, 404);
+  assert.equal((await getCrudo(c.port, "//")).estado, 400);
   assert.equal((await getCrudo(c.port, "/api/persona/..%2F..%2Fetc")).estado, 404);
   assert.equal((await getCrudo(c.port, "/api/persona/..%2F..")).estado, 404);
   assert.equal((await getCrudo(c.port, "/%E0%A4%A")).estado, 400);
