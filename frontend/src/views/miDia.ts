@@ -25,7 +25,10 @@ const COLUMNAS: ReadonlyArray<{ clave: keyof Resumen; titulo: string }> = [
 
 function formatearDia(iso: string): string {
   // Las fechas del contrato son YYYY-MM-DD sin zona: se leen en UTC para que no corran un día.
-  return FECHA.format(new Date(`${iso}T00:00:00Z`));
+  const fecha = new Date(`${iso}T00:00:00Z`);
+  // El contrato acepta "2026-13-45" y format() lanzaría: mejor mostrar el dato crudo que perder toda la vista.
+  if (Number.isNaN(fecha.getTime())) return iso;
+  return FECHA.format(fecha);
 }
 
 function formatearPeriodo(desde: string, hasta: string): string {
@@ -103,7 +106,7 @@ function entrada(snapshot: Snapshot, e: EntradaBitacora): HTMLElement {
     h(
       "div",
       { class: "entrada-margen" },
-      listaEvidencia(e.evidencia),
+      ...listaEvidencia(e.evidencia),
       ...(e.razon === undefined ? [] : [h("p", { class: "razon" }, e.razon)]),
     ),
   );

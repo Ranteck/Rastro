@@ -307,6 +307,7 @@ a.persona-lamina.placa-alerta:hover {
 }
 
 .sin-cerrar a.boton {
+  border-color: var(--sello-tinta);
   margin-top: 12px;
 }
 
@@ -351,7 +352,7 @@ a.persona-lamina.placa-alerta:hover {
 }
 
 .bitacora {
-  margin: 0 0 32px;
+  margin: 0;
   padding: 0;
   list-style: none;
   border-top: 1px solid var(--tinta);
@@ -403,11 +404,10 @@ a.persona-lamina.placa-alerta:hover {
 
 .entrada-cuerpo .entrada-tarea {
   margin-bottom: 4px;
-  font-weight: 500;
 }
 
-.entrada-texto {
-  margin: 0 0 4px;
+.entrada-cuerpo .entrada-texto {
+  margin-bottom: 4px;
   overflow-wrap: anywhere;
   max-width: 70ch;
 }
@@ -428,7 +428,7 @@ a.persona-lamina.placa-alerta:hover {
 }
 
 .costo {
-  margin: 0;
+  margin: 32px 0 0;
 }
 
 @media (max-width: 960px) {
@@ -450,6 +450,7 @@ a.persona-lamina.placa-alerta:hover {
   .cabecera-dia {
     grid-template-columns: 1fr;
     grid-template-areas: "nombre" "fecha" "plan" "sello";
+    row-gap: 24px;
   }
 
   .resumen-columna {

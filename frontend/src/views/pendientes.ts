@@ -22,7 +22,7 @@ function lamina(snapshot: Snapshot, p: Pendiente): HTMLElement {
     h("p", { class: "etiqueta pendiente-tipo" }, TIPOS[p.tipo]),
     h("p", { class: "dato meta" }, nombreDeTarea(snapshot, p.tarea)),
     h("p", { class: "cuerpo pendiente-texto" }, p.texto),
-    listaEvidencia(p.evidencia),
+    ...listaEvidencia(p.evidencia),
     h(
       "div",
       { class: "proximo-paso" },

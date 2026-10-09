@@ -17,6 +17,8 @@ function itemEvidencia(e: Evidencia): HTMLElement {
   return h("li", { class: "evidencia-item" }, h("span", { class: "etiqueta meta" }, ETIQUETA_EVIDENCIA[e.tipo]), ref);
 }
 
-export function listaEvidencia(evidencia: readonly Evidencia[]): HTMLElement {
-  return h("ul", { class: "evidencia", "aria-label": "Evidencia" }, ...evidencia.map(itemEvidencia));
+/** Sin evidencia no hay lista: un `ul` vacío se anuncia como lista vacía en los lectores de pantalla. */
+export function listaEvidencia(evidencia: readonly Evidencia[]): HTMLElement[] {
+  if (evidencia.length === 0) return [];
+  return [h("ul", { class: "evidencia", "aria-label": "Evidencia" }, ...evidencia.map(itemEvidencia))];
 }

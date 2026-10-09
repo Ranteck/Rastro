@@ -37,17 +37,8 @@ body {
   background-attachment: fixed;
 }
 
-/* Con cifras tabulares la coma y el punto de Schibsted Grotesk ocupan ancho de cifra y la prosa sale espaciada: solo los datos las usan. */
-.dato,
-.display,
-.etiqueta,
-.costo,
-.pestana,
-.token-persona,
-.marca,
-.boton,
-.boton-tema,
-table {
+/* Con cifras tabulares la coma y el punto de Schibsted Grotesk ocupan ancho de cifra y la prosa sale espaciada; en mono no cambia nada. Solo el número grande las necesita para alinear. */
+.display {
   font-variant-numeric: tabular-nums;
 }
 

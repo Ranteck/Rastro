@@ -25,9 +25,10 @@ describe("vista Mi día", () => {
   });
 
   it("muestra la entrada inferida con su razón", () => {
-    const texto = montar(snapshot).textContent ?? "";
-    expect(texto).toContain("inferido");
-    expect(texto).toContain("El commit toca la validación del endpoint de publicación del central.");
+    const entrada = [...montar(snapshot).querySelectorAll(".entrada")].find((e) => e.textContent?.includes("inferido"));
+    expect(entrada?.textContent).toContain("El commit toca la validación del endpoint de publicación del central.");
+    expect(entrada?.querySelector(".entrada-margen a")?.textContent).toBe("4e81d07");
+    expect(entrada?.querySelector(".entrada-tarea")?.textContent).toBe("Central");
   });
 
   it("muestra el vínculo por nombre y las entradas sin tarea", () => {
@@ -77,9 +78,21 @@ describe("vista Mi día", () => {
     expect(montar({ ...snapshot, bitacora: [] }).textContent).toContain("Hoy no hay actividad registrada.");
   });
 
-  it("aguanta 49 entradas con textos largos sin recortarlas", () => {
+  it("renderiza las 49 entradas con el texto completo", () => {
     const largo = "commit ".repeat(80);
     const muchas = Array.from({ length: 49 }, (_, i): EntradaBitacora => ({ ...base, hora: `${String(i % 24).padStart(2, "0")}:00`, texto: largo }));
-    expect(montar({ ...snapshot, bitacora: muchas }).querySelectorAll(".entrada")).toHaveLength(49);
+    const entradas = montar({ ...snapshot, bitacora: muchas }).querySelectorAll(".entrada");
+    expect(entradas).toHaveLength(49);
+    expect(entradas[0]?.querySelector(".entrada-texto")?.textContent).toBe(largo);
+  });
+
+  it("muestra la fecha cruda si el periodo no es una fecha real", () => {
+    const raiz = montar({ ...snapshot, periodo: { desde: "2026-13-45", hasta: "2026-13-45" } });
+    expect(raiz.textContent).toContain("2026-13-45");
+  });
+
+  it("omite la lista de evidencia cuando una entrada no tiene", () => {
+    const raiz = montar({ ...snapshot, bitacora: [{ ...base, evidencia: [] }] });
+    expect(raiz.querySelector(".entrada ul")).toBeNull();
   });
 });
