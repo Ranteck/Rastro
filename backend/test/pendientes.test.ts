@@ -1,0 +1,98 @@
+import { test } from "node:test";
+import assert from "node:assert/strict";
+import type { Plan } from "../src/contract/snapshot.ts";
+import { detectarPendientes, ramaDeMerge, type CommitVinculado, type EntradaPendientes } from "../src/detectores/pendientes.ts";
+import type { Commit } from "../src/git.ts";
+
+const plan: Plan = {
+  semana: "2026-10-05",
+  entregable: "Demo.",
+  tareas: [
+    { slug: "pendientes", nombre: "Pendientes", objetivo: "", estado: "pendiente" },
+    { slug: "bitacora", nombre: "Bitácora", objetivo: "", estado: "hecha" },
+    { slug: "central", nombre: "Central", objetivo: "", estado: "pendiente" },
+  ],
+};
+
+const commit = (p: Partial<CommitVinculado> & { sha: string }): CommitVinculado => ({
+  fecha: new Date("2026-10-09T15:00:00-03:00"),
+  padres: ["p1"],
+  asunto: "",
+  cuerpo: "",
+  archivos: [],
+  rama: "main",
+  vinculo: { tarea: null, tipo: "sin-tarea" },
+  ...p,
+});
+
+const merge = (sha: string, asunto: string): Commit => ({
+  sha, fecha: new Date("2026-10-09T16:00:00-03:00"), padres: ["a", "b"], asunto, cuerpo: "", archivos: [], rama: "main",
+});
+
+const entrada = (o: Partial<EntradaPendientes> = {}): EntradaPendientes => ({
+  plan,
+  commitsSemana: [],
+  commitsPeriodo: [],
+  merges: [],
+  ramas: [],
+  ramaPrincipal: "main",
+  lineasAgregadas: () => [],
+  evidenciaCommit: (sha) => ({ tipo: "commit", ref: sha.slice(0, 7) }),
+  ahora: new Date("2026-10-09T18:00:00-03:00"),
+  ramaQuietaDias: 3,
+  ...o,
+});
+
+const deTipo = (e: EntradaPendientes, tipo: string) => detectarPendientes(e).filter((p) => p.tipo === tipo);
+
+test("lee la rama de un merge local o de un PR de GitHub", () => {
+  assert.equal(ramaDeMerge("Merge branch 'feat/pendientes'"), "feat/pendientes");
+  assert.equal(ramaDeMerge("Merge pull request #12 from flock/feat/pendientes"), "feat/pendientes");
+  assert.equal(ramaDeMerge("fix parser"), null);
+});
+
+test("resuelto sin cerrar: el merge de la rama de una tarea abierta", () => {
+  const [p] = deTipo(entrada({ merges: [merge("abcdef1234", "Merge pull request #12 from flock/feat/pendientes")] }), "resuelto-sin-cerrar");
+  assert.equal(p?.tarea, "pendientes");
+  assert.equal(p?.proximoPaso, "Tildar Pendientes en el plan.");
+  assert.deepEqual(p?.evidencia, [{ tipo: "commit", ref: "abcdef1" }]);
+});
+
+test("resuelto sin cerrar: un commit que dice cierra [Central]", () => {
+  const c = commit({ sha: "1234567890", asunto: "Cierra [Central] con la API lista", vinculo: { tarea: "central", tipo: "nombre" } });
+  const [p] = deTipo(entrada({ commitsSemana: [c] }), "resuelto-sin-cerrar");
+  assert.equal(p?.tarea, "central");
+});
+
+test("cerrado sin evidencia: tarea hecha sin commits vinculados", () => {
+  assert.deepEqual(deTipo(entrada(), "cerrado-sin-evidencia").map((p) => p.tarea), ["bitacora"]);
+  const c = commit({ sha: "aaaaaaa1", vinculo: { tarea: "bitacora", tipo: "nombre" } });
+  assert.equal(deTipo(entrada({ commitsSemana: [c] }), "cerrado-sin-evidencia").length, 0);
+});
+
+test("rama quieta: sin mergear y sin commits hace N días", () => {
+  const ramas = [
+    { nombre: "feat/central", ultimoCommit: new Date("2026-10-04T10:00:00-03:00"), sha: "bbbbbbb1", mergeada: false },
+    { nombre: "feat/vieja-mergeada", ultimoCommit: new Date("2026-10-01T10:00:00-03:00"), sha: "ccccccc1", mergeada: true },
+    { nombre: "feat/reciente", ultimoCommit: new Date("2026-10-08T10:00:00-03:00"), sha: "ddddddd1", mergeada: false },
+  ];
+  const quietas = deTipo(entrada({ ramas }), "rama-quieta");
+  assert.deepEqual(quietas.map((p) => p.tarea), ["central"]);
+  assert.match(quietas[0]?.texto ?? "", /hace 5 días/);
+});
+
+test("TODO o FIXME nuevo en el diff", () => {
+  const c = commit({ sha: "eeeeeee1", vinculo: { tarea: "central", tipo: "nombre" } });
+  const [p] = deTipo(entrada({ commitsPeriodo: [c], lineasAgregadas: () => ["// TODO: limitar el tamaño", "x"] }), "todo-nuevo");
+  assert.equal(p?.tarea, "central");
+  assert.match(p?.texto ?? "", /limitar el tamaño/);
+});
+
+test("código sin doc: por tarea, salvo que se toque README o docs/ o solo tests", () => {
+  const conCodigo = commit({ sha: "fffffff1", archivos: ["src/a.ts"], vinculo: { tarea: "central", tipo: "nombre" } });
+  assert.equal(deTipo(entrada({ commitsPeriodo: [conCodigo] }), "codigo-sin-doc").length, 1);
+  const conDoc = commit({ sha: "fffffff2", archivos: ["src/a.ts", "README.md"], vinculo: { tarea: "central", tipo: "nombre" } });
+  assert.equal(deTipo(entrada({ commitsPeriodo: [conDoc] }), "codigo-sin-doc").length, 0);
+  const soloTests = commit({ sha: "fffffff3", archivos: ["test/a.test.ts"] });
+  assert.equal(deTipo(entrada({ commitsPeriodo: [soloTests] }), "codigo-sin-doc").length, 0);
+});
