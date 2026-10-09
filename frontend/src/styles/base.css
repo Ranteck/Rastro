@@ -157,6 +157,76 @@ button {
   color: var(--sello-tinta);
 }
 
+button.boton,
+a.boton {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 16px;
+  margin-top: 16px;
+  background: transparent;
+  border: 1px solid var(--hairline);
+  color: var(--tinta);
+  cursor: pointer;
+  font-family: var(--fuente-mono);
+  font-size: 13px;
+  letter-spacing: 0.14em;
+  text-decoration: none;
+  text-transform: uppercase;
+}
+
+.boton:hover {
+  background: var(--sello);
+  color: var(--sello-tinta);
+}
+
+.navegacion {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.pestana {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 12px;
+  border-bottom: 2px solid transparent;
+  color: var(--tinta-secundaria);
+  font-family: var(--fuente-mono);
+  font-size: 13px;
+  letter-spacing: 0.14em;
+  text-decoration: none;
+  text-transform: uppercase;
+}
+
+.pestana[aria-current="page"] {
+  color: var(--tinta);
+  border-bottom-color: var(--tinta);
+}
+
+.token-persona {
+  padding: 4px 8px;
+  border: 1px solid var(--hairline);
+  font-family: var(--fuente-mono);
+  font-size: 13px;
+}
+
+.etiqueta-mock {
+  display: inline-block;
+  padding: 4px 8px;
+  border: 1px solid var(--hairline);
+}
+
+#contenido {
+  padding: 32px;
+}
+
+.estado {
+  max-width: 70ch;
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

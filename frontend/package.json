@@ -4,6 +4,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "dev:ejemplos": "VITE_RASTRO_FUENTE=ejemplos vite",
     "build": "vite build",
     "typecheck": "tsc -p .",
     "test": "vitest run",
