@@ -2,7 +2,7 @@
 
 Memoria de equipo con evidencia. Rastro cruza lo que pasó en el código con el plan de la semana y muestra qué está resuelto, qué está pendiente y con qué evidencia: *"Está resuelto en el código; nadie cerró el ticket."*
 
-No corre todo el tiempo. Se activa en momentos concretos: un post-commit que solo anota el evento, el fin de una sesión de Claude Code y `rastro daily`, a demanda o por cron. Nada sale de tu máquina sin `rastro publish`.
+No corre todo el tiempo. Se activa en momentos concretos: un post-commit que anota el evento y avisa si te desviás del plan, el fin de una sesión de Claude Code y `rastro daily`, a demanda o por cron. Nada se comparte con el central ni con Notion sin `rastro publish`. `daily` y `plan` sí mandan texto, con los secretos redactados, a `claude -p`, salvo que pongas `llm.proveedor: "ninguno"`.
 
 ## Estructura
 
