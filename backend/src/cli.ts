@@ -16,7 +16,10 @@ Uso:
 `;
 
 // Carga diferida: el hook de cada commit solo importa lo que usa.
-const comandos: Readonly<Record<string, () => Promise<Comando>>> = {};
+const comandos: Readonly<Record<string, () => Promise<Comando>>> = {
+  init: async () => (await import("./init.ts")).cmdInit,
+  hook: async () => (await import("./hooks.ts")).cmdHook,
+};
 
 export async function main(argv: string[]): Promise<number> {
   const [nombre, ...resto] = argv;
@@ -24,7 +27,8 @@ export async function main(argv: string[]): Promise<number> {
     process.stdout.write(AYUDA);
     return 0;
   }
-  const cargar = comandos[nombre];
+  // hasOwn: "constructor" o "toString" no son comandos aunque el objeto los herede.
+  const cargar = Object.hasOwn(comandos, nombre) ? comandos[nombre] : undefined;
   if (cargar === undefined) {
     process.stderr.write(`Comando desconocido: ${nombre}\n\n${AYUDA}`);
     return 2;

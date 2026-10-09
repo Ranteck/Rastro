@@ -16,3 +16,9 @@ test("un comando desconocido sale con 2 y lo nombra", () => {
   assert.equal(r.status, 2);
   assert.match(r.stderr, /Comando desconocido: nada/);
 });
+
+test("un nombre heredado de Object.prototype no es un comando", () => {
+  const r = spawnSync(process.execPath, [BIN, "constructor"], { encoding: "utf8" });
+  assert.equal(r.status, 2);
+  assert.match(r.stderr, /Comando desconocido: constructor/);
+});
