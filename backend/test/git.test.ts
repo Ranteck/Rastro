@@ -75,7 +75,7 @@ test("las líneas agregadas de un commit", () => {
   r.commit("uno", "2026-10-09T10:00:00-03:00");
   r.escribir("a.ts", "uno\n// TODO: dos\n");
   const sha = r.commit("dos", "2026-10-09T10:05:00-03:00");
-  assert.deepEqual(lineasAgregadas(r.dir, sha), ["// TODO: dos"]);
+  assert.deepEqual(lineasAgregadas(r.dir, sha), [{ archivo: "a.ts", texto: "// TODO: dos" }]);
 });
 
 test("una rama con el nombre de un directorio no rompe la recolección", () => {

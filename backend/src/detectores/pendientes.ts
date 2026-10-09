@@ -1,6 +1,6 @@
 import type { Evidencia, Pendiente, Plan } from "../contract/snapshot.ts";
 import { diasEntre } from "../fechas.ts";
-import type { Commit, Rama } from "../git.ts";
+import type { Commit, LineaAgregada, Rama } from "../git.ts";
 import { escaparRegex, normalizar } from "../texto.ts";
 import { ramaContieneSlug, vincularPorNombre, type Vinculo } from "./vinculo.ts";
 
@@ -15,7 +15,7 @@ export type EntradaPendientes = {
   merges: readonly Commit[];
   ramas: readonly Rama[];
   ramaPrincipal: string;
-  lineasAgregadas: (sha: string) => string[];
+  lineasAgregadas: (sha: string) => LineaAgregada[];
   evidenciaCommit: (sha: string) => Evidencia;
   ahora: Date;
   ramaQuietaDias: number;
@@ -24,6 +24,9 @@ export type EntradaPendientes = {
 const RE_MERGE = /^Merge (?:branch '([^']+)'|pull request #\d+ from [^/\s]+\/(\S+))/;
 const RE_CODIGO = /\.(ts|tsx|js|jsx|mjs|cjs|py|go|rs|java|kt|rb|php|cs|c|cc|cpp|h|hpp|swift|sh)$/;
 const RE_TEST = /(^|\/)(test|tests|__tests__)\/|\.(test|spec)\.[a-z]+$/;
+
+// El marcador cuenta solo dentro de un comentario: un string, una regex o un .md que nombran TODO no son pendientes.
+const RE_TODO_EN_COMENTARIO = /(?:\/\/|#|\/\*|^\s*\*|--|<!--)\s*(?:TODO|FIXME)\b/;
 
 const esCodigo = (a: string): boolean => RE_CODIGO.test(a) && !RE_TEST.test(a);
 const esDoc = (a: string): boolean => /(^|\/)README[^/]*$/i.test(a) || a.startsWith("docs/");
@@ -109,13 +112,13 @@ function ramasQuietas(e: EntradaPendientes): Pendiente[] {
 function todosNuevos(e: EntradaPendientes): Pendiente[] {
   const res: Pendiente[] = [];
   for (const c of e.commitsPeriodo) {
-    const todos = e.lineasAgregadas(c.sha).filter((l) => /\b(TODO|FIXME)\b/.test(l));
-    const primera = todos[0];
+    const todos = e.lineasAgregadas(c.sha).filter((l) => esCodigo(l.archivo) && RE_TODO_EN_COMENTARIO.test(l.texto));
+    const primera = todos[0]?.texto;
     if (primera === undefined) continue;
     res.push({
       tipo: "todo-nuevo",
       tarea: c.vinculo.tarea,
-      texto: `Se agregó ${todos.length === 1 ? "un TODO/FIXME" : `${todos.length} TODO/FIXME, por ejemplo`}: "${primera.trim().slice(0, 80)}".`,
+      texto: `${todos.length === 1 ? "Se agregó un TODO/FIXME" : `Se agregaron ${todos.length} TODO/FIXME, por ejemplo`}: "${primera.trim().slice(0, 80)}".`,
       evidencia: [e.evidenciaCommit(c.sha)],
       proximoPaso: "Resolverlo o sumarlo como tarea al plan.",
     });

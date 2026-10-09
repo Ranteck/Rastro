@@ -95,11 +95,29 @@ test("rama quieta: sin mergear y sin commits hace N días", () => {
   assert.match(quietas[0]?.texto ?? "", /hace 5 días/);
 });
 
-test("TODO o FIXME nuevo en el diff", () => {
+const agregadas = (archivo: string, ...textos: string[]): (() => { archivo: string; texto: string }[]) => () => textos.map((texto) => ({ archivo, texto }));
+
+test("TODO o FIXME nuevo en un comentario de código", () => {
   const c = commit({ sha: "eeeeeee1", vinculo: { tarea: "central", tipo: "nombre" } });
-  const [p] = deTipo(entrada({ commitsPeriodo: [c], lineasAgregadas: () => ["// TODO: limitar el tamaño", "x"] }), "todo-nuevo");
+  const [p] = deTipo(entrada({ commitsPeriodo: [c], lineasAgregadas: agregadas("src/a.ts", "// TODO: limitar el tamaño", "x") }), "todo-nuevo");
   assert.equal(p?.tarea, "central");
-  assert.match(p?.texto ?? "", /limitar el tamaño/);
+  assert.match(p?.texto ?? "", /^Se agregó un TODO\/FIXME: "\/\/ TODO: limitar el tamaño"\.$/);
+});
+
+test("varios TODO nuevos usan el plural", () => {
+  const c = commit({ sha: "eeeeeee2" });
+  const [p] = deTipo(entrada({ commitsPeriodo: [c], lineasAgregadas: agregadas("src/a.ts", "// TODO: uno", "# FIXME: dos") }), "todo-nuevo");
+  assert.match(p?.texto ?? "", /^Se agregaron 2 TODO\/FIXME, por ejemplo: "\/\/ TODO: uno"\.$/);
+});
+
+test("un TODO en markdown, en un string, en una regex o en un test no cuenta", () => {
+  const c = commit({ sha: "eeeeeee3" });
+  const sin = (archivo: string, texto: string): number => deTipo(entrada({ commitsPeriodo: [c], lineasAgregadas: agregadas(archivo, texto) }), "todo-nuevo").length;
+  assert.equal(sin("intent/plan.md", "- TODO: algo"), 0);
+  assert.equal(sin("src/a.ts", 'const marca = "TODO: algo";'), 0);
+  assert.equal(sin("src/a.ts", "const re = /\\b(TODO|FIXME)\\b/;"), 0);
+  assert.equal(sin("test/a.test.ts", "// TODO: algo"), 0);
+  assert.equal(sin("src/a.py", "# TODO: algo"), 1);
 });
 
 test("código sin doc: por tarea, salvo que se toque README o docs/ o solo tests", () => {

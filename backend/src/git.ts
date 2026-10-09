@@ -105,11 +105,16 @@ export function recolectarGit(repo: string, desdeGit: string): DatosGit {
   };
 }
 
-export function lineasAgregadas(repo: string, sha: string): string[] {
-  return git(repo, ["show", "--format=", "--unified=0", "--no-color", sha])
-    .split("\n")
-    .filter((l) => l.startsWith("+") && !l.startsWith("+++"))
-    .map((l) => l.slice(1));
+export type LineaAgregada = { archivo: string; texto: string };
+
+export function lineasAgregadas(repo: string, sha: string): LineaAgregada[] {
+  const res: LineaAgregada[] = [];
+  let archivo = "";
+  for (const l of git(repo, ["show", "--format=", "--unified=0", "--no-color", sha]).split("\n")) {
+    if (l.startsWith("+++ ")) archivo = l.slice(4).replace(/^b\//, "");
+    else if (l.startsWith("+")) res.push({ archivo, texto: l.slice(1) });
+  }
+  return res;
 }
 
 export function diffResumido(repo: string, sha: string, maxBytes: number): string {
