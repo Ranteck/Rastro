@@ -46,7 +46,7 @@ test("con pagina el prompt apunta a esa página, mantiene los flags y lo informa
   const { llamadas, conector } = conClaude(homeTemporal(), PAGINA);
   const mensaje = await conector.publicar(snapshot());
   const l = llamadas[0];
-  assert.ok(l?.entrada.startsWith(`Usá notion-fetch para leer la página ${PAGINA} y, con notion-update-page, agregá al final estas entradas tal cual (formato de la Daily de daily-flock). No toques ninguna otra página ni cambies lo que ya está.\n\n### `));
+  assert.ok(l?.entrada.startsWith(`Usá notion-fetch para leer la página ${PAGINA} y, con notion-update-page, agregá al final estas entradas tal cual (formato de la Daily de daily-flock). No toques ninguna otra página ni cambies lo que ya está. No uses la skill daily-flock ni escribas en la página Daily.\n\n### `));
   assert.match(l?.entrada ?? "", /^### 09\/10$/m);
   assert.deepEqual(l?.args, [
     "-p", "--output-format", "json", "--model", "sonnet", "--no-session-persistence",

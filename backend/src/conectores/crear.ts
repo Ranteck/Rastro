@@ -9,6 +9,6 @@ export function crearConectores(config: Config, repo: string): Conector[] {
     const { pagina } = config.notion;
     return config.notion.modo === "claude"
       ? new ConectorNotionClaude({ modelo: config.llm.modelo, ...(pagina !== undefined ? { pagina } : {}) })
-      :new ConectorNotionMock(rutas(repo).notionPreview);
+      : new ConectorNotionMock(rutas(repo).notionPreview);
   });
 }

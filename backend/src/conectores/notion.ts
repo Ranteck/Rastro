@@ -85,7 +85,7 @@ export class ConectorNotionClaude implements Conector {
     const instruccion =
       this.#pagina === undefined
         ? "Usá la skill daily-flock (Flujo A: registrar entradas) para agregar a la página Daily estas entradas, respetando la fecha y la hora de cada una. No agregues nada más ni cambies lo que ya está."
-        : `Usá notion-fetch para leer la página ${this.#pagina} y, con notion-update-page, agregá al final estas entradas tal cual (formato de la Daily de daily-flock). No toques ninguna otra página ni cambies lo que ya está.`;
+        : `Usá notion-fetch para leer la página ${this.#pagina} y, con notion-update-page, agregá al final estas entradas tal cual (formato de la Daily de daily-flock). No toques ninguna otra página ni cambies lo que ya está. No uses la skill daily-flock ni escribas en la página Daily.`;
     const prompt = redactar(
       [
         instruccion,

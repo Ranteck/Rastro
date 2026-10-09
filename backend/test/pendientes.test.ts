@@ -128,6 +128,9 @@ test("el marcador cuenta solo si empieza un comentario real, no si está dentro 
   assert.equal(cuenta("src/a.ts", "const x = 1; // TODO arreglar"), 1);
   assert.equal(cuenta("src/a.ts", "  // FIXME algo"), 1);
   assert.equal(cuenta("src/a.py", "# TODO"), 1);
+  assert.equal(cuenta("src/a.ts", "// nada de TODO acá"), 0);
+  assert.equal(cuenta("src/a.ts", "#cache = new Map(); // TODO invalidar"), 1);
+  assert.equal(cuenta("src/a.py", "x = a // b  # TODO"), 1);
 });
 
 test("el TODO nuevo se redacta antes de cortarlo a 80 caracteres", () => {

@@ -27,19 +27,18 @@ const RE_CODIGO = /\.(ts|tsx|js|jsx|mjs|cjs|py|go|rs|java|kt|rb|php|cs|c|cc|cpp|
 const RE_TEST = /(^|\/)(test|tests|__tests__)\/|\.(test|spec)\.[a-z]+$/;
 
 // El marcador cuenta solo dentro de un comentario: un string, una regex o un .md que nombran TODO no son pendientes.
-const RE_COMENTARIO_AL_INICIO = /^\s*(?:\/\/|#|\/\*|\*|--|<!--)/;
+const RE_COMENTARIO_CON_MARCADOR = /^\s*(?:\/\/|#|\/\*|\*|--|<!--)\s*(?:TODO|FIXME)\b/;
 const RE_MARCADOR = /^\s*(?:TODO|FIXME)\b/;
-const RE_TODO_EN_LINEA_COMENTADA = /\b(?:TODO|FIXME)\b/;
 
 // Un `//` o `#` posterior al código abre un comentario solo si antes hay cantidad par de cada comilla; si no, está dentro de un string.
 function esTodoEnComentario(texto: string): boolean {
-  if (RE_COMENTARIO_AL_INICIO.test(texto)) return RE_TODO_EN_LINEA_COMENTADA.test(texto);
+  if (RE_COMENTARIO_CON_MARCADOR.test(texto)) return true;
   const comillas: Record<string, number> = { "'": 0, '"': 0, "`": 0 };
   for (let i = 0; i < texto.length; i++) {
     const ch = texto.charAt(i);
     if (ch in comillas) comillas[ch] = (comillas[ch] ?? 0) + 1;
     const abre = ch === "#" ? 1 : ch === "/" && texto.charAt(i + 1) === "/" ? 2 : 0;
-    if (abre > 0 && Object.values(comillas).every((n) => n % 2 === 0)) return RE_MARCADOR.test(texto.slice(i + abre));
+    if (abre > 0 && Object.values(comillas).every((n) => n % 2 === 0) && RE_MARCADOR.test(texto.slice(i + abre))) return true;
   }
   return false;
 }
