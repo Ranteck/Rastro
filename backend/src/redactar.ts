@@ -9,8 +9,9 @@ const TOKENS: readonly RegExp[] = [
 ];
 
 // Cubre FOO_KEY=..., API_TOKEN="...", SECRET=..., KEY=..., password=... y --password=...
-// El valor sin comillas corta en espacios y comillas para no comerse el cierre de un string JSON.
-const ASIGNACIONES = /\b((?:[A-Za-z_][A-Za-z0-9_]*)?(?:KEY|TOKEN|SECRET|PASSWORD))\s*=\s*("[^"]*"|'[^']*'|[^\s"']+)/gi;
+// El valor sin cerrar corta en espacios, comillas y barras para no comerse el cierre de un string JSON;
+// admite una comilla de apertura (con o sin escapar) para no filtrar valores sin comilla de cierre.
+const ASIGNACIONES = /\b((?:[A-Za-z_][A-Za-z0-9_]*)?(?:KEY|TOKEN|SECRET|PASSWORD))\s*=\s*("[^"]*"|'[^']*'|\\?["']?[^\s"'\\]+)/gi;
 
 export function redactar(texto: string): string {
   let r = texto;

@@ -31,6 +31,19 @@ test("una asignación dentro de un string JSON deja el JSON válido y sin el sec
   assert.deepEqual(JSON.parse(r), { msg: "API_KEY=[redactado]", x: 1 });
 });
 
+test("una asignación con comillas escapadas dentro de JSON no filtra ni rompe el JSON", () => {
+  const r = redactar(JSON.stringify({ cmd: 'export TOKEN="abc123" && ls' }));
+  assert.ok(!r.includes("abc123"));
+  assert.doesNotThrow(() => JSON.parse(r));
+});
+
+test("redacta valores con comilla de apertura sin cerrar", () => {
+  for (const entrada of ['export TOKEN="abc123', "KEY='abc"]) {
+    const r = redactar(entrada);
+    assert.ok(!/abc/.test(r), entrada);
+  }
+});
+
 test("no toca texto sin secretos", () => {
   assert.equal(redactar("git commit -m 'arreglo el parser'"), "git commit -m 'arreglo el parser'");
 });
