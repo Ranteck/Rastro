@@ -1,5 +1,5 @@
 import { readFileSync } from "node:fs";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { ErrorApi, type Api } from "../src/api.ts";
 import { montarApp, type Vistas } from "../src/app.ts";
 import { parsearRuta } from "../src/router.ts";
@@ -34,7 +34,15 @@ function apiDoble(over: Partial<Api> = {}): Api {
 }
 
 let raiz: HTMLElement;
+let desmontar: (() => void)[] = [];
+const montar = (o: Parameters<typeof montarApp>[0]): void => void desmontar.push(montarApp(o));
+afterEach(() => {
+  desmontar.forEach((f) => f());
+  desmontar = [];
+  vi.restoreAllMocks();
+});
 beforeEach(() => {
+  vi.spyOn(console, "error").mockImplementation(() => undefined);
   vi.stubGlobal("matchMedia", (consulta: string) => ({ matches: false, media: consulta, addEventListener: vi.fn() }));
   document.body.innerHTML = '<div id="app"></div>';
   raiz = document.getElementById("app") as HTMLElement;
@@ -54,7 +62,7 @@ describe("montarApp", () => {
   it("abrir directo #/persona/denis/pendientes monta esa vista con el snapshot", async () => {
     await irA("#/persona/denis/pendientes");
     const api = apiDoble();
-    montarApp({ raiz, api, vistas });
+    montar({ raiz, api, vistas });
     await pausa();
     expect(raiz.querySelector("#contenido")?.textContent).toBe("pendientes:denis");
     expect(api.cargarPersona).toHaveBeenCalledWith("denis");
@@ -66,7 +74,7 @@ describe("montarApp", () => {
   it("cambiar de pestaña de la misma persona reusa el snapshot", async () => {
     await irA("#/persona/denis/pendientes");
     const api = apiDoble();
-    montarApp({ raiz, api, vistas });
+    montar({ raiz, api, vistas });
     await pausa();
     window.location.hash = "#/persona/denis/plan";
     await pausa();
@@ -77,7 +85,7 @@ describe("montarApp", () => {
   it("una ruta desconocida o sin vista registrada muestra el aviso con link a Equipo", async () => {
     for (const hash of ["#/nada", "#/persona/denis/sugerencias"]) {
       await irA(hash);
-      montarApp({ raiz, api: apiDoble(), vistas });
+      montar({ raiz, api: apiDoble(), vistas });
       await pausa();
       expect(raiz.querySelector("#contenido")?.textContent).toContain("No encontré esa página");
       expect(raiz.querySelector("#contenido a")?.getAttribute("href")).toBe("#/equipo");
@@ -90,7 +98,7 @@ describe("montarApp", () => {
       .fn<Api["cargarEquipo"]>()
       .mockRejectedValueOnce(new ErrorApi("central"))
       .mockResolvedValue(filas);
-    montarApp({ raiz, api: apiDoble({ cargarEquipo }), vistas });
+    montar({ raiz, api: apiDoble({ cargarEquipo }), vistas });
     await pausa();
     expect(raiz.querySelector("#contenido")?.textContent).toContain("No pude hablar con el central");
     const boton = [...raiz.querySelectorAll("button")].find((b) => b.textContent === "Reintentar");
@@ -103,16 +111,40 @@ describe("montarApp", () => {
   it("una persona inexistente muestra el aviso y el link a #/equipo", async () => {
     await irA("#/persona/nadie/plan");
     const api = apiDoble({ cargarPersona: vi.fn(async () => Promise.reject(new ErrorApi("no-encontrada"))) });
-    montarApp({ raiz, api, vistas });
+    montar({ raiz, api, vistas });
     await pausa();
     const contenido = raiz.querySelector("#contenido");
     expect(contenido?.textContent).toContain("No encontré a esa persona");
     expect(contenido?.querySelector("a")?.getAttribute("href")).toBe("#/equipo");
   });
 
+  it("una vista que tira muestra el error con Reintentar, no Cargando", async () => {
+    await irA("#/equipo");
+    const rechazos: unknown[] = [];
+    const registrar = (e: unknown): number => rechazos.push(e);
+    process.on("unhandledRejection", registrar);
+    const rota: Vistas = { ...vistas, equipo: () => { throw new Error("bug"); } };
+    montar({ raiz, api: apiDoble(), vistas: rota });
+    await pausa();
+    process.off("unhandledRejection", registrar);
+    const contenido = raiz.querySelector("#contenido");
+    expect(contenido?.textContent).toContain("No pude mostrar esta vista");
+    expect(contenido?.textContent).not.toContain("Cargando");
+    expect([...raiz.querySelectorAll("button")].some((b) => b.textContent === "Reintentar")).toBe(true);
+    expect(rechazos).toEqual([]);
+  });
+
+  it("un error inesperado de la api también cae en el estado de error", async () => {
+    await irA("#/equipo");
+    const api = apiDoble({ cargarEquipo: vi.fn(async () => Promise.reject(new TypeError("raro"))) });
+    montar({ raiz, api, vistas });
+    await pausa();
+    expect(raiz.querySelector("#contenido")?.textContent).toContain("No pude mostrar esta vista");
+  });
+
   it("el botón de tema sigue en la barra", async () => {
     await irA("#/equipo");
-    montarApp({ raiz, api: apiDoble(), vistas });
+    montar({ raiz, api: apiDoble(), vistas });
     expect(raiz.querySelector(".boton-tema")).not.toBeNull();
   });
 });

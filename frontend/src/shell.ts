@@ -32,6 +32,7 @@ export function montarShell(raiz: HTMLElement): HTMLElement {
 
   const principal = document.createElement("main");
   principal.id = "contenido";
+  principal.tabIndex = -1;
 
   raiz.replaceChildren(barra, principal);
   return principal;

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { h, svg } from "../src/ui/dom.ts";
+import { esUrlWeb, h, svg } from "../src/ui/dom.ts";
 
 describe("dom", () => {
   it("deja el HTML de un string como texto", () => {
@@ -12,6 +12,29 @@ describe("dom", () => {
   it("rechaza handlers como texto y URLs javascript:", () => {
     expect(() => h("button", { onclick: "alert(1)" })).toThrow();
     expect(() => h("a", { href: "javascript:alert(1)" })).toThrow();
+  });
+
+  it("solo escribe href http(s), también con tabs, saltos y controles", () => {
+    for (const href of [
+      "javascript:alert(1)",
+      "java\tscript:alert(1)",
+      "java\nscript:alert(1)",
+      "\u0001javascript:alert(1)",
+      " JavaScript:alert(1)",
+      "data:text/html,x",
+      "vbscript:x",
+    ]) {
+      expect(() => h("a", { href }), JSON.stringify(href)).toThrow();
+    }
+    for (const href of ["https://a.b/c", "http://a.b", "#/equipo", "./ejemplos/x.json"]) {
+      expect(h("a", { href }).getAttribute("href")).toBe(href);
+    }
+  });
+
+  it("esUrlWeb rechaza lo que no es http(s)", () => {
+    expect(esUrlWeb("https://github.com/x")).toBe(true);
+    expect(esUrlWeb("java\tscript:alert(1)")).toBe(false);
+    expect(esUrlWeb("data:text/html,x")).toBe(false);
   });
 
   it("registra eventos y atributos", () => {

@@ -182,7 +182,13 @@ a.boton {
   display: flex;
   align-items: center;
   gap: 8px;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
+  min-width: 0;
+  overflow-x: auto;
+}
+
+.navegacion > * {
+  flex: none;
 }
 
 .pestana {
@@ -215,6 +221,10 @@ a.boton {
   display: inline-block;
   padding: 4px 8px;
   border: 1px solid var(--hairline);
+}
+
+#contenido:focus {
+  outline: none;
 }
 
 #contenido {

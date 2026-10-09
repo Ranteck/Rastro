@@ -16,7 +16,10 @@ export interface OpcionesApp {
   vistas: Vistas;
 }
 
-export function montarApp({ raiz, api, vistas }: OpcionesApp): void {
+const MENSAJE_VISTA = "No pude mostrar esta vista";
+
+/** Monta la app y devuelve la función que quita sus listeners. */
+export function montarApp({ raiz, api, vistas }: OpcionesApp): () => void {
   const contenido = montarShell(raiz);
   let navegacion = 0;
   let personaCargada: { id: string; snapshot: Snapshot } | null = null;
@@ -28,41 +31,55 @@ export function montarApp({ raiz, api, vistas }: OpcionesApp): void {
     return snapshot;
   }
 
-  async function pintar(ruta: Ruta): Promise<void> {
+  function nombreCargado(ruta: Ruta): string | undefined {
+    return ruta.tipo === "persona" && personaCargada?.id === ruta.id ? personaCargada.snapshot.persona.nombre : undefined;
+  }
+
+  async function pintar(ruta: Ruta, enfocar: boolean): Promise<void> {
     const turno = ++navegacion;
-    const vigente = (): boolean => turno === navegacion;
-    pintarNavegacion(raiz, ruta, personaCargada?.id === (ruta.tipo === "persona" ? ruta.id : null) ? personaCargada?.snapshot.persona.nombre : undefined);
+    pintarNavegacion(raiz, ruta, nombreCargado(ruta));
 
     const mostrar = (nodo: Node): void => {
-      if (vigente()) contenido.replaceChildren(nodo);
+      if (turno !== navegacion) return;
+      contenido.replaceChildren(nodo);
+      // Sin esto, al reemplazar el contenido el foco del teclado cae al body.
+      if (enfocar) contenido.focus();
     };
-    const reintentar = (): void => void pintar(ruta);
-    const fallar = (error: unknown): void => {
+    const reintentar = (): void => void pintar(ruta, true);
+
+    const vistaPersona = ruta.tipo === "persona" ? vistas.persona[ruta.vista] : undefined;
+    const vistaEquipo = ruta.tipo === "equipo" ? vistas.equipo : undefined;
+    if (!vistaPersona && !vistaEquipo) {
+      mostrar(paginaNoEncontrada());
+      return;
+    }
+
+    mostrar(cargando());
+    try {
+      if (ruta.tipo === "persona" && vistaPersona) {
+        const snapshot = await resolverPersona(ruta.id);
+        if (turno !== navegacion) return;
+        pintarNavegacion(raiz, ruta, snapshot.persona.nombre);
+        mostrar(vistaPersona(snapshot));
+      } else if (vistaEquipo) {
+        const filas = await api.cargarEquipo();
+        if (turno !== navegacion) return;
+        mostrar(vistaEquipo(filas));
+      }
+    } catch (error) {
       if (error instanceof ErrorApi) {
+        // Único punto donde se registra la causa; al usuario solo le llega el mensaje.
+        console.error(error.message, error.cause);
         mostrar(error.tipo === "no-encontrada" ? personaInexistente(error.mensajeUsuario) : errorCentral(error.mensajeUsuario, reintentar));
         return;
       }
-      throw error;
-    };
-
-    if (ruta.tipo === "equipo" && vistas.equipo) {
-      const vista = vistas.equipo;
-      mostrar(cargando());
-      await api.cargarEquipo().then((filas) => mostrar(vista(filas)), fallar);
-    } else if (ruta.tipo === "persona" && vistas.persona[ruta.vista]) {
-      const vista = vistas.persona[ruta.vista];
-      if (!vista) return;
-      mostrar(cargando());
-      await resolverPersona(ruta.id).then((snapshot) => {
-        pintarNavegacion(raiz, ruta, snapshot.persona.nombre);
-        mostrar(vista(snapshot));
-      }, fallar);
-    } else {
-      mostrar(paginaNoEncontrada());
+      console.error(MENSAJE_VISTA, error);
+      mostrar(errorCentral(MENSAJE_VISTA, reintentar));
     }
   }
 
-  const alCambiarHash = (): void => void pintar(parsearRuta(window.location.hash));
+  const alCambiarHash = (): void => void pintar(parsearRuta(window.location.hash), true);
   window.addEventListener("hashchange", alCambiarHash);
-  alCambiarHash();
+  void pintar(parsearRuta(window.location.hash), false);
+  return () => window.removeEventListener("hashchange", alCambiarHash);
 }

@@ -1,5 +1,5 @@
 import type { Evidencia, Pendiente, Snapshot } from "../../../backend/src/contract/snapshot.ts";
-import { h } from "../ui/dom.ts";
+import { esUrlWeb, h } from "../ui/dom.ts";
 import { vacio } from "../ui/estado.ts";
 import { crearSello } from "../ui/sello.ts";
 
@@ -23,12 +23,8 @@ function nombreDeTarea(snapshot: Snapshot, slug: string | null): string {
   return snapshot.plan?.tareas.find((t) => t.slug === slug)?.nombre ?? slug;
 }
 
-function esUrlWeb(url: string): boolean {
-  // El contrato solo exige un string: un `data:` o similar no debe volverse link.
-  return /^https?:\/\//i.test(url);
-}
-
 function evidencia(e: Evidencia): HTMLElement {
+  // El contrato solo exige un string en `url`: lo que no es http(s) se muestra como texto, no como link.
   const ref =
     e.url !== undefined && esUrlWeb(e.url)
       ? h("a", { class: "dato", href: e.url, target: "_blank", rel: "noopener noreferrer" }, e.ref)
