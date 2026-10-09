@@ -1,6 +1,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { mkdtempSync, readFileSync } from "node:fs";
+import { createServer } from "node:http";
 import type { AddressInfo } from "node:net";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
@@ -140,4 +141,15 @@ test("un secreto en la bitácora no sale por ningún conector", async (t) => {
   assert.ok(!readFileSync(archivo, "utf8").includes("ghp_abc123"));
   const recibido = await (await fetch(`${url}/api/persona/denis`)).text();
   assert.ok(!recibido.includes("ghp_abc123"));
+});
+
+test("un central que no responde corta por timeout con un mensaje claro", async (t) => {
+  const colgado = createServer(() => undefined);
+  await new Promise<void>((resolve) => colgado.listen(0, "127.0.0.1", resolve));
+  t.after(() => {
+    colgado.closeAllConnections();
+    colgado.close();
+  });
+  const url = `http://127.0.0.1:${(colgado.address() as AddressInfo).port}`;
+  await assert.rejects(new ConectorCentral(url, 100).publicar(snapshot()), /no respondió en 0\.1 s/);
 });

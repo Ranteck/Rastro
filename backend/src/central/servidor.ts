@@ -17,6 +17,12 @@ const TIPOS: Readonly<Record<string, string>> = {
   ".png": "image/png",
   ".ico": "image/x-icon",
   ".woff2": "font/woff2",
+  ".woff": "font/woff",
+  ".map": "application/json; charset=utf-8",
+  ".webp": "image/webp",
+  ".jpg": "image/jpeg",
+  ".jpeg": "image/jpeg",
+  ".txt": "text/plain; charset=utf-8",
 };
 
 /** Error del cliente: se responde con su estado y su mensaje, sin detalles internos. */

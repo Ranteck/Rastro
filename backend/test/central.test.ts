@@ -1,10 +1,12 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { mkdirSync, mkdtempSync, readFileSync, symlinkSync, writeFileSync } from "node:fs";
+import { spawn } from "node:child_process";
 import { request } from "node:http";
 import type { AddressInfo } from "node:net";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
+import { fileURLToPath } from "node:url";
 import { Almacen } from "../src/central/almacen.ts";
 import { crearCentral } from "../src/central/servidor.ts";
 import { checkEquipo } from "../src/contract/equipo.ts";
@@ -136,4 +138,34 @@ test("POST /api/publish exige application/json, con charset opcional", async (t)
   assert.equal(await post("application/x-www-form-urlencoded"), 415);
   assert.equal(await post(), 415);
   assert.equal(await post("application/json; charset=utf-8"), 201);
+});
+
+test("sirve los tipos MIME de los estáticos comunes", async (t) => {
+  const dist = mkdtempSync(join(tmpdir(), "rastro-dist-"));
+  const tipos = { "a.map": "application/json; charset=utf-8", "a.webp": "image/webp", "a.jpg": "image/jpeg", "a.jpeg": "image/jpeg", "a.woff": "font/woff", "a.txt": "text/plain; charset=utf-8" };
+  for (const nombre of Object.keys(tipos)) writeFileSync(join(dist, nombre), "x");
+  const c = await levantar(dist);
+  t.after(c.cerrar);
+  for (const [nombre, tipo] of Object.entries(tipos)) assert.equal((await fetch(`${c.url}/${nombre}`)).headers.get("content-type"), tipo, nombre);
+});
+
+test("rastro serve informa el puerto real, no el pedido", async () => {
+  const bin = fileURLToPath(new URL("../bin/rastro.js", import.meta.url));
+  const datos = mkdtempSync(join(tmpdir(), "rastro-serve-"));
+  const hijo = spawn(process.execPath, [bin, "serve", "--puerto", "0", "--datos", datos]);
+  try {
+    const salida = await new Promise<string>((resolve, reject) => {
+      let acumulado = "";
+      hijo.stdout.setEncoding("utf8").on("data", (d: string) => {
+        acumulado += d;
+        if (acumulado.includes("\n")) resolve(acumulado);
+      });
+      hijo.once("error", reject);
+      hijo.once("exit", () => reject(new Error(`serve terminó: ${acumulado}`)));
+    });
+    const puerto = /http:\/\/127\.0\.0\.1:(\d+)/.exec(salida)?.[1];
+    assert.ok(puerto !== undefined && Number(puerto) > 0, salida);
+  } finally {
+    hijo.kill("SIGINT");
+  }
 });

@@ -1,3 +1,4 @@
+import type { AddressInfo } from "node:net";
 import { homedir } from "node:os";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -29,7 +30,7 @@ export async function cmdServe(args: string[]): Promise<number> {
     if ((e as NodeJS.ErrnoException).code === "EADDRINUSE") throw new ErrorUsuario(`El puerto ${puerto} está ocupado: probá con --puerto.`, { cause: e });
     throw e;
   }
-  process.stdout.write(`Central de Rastro en http://127.0.0.1:${puerto} (datos en ${values.datos}). Ctrl+C para salir.\n`);
+  process.stdout.write(`Central de Rastro en http://127.0.0.1:${(servidor.address() as AddressInfo).port} (datos en ${values.datos}). Ctrl+C para salir.\n`);
   await new Promise<void>((resolve) => {
     const cerrar = (): void => {
       servidor.close(() => resolve());
