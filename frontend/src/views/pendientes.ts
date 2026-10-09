@@ -1,7 +1,9 @@
-import type { Evidencia, Pendiente, Snapshot } from "../../../backend/src/contract/snapshot.ts";
-import { esUrlWeb, h } from "../ui/dom.ts";
+import type { Pendiente, Snapshot } from "../../../backend/src/contract/snapshot.ts";
+import { h } from "../ui/dom.ts";
 import { vacio } from "../ui/estado.ts";
+import { listaEvidencia } from "../ui/evidencia.ts";
 import { crearSello } from "../ui/sello.ts";
+import { nombreDeTarea } from "../ui/tarea.ts";
 
 const TIPOS: Record<Pendiente["tipo"], string> = {
   "resuelto-sin-cerrar": "Resuelto sin cerrar",
@@ -10,27 +12,6 @@ const TIPOS: Record<Pendiente["tipo"], string> = {
   "todo-nuevo": "TODO nuevo",
   "codigo-sin-doc": "Código sin documentar",
 };
-
-const ETIQUETA_EVIDENCIA: Record<Evidencia["tipo"], string> = {
-  commit: "commit",
-  rama: "rama",
-  doc: "doc",
-  sesion: "sesión",
-};
-
-function nombreDeTarea(snapshot: Snapshot, slug: string | null): string {
-  if (slug === null) return "sin tarea";
-  return snapshot.plan?.tareas.find((t) => t.slug === slug)?.nombre ?? slug;
-}
-
-function evidencia(e: Evidencia): HTMLElement {
-  // El contrato solo exige un string en `url`: lo que no es http(s) se muestra como texto, no como link.
-  const ref =
-    e.url !== undefined && esUrlWeb(e.url)
-      ? h("a", { class: "dato", href: e.url, target: "_blank", rel: "noopener noreferrer" }, e.ref)
-      : h("span", { class: "dato" }, e.ref);
-  return h("li", { class: "evidencia-item" }, h("span", { class: "etiqueta meta" }, ETIQUETA_EVIDENCIA[e.tipo]), ref);
-}
 
 function lamina(snapshot: Snapshot, p: Pendiente): HTMLElement {
   const principal = p.tipo === "resuelto-sin-cerrar";
@@ -41,7 +22,7 @@ function lamina(snapshot: Snapshot, p: Pendiente): HTMLElement {
     h("p", { class: "etiqueta pendiente-tipo" }, TIPOS[p.tipo]),
     h("p", { class: "dato meta" }, nombreDeTarea(snapshot, p.tarea)),
     h("p", { class: "cuerpo pendiente-texto" }, p.texto),
-    h("ul", { class: "evidencia", "aria-label": "Evidencia" }, ...p.evidencia.map(evidencia)),
+    listaEvidencia(p.evidencia),
     h(
       "div",
       { class: "proximo-paso" },

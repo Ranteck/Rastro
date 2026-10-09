@@ -229,3 +229,211 @@ a.persona-lamina:hover {
     margin: -8px 0 16px auto;
   }
 }
+
+/* Mi día */
+.cabecera-dia {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  grid-template-areas:
+    "nombre nombre"
+    "fecha fecha"
+    "plan sello";
+  align-items: end;
+  gap: 8px 32px;
+  margin-bottom: 64px;
+}
+
+.cabecera-dia .titulo {
+  grid-area: nombre;
+  margin: 0;
+}
+
+.cabecera-fecha {
+  grid-area: fecha;
+  margin: 0 0 24px;
+}
+
+.fuera-del-plan {
+  grid-area: plan;
+  justify-self: start;
+}
+
+.fuera-del-plan.placa-alerta {
+  color: var(--papel);
+  --cruz-trazo: linear-gradient(var(--papel), var(--papel));
+}
+
+.fuera-del-plan .display,
+.fuera-del-plan .etiqueta {
+  margin: 0;
+}
+
+.sin-cerrar {
+  grid-area: sello;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  max-width: 420px;
+}
+
+.sin-cerrar .sello-svg {
+  flex: none;
+}
+
+.sin-cerrar-cantidad {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 500;
+  line-height: 1.25;
+}
+
+.sin-cerrar a.boton {
+  margin-top: 12px;
+}
+
+.resumen {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 32px 24px;
+  margin-bottom: 64px;
+}
+
+.resumen-columna {
+  grid-column: span 3;
+  min-width: 0;
+}
+
+.resumen-titulo {
+  margin: 0 0 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--tinta);
+}
+
+.resumen-lista {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.resumen-lista li + li {
+  margin-top: 12px;
+}
+
+.resumen-columna p {
+  margin: 0;
+}
+
+.resumen-ausente {
+  margin: 0 0 64px;
+}
+
+.bitacora-titulo {
+  margin: 0 0 8px;
+}
+
+.bitacora {
+  margin: 0 0 32px;
+  padding: 0;
+  list-style: none;
+  border-top: 1px solid var(--tinta);
+}
+
+.entrada {
+  display: grid;
+  grid-template-columns: 72px 148px minmax(0, 1fr) minmax(0, 280px);
+  gap: 8px 24px;
+  align-items: start;
+  padding: 20px 0;
+  border-bottom: 1px solid var(--hairline);
+}
+
+.entrada-hora {
+  padding-top: 2px;
+}
+
+.entrada-marca {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding-top: 2px;
+}
+
+.marca-vinculo {
+  flex: none;
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+}
+
+.marca-nombre {
+  background: var(--tinta);
+}
+
+.marca-inferido {
+  border: 2px solid var(--tinta);
+}
+
+.marca-sin-tarea {
+  height: 2px;
+  background: var(--tinta);
+}
+
+.entrada-cuerpo p {
+  margin: 0;
+}
+
+.entrada-cuerpo .entrada-tarea {
+  margin-bottom: 4px;
+  font-weight: 500;
+}
+
+.entrada-texto {
+  margin: 0 0 4px;
+  overflow-wrap: anywhere;
+  max-width: 70ch;
+}
+
+.entrada-margen .evidencia {
+  flex-direction: column;
+  gap: 4px;
+}
+
+/* La regla de 1px une la razón con la fila de la entrada inferida. */
+.razon {
+  margin: 12px 0 0;
+  padding-left: 12px;
+  border-left: 1px solid var(--tinta);
+  color: var(--tinta-secundaria);
+  font-size: 15px;
+  line-height: 1.4;
+}
+
+.costo {
+  margin: 0;
+}
+
+@media (max-width: 960px) {
+  .resumen-columna {
+    grid-column: span 6;
+  }
+
+  .entrada {
+    grid-template-columns: 72px 1fr;
+  }
+
+  .entrada-cuerpo,
+  .entrada-margen {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 560px) {
+  .cabecera-dia {
+    grid-template-columns: 1fr;
+    grid-template-areas: "nombre" "fecha" "plan" "sello";
+  }
+
+  .resumen-columna {
+    grid-column: 1 / -1;
+  }
+}

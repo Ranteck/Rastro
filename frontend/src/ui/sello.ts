@@ -36,3 +36,17 @@ export function crearSello(): SVGSVGElement {
     ),
   );
 }
+
+const LADO_CHICO = 56;
+
+/** Versión chica: a este tamaño el texto en anillo quedaría por debajo de 13px, así que solo lleva el disco y el tilde. */
+export function crearSelloChico(): SVGSVGElement {
+  const centro = LADO_CHICO / 2;
+  return svg(
+    "svg",
+    { class: "sello-svg", viewBox: `0 0 ${LADO_CHICO} ${LADO_CHICO}`, width: LADO_CHICO, height: LADO_CHICO, "aria-hidden": "true", focusable: "false" },
+    svg("circle", { class: "sello-disco", cx: centro, cy: centro, r: centro - 1 }),
+    svg("circle", { class: "sello-borde", cx: centro, cy: centro, r: centro - 5 }),
+    svg("path", { class: "sello-tilde", d: `M${centro - 9} ${centro + 1} l6 7 l12 -14` }),
+  );
+}
