@@ -46,8 +46,11 @@ export function crearCentral(o: Opciones): Server {
 }
 
 async function atender(req: IncomingMessage, res: ServerResponse, o: Opciones): Promise<void> {
+  // Solo se atiende a quien llega por una dirección local: otro Host indica un ataque de DNS rebinding desde el navegador.
+  if (!HOSTS_LOCALES.has(hostnameDe(req.headers.host))) throw new ErrorPedido(403, "host no permitido");
   const ruta = rutaDe(req.url ?? "/");
   if (req.method === "POST" && ruta === "/api/publish") {
+    if (!/^application\/json\s*(?:;|$)/i.test(req.headers["content-type"] ?? "")) throw new ErrorPedido(415, "se esperaba content-type application/json");
     const snapshot = validarCuerpo(await leerCuerpo(req));
     o.almacen.guardar(snapshot);
     log("info", "snapshot_recibido", { persona: snapshot.persona.id, equipo: snapshot.persona.equipo });
@@ -72,6 +75,16 @@ async function atender(req: IncomingMessage, res: ServerResponse, o: Opciones): 
   }
   if (ruta.startsWith("/api/")) throw new ErrorPedido(404, "ruta no encontrada");
   servirEstatico(res, o.estaticos, decodificar(ruta));
+}
+
+const HOSTS_LOCALES: ReadonlySet<string> = new Set(["127.0.0.1", "localhost", "[::1]"]);
+
+function hostnameDe(host: string | undefined): string {
+  try {
+    return new URL(`http://${host ?? ""}`).hostname;
+  } catch {
+    return "";
+  }
 }
 
 function rutaDe(url: string): string {

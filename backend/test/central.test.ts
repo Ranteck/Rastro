@@ -58,8 +58,9 @@ test("rechaza campos no admitidos y no guarda nada", async (t) => {
 test("JSON roto da 400 y un cuerpo de más de 1 MB da 413", async (t) => {
   const c = await levantar();
   t.after(c.cerrar);
-  assert.equal((await fetch(`${c.url}/api/publish`, { method: "POST", body: "{no" })).status, 400);
-  assert.equal((await fetch(`${c.url}/api/publish`, { method: "POST", body: "x".repeat(1_100_000) })).status, 413);
+  const json = { "content-type": "application/json" };
+  assert.equal((await fetch(`${c.url}/api/publish`, { method: "POST", headers: json, body: "{no" })).status, 400);
+  assert.equal((await fetch(`${c.url}/api/publish`, { method: "POST", headers: json, body: "x".repeat(1_100_000) })).status, 413);
 });
 
 test("rutas hostiles nunca salen de sus directorios", async (t) => {
@@ -99,4 +100,40 @@ test("sin UI construida, la raíz dice dónde está el pedido", async (t) => {
 
 test("el ejemplo de equipo de frontend cumple el contrato", () => {
   assert.equal(checkEquipo(ejemplo("equipo.json"), "ejemplo").equipo.length, 3);
+});
+
+/** Pedido con Host y content-type a elección: fetch no permite cambiar Host. */
+function pedidoCrudo(port: number, o: { host?: string; contentType?: string; ruta?: string; metodo?: string; cuerpo?: string }): Promise<number> {
+  return new Promise((resolve, reject) => {
+    const headers: Record<string, string> = {};
+    if (o.host !== undefined) headers["host"] = o.host;
+    if (o.contentType !== undefined) headers["content-type"] = o.contentType;
+    const req = request({ host: "127.0.0.1", port, path: o.ruta ?? "/api/equipo", method: o.metodo ?? "GET", headers }, (res) => {
+      res.resume();
+      res.on("end", () => resolve(res.statusCode ?? 0));
+    });
+    req.on("error", reject);
+    req.end(o.cuerpo);
+  });
+}
+
+test("rechaza con 403 un Host que no es local (DNS rebinding)", async (t) => {
+  const c = await levantar();
+  t.after(c.cerrar);
+  assert.equal(await pedidoCrudo(c.port, { host: "evil.example.com" }), 403);
+  assert.equal(await pedidoCrudo(c.port, { host: `evil.example.com:${c.port}` }), 403);
+  assert.equal(await pedidoCrudo(c.port, { host: `127.0.0.1:${c.port}` }), 200);
+  assert.equal(await pedidoCrudo(c.port, { host: `localhost:${c.port}` }), 200);
+  assert.equal(await pedidoCrudo(c.port, { host: `[::1]:${c.port}` }), 200);
+});
+
+test("POST /api/publish exige application/json, con charset opcional", async (t) => {
+  const c = await levantar();
+  t.after(c.cerrar);
+  const cuerpo = JSON.stringify(ejemplo("persona-denis.json"));
+  const post = (contentType?: string) => pedidoCrudo(c.port, { ruta: "/api/publish", metodo: "POST", cuerpo, ...(contentType === undefined ? {} : { contentType }) });
+  assert.equal(await post("text/plain"), 415);
+  assert.equal(await post("application/x-www-form-urlencoded"), 415);
+  assert.equal(await post(), 415);
+  assert.equal(await post("application/json; charset=utf-8"), 201);
 });
