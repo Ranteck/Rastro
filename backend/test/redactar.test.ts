@@ -27,21 +27,34 @@ test("redacta asignaciones sin prefijo en el nombre", () => {
 
 test("una asignación dentro de un string JSON deja el JSON válido y sin el secreto", () => {
   const r = redactar('{"msg":"API_KEY=abc123","x":1}');
-  assert.ok(!r.includes("abc123"));
-  assert.deepEqual(JSON.parse(r), { msg: "API_KEY=[redactado]", x: 1 });
+  assert.equal(r, '{"msg":"API_KEY=[redactado]","x":1}');
+  JSON.parse(r);
 });
 
-test("una asignación con comillas escapadas dentro de JSON no filtra ni rompe el JSON", () => {
-  const r = redactar(JSON.stringify({ cmd: 'export TOKEN="abc123" && ls' }));
-  assert.ok(!r.includes("abc123"));
-  assert.doesNotThrow(() => JSON.parse(r));
+test("comillas escapadas dentro de JSON: el resultado sigue siendo JSON y no filtra", () => {
+  const simple = redactar(JSON.stringify({ cmd: 'export TOKEN="abc123" && ls' }));
+  assert.equal(simple, '{"cmd":"export TOKEN=[redactado] && ls"}');
+  JSON.parse(simple);
+  const conEspacio = redactar(JSON.stringify({ cmd: 'export TOKEN="abc def" && ls' }));
+  assert.equal(conEspacio, '{"cmd":"export TOKEN=[redactado] && ls"}');
+  JSON.parse(conEspacio);
 });
 
-test("redacta valores con comilla de apertura sin cerrar", () => {
-  for (const entrada of ['export TOKEN="abc123', "KEY='abc"]) {
-    const r = redactar(entrada);
-    assert.ok(!/abc/.test(r), entrada);
-  }
+test("comilla de apertura sin cerrar redacta hasta el fin de línea", () => {
+  assert.equal(redactar('export TOKEN="abc123'), "export TOKEN=[redactado]");
+  assert.equal(redactar("KEY='abc"), "KEY=[redactado]");
+  assert.equal(redactar('TOKEN="abc def'), "TOKEN=[redactado]");
+  assert.equal(redactar('TOKEN="abc def\nok'), "TOKEN=[redactado]\nok");
+});
+
+test("una barra invertida dentro del secreto no deja cola", () => {
+  assert.equal(redactar("PASSWORD=ab\\cd"), "PASSWORD=[redactado]");
+});
+
+test("una asignación vacía dentro de JSON no consume las comillas siguientes", () => {
+  const r = redactar('{"m":"API_KEY=","x":"y"}');
+  assert.equal(r, '{"m":"API_KEY=[redactado]","x":"y"}');
+  JSON.parse(r);
 });
 
 test("no toca texto sin secretos", () => {

@@ -9,9 +9,19 @@ const TOKENS: readonly RegExp[] = [
 ];
 
 // Cubre FOO_KEY=..., API_TOKEN="...", SECRET=..., KEY=..., password=... y --password=...
-// El valor sin cerrar corta en espacios, comillas y barras para no comerse el cierre de un string JSON;
-// admite una comilla de apertura (con o sin escapar) para no filtrar valores sin comilla de cierre.
-const ASIGNACIONES = /\b((?:[A-Za-z_][A-Za-z0-9_]*)?(?:KEY|TOKEN|SECRET|PASSWORD))\s*=\s*("[^"]*"|'[^']*'|\\?["']?[^\s"'\\]+)/gi;
+// Alternativas del valor, en orden: comillas escapadas (dentro de un string JSON), comillas cerradas, comilla
+// sin cerrar (hasta fin de línea), valor sin comillas y valor vacío. Una comilla de cierre seguida de una
+// letra no cierra un valor: es `KEY=","x"` en JSON, una asignación vacía, y no debe consumir las comillas ajenas.
+const VALOR = [
+  String.raw`\\"(?:[^"\\]|\\.)*?\\"`,
+  String.raw`"[^"\n]*"(?!\w)`,
+  String.raw`'[^'\n]*'(?!\w)`,
+  String.raw`\\?"[^"\n]*$`,
+  String.raw`\\?'[^'\n]*$`,
+  String.raw`[^\s"']+`,
+  String.raw`(?=["']|\s|$)`,
+].join("|");
+const ASIGNACIONES = new RegExp(String.raw`\b((?:[A-Za-z_][A-Za-z0-9_]*)?(?:KEY|TOKEN|SECRET|PASSWORD))\s*=\s*(?:${VALOR})`, "gim");
 
 export function redactar(texto: string): string {
   let r = texto;
