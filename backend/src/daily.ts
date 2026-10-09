@@ -1,7 +1,7 @@
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
-import { basename } from "node:path";
+import { basename, join } from "node:path";
 import { parseArgs } from "node:util";
-import { leerConfig, rutas, type Config } from "./config.ts";
+import { expandirHome, leerConfig, rutas, type Config } from "./config.ts";
 import {
   validarSnapshot,
   type EntradaBitacora,
@@ -14,21 +14,31 @@ import {
   type Tarea,
 } from "./contract/snapshot.ts";
 import { calcularDesvios } from "./detectores/desvios.ts";
+import { patronesDeComandos, patronesDePrompts, type Patron } from "./detectores/repeticiones.ts";
 import { detectarPendientes, type CommitVinculado } from "./detectores/pendientes.ts";
 import { vincularPorNombre, type Vinculo } from "./detectores/vinculo.ts";
 import { ErrorUsuario } from "./errores.ts";
 import { leerEventos, type Evento } from "./eventos.ts";
 import { fechaLocal, horaLocal, lunesDe, sumarDias, type Fecha } from "./fechas.ts";
-import { leerTranscript } from "./fuentes/claudeCode.ts";
+import { dirDeProyecto, leerTranscript, promptsDeTranscript, transcriptsRecientes, type PromptUsuario } from "./fuentes/claudeCode.ts";
+import { parsearHistorialZsh, type Comando } from "./fuentes/zsh.ts";
 import { ganttMock } from "./gantt.ts";
 import { diffResumido, lineasAgregadas, raizDelRepo, recolectarGit, type Commit } from "./git.ts";
 import { crearLlm } from "./llm/crear.ts";
 import { ErrorLlm, type Llm } from "./llm/llm.ts";
-import { pedidoBitacora, pedidoVinculos } from "./llm/usos.ts";
+import { pedidoBitacora, pedidoSugerencias, pedidoVinculos } from "./llm/usos.ts";
 import { log } from "./log.ts";
 import { parsearPlan } from "./plan.ts";
+import { redactar } from "./redactar.ts";
 
-export type ContextoDaily = { repo: string; config: Config; llm: Llm | null; ahora: Date; desde?: Fecha };
+export type ContextoDaily = {
+  repo: string;
+  config: Config;
+  llm: Llm | null;
+  ahora: Date;
+  desde?: Fecha;
+  fuentes?: { comandos: readonly Comando[]; prompts: readonly PromptUsuario[] };
+};
 export type ResultadoDaily = { snapshot: Snapshot; avisos: string[] };
 
 type ItemBitacora = { entrada: EntradaBitacora; sha: string | null };
@@ -134,7 +144,12 @@ export async function generarSnapshot(ctx: ContextoDaily): Promise<ResultadoDail
     }
   }
 
-  const sugerencias: Sugerencia[] = [];
+  let sugerencias: Sugerencia[] = [];
+  if (llm !== null && ctx.fuentes !== undefined) {
+    const u = config.umbrales.repeticiones;
+    const patrones = [...patronesDeComandos(ctx.fuentes.comandos, u, zona), ...patronesDePrompts(ctx.fuentes.prompts, u, zona)];
+    sugerencias = await sugerirAutomatizaciones(llm, patrones, avisos);
+  }
 
   const snapshot = validarSnapshot({
     schemaVersion: 1,
@@ -152,6 +167,46 @@ export async function generarSnapshot(ctx: ContextoDaily): Promise<ResultadoDail
     costo: ctx.llm?.costo() ?? { llamadas: 0, usd: 0, tokens: 0 },
   });
   return { snapshot, avisos };
+}
+
+async function sugerirAutomatizaciones(llm: Llm, patrones: readonly Patron[], avisos: string[]): Promise<Sugerencia[]> {
+  if (patrones.length === 0) return [];
+  try {
+    const r = await llm.completar(pedidoSugerencias({ patrones: patrones.map((p, i) => ({ id: String(i), ...p })) }));
+    return r.propuestas.flatMap((x): Sugerencia[] => {
+      const p = patrones[Number(x.id)];
+      // El patrón queda en el snapshot: se redacta igual que lo que va al LLM.
+      return p === undefined ? [] : [{ ...p, patron: redactar(p.patron), propuesta: { tipo: x.tipo, contenido: x.contenido, porque: x.porque } }];
+    });
+  } catch (e) {
+    if (!(e instanceof ErrorLlm)) throw e;
+    avisos.push(`Sin sugerencias: el LLM no está disponible (${e.message}).`);
+    return [];
+  }
+}
+
+const DIAS_DE_HISTORIA = 14;
+
+export function leerFuentes(config: Config, repo: string, ahora: Date, avisos: string[]): { comandos: Comando[]; prompts: PromptUsuario[] } {
+  const desde = new Date(ahora.getTime() - DIAS_DE_HISTORIA * 86_400_000);
+  const zsh = expandirHome(config.fuentes.zshHistory);
+  let comandos: Comando[] = [];
+  if (existsSync(zsh)) {
+    const r = parsearHistorialZsh(readFileSync(zsh));
+    comandos = r.comandos.filter((c) => c.en >= desde);
+    if (r.descartadas > 0) avisos.push(`${r.descartadas} líneas del historial de zsh no tienen fecha: con \`setopt EXTENDED_HISTORY\` empiezan a contar.`);
+  }
+  const prompts: PromptUsuario[] = [];
+  let ilegibles = 0;
+  // Solo el proyecto actual: leer las sesiones de otros proyectos sería vigilancia, no bitácora.
+  const dirProyecto = join(expandirHome(config.fuentes.claudeProjects), dirDeProyecto(repo));
+  for (const t of transcriptsRecientes(dirProyecto, desde)) {
+    const r = promptsDeTranscript(readFileSync(t, "utf8"));
+    prompts.push(...r.prompts.filter((p) => p.en >= desde));
+    ilegibles += r.descartadas;
+  }
+  if (ilegibles > 0) avisos.push(`${ilegibles} líneas ilegibles en los transcripts de Claude Code.`);
+  return { comandos, prompts };
 }
 
 async function inferirVinculos(
@@ -297,15 +352,18 @@ export async function cmdDaily(args: string[]): Promise<number> {
   const repo = raizDelRepo(process.cwd());
   const config = leerConfig(repo);
   const ahora = new Date();
+  const avisosFuentes: string[] = [];
+  const fuentes = leerFuentes(config, repo, ahora, avisosFuentes);
   const { snapshot, avisos } = await generarSnapshot({
     repo,
     config,
     llm: crearLlm(config),
     ahora,
+    fuentes,
     ...(values.desde === undefined ? {} : { desde: values.desde }),
   });
   writeFileSync(rutas(repo).state, `${JSON.stringify(snapshot, null, 2)}\n`);
-  for (const aviso of avisos) log("warn", "daily_degradado", { detalle: aviso });
+  for (const aviso of [...avisosFuentes, ...avisos]) log("warn", "daily_degradado", { detalle: aviso });
   process.stdout.write(textoDelDia(snapshot));
   return 0;
 }
