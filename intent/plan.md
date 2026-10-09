@@ -2,7 +2,7 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-Estado: borrador · Fecha: 2026-10-09 · Desde `intent/spec.md` (2026-10-09, aceptado) e `intent/intent.md` (2026-10-09, aceptado)
+Estado: aceptado · Fecha: 2026-10-09 · Desde `intent/spec.md` (2026-10-09, aceptado) e `intent/intent.md` (2026-10-09, aceptado)
 
 **Goal:** Construir la CLI `rastro` y su central: hooks que anotan eventos, detección determinística de pendientes, desvíos y repeticiones, resumen con `claude -p`, publicación con confirmación y un central que recibe lo de cada persona y sirve la UI que Denis diseña aparte.
 
@@ -32,6 +32,19 @@ Estado: borrador · Fecha: 2026-10-09 · Desde `intent/spec.md` (2026-10-09, ace
 3. **Repo sin commits, sin remoto o con HEAD separado.** `rastro daily` produce un snapshot válido y vacío, sin excepción. Test en Task 11.
 4. **Historial de zsh con bytes metaficados y líneas sin timestamp; transcripts con líneas rotas.** Se decodifica bien, y lo ilegible se descarta y se cuenta, sin abortar. Tests en Task 15.
 5. **Remoto con credenciales** (`https://usuario:token@github.com/...`). El token nunca aparece en la evidencia ni en el snapshot. Test en Task 5.
+
+## Ejecución
+
+Acordado con Denis el 2026-10-09: proceso `superpowers:subagent-driven-development`, usando los workers del plugin `orquestar` como subagentes. El controlador coordina y decide los conflictos, pero no escribe código. Cada lanzamiento lleva `model` y `effort` explícitos:
+
+| Rol | Subagente | Modelo | Esfuerzo |
+| --- | --- | --- | --- |
+| Implementador de cada tarea | `orquestar:ejecutor` | sonnet | medium |
+| Revisor de cada tarea y re-revisiones | revisor con la plantilla de la skill | sonnet | high |
+| Correcciones de las rondas 4 y 5 | `orquestar:ejecutor` | opus | high |
+| Revisión final de toda la rama | revisor con `requesting-code-review` | opus | xhigh |
+
+El repo ya existe: Denis lo creó y subió `main` (`82132de`, con intent, spec, plan, frontend y propuesta) a `github.com/Ranteck/Rastro`. Todas las tareas, la 1 incluida, van en la rama `feat/rastro-mvp`, con commits locales; el push y el PR a `main` solo con el OK de Denis.
 
 ## Archivos
 
@@ -102,11 +115,10 @@ Tasks 1 a 8 dejan el núcleo determinístico. Con la Task 11, `rastro daily` ya 
 **Interfaces:**
 - Produces: `main(argv: string[]): Promise<number>` en `src/cli.ts`; `type Comando = (args: string[]) => Promise<number>`; mapa `comandos` de cargadores diferidos al que las tareas siguientes agregan entradas. `log(nivel, evento, campos)` en `src/log.ts`. `class ErrorUsuario extends Error` en `src/errores.ts`.
 
-- [ ] **Step 1: Inicializar el repo y las dependencias**
+- [ ] **Step 1: Dependencias (el repo ya existe: no correr `git init`)**
 
 ```bash
 cd /home/denis-legion/Documentos/AI-Day/Rastro
-git init -b main
 npm init -y
 npm i -D typescript@7.0.2 @types/node@22
 ```
@@ -148,6 +160,7 @@ node_modules/
 .rastro/
 frontend/dist/
 .remember/
+.superpowers/
 ```
 
 - [ ] **Step 2: Escribir el test que falla**
@@ -277,10 +290,10 @@ chmod +x bin/rastro.js
 Run: `npm run check`
 Expected: PASS (2 tests) y `tsc` sin errores.
 
-- [ ] **Step 6: Primer commit (incluye intent, spec, plan, frontend y propuesta)**
+- [ ] **Step 6: Commit (intent, spec, plan, frontend y propuesta ya están en `main`)**
 
 ```bash
-git add .gitignore package.json package-lock.json tsconfig.json bin src test intent frontend "Memoria de equipo con evidencia — Propuesta de producto.md"
+git add .gitignore package.json package-lock.json tsconfig.json bin src test
 git commit -m "chore: proyecto rastro con CLI mínima" -m "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 ```
 
