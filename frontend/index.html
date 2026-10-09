@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Rastro</title>
+    <script>
+      // Va antes del primer pintado para que la elección guardada no parpadee. Sin elección,
+      // manda prefers-color-scheme desde el CSS.
+      try {
+        var tema = localStorage.getItem("rastro.tema");
+        if (tema === "light" || tema === "dark") document.documentElement.dataset.theme = tema;
+      } catch (e) {
+        // Sin localStorage (modo privado, bloqueado) se sigue al sistema; tema.ts avisa del mismo modo.
+      }
+    </script>
+  </head>
+  <body>
+    <div id="app"></div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

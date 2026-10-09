@@ -1,0 +1,168 @@
+@import "@fontsource/schibsted-grotesk/400.css";
+@import "@fontsource/schibsted-grotesk/500.css";
+@import "@fontsource/jetbrains-mono/400.css";
+
+:root {
+  --fuente-texto: "Schibsted Grotesk", system-ui, sans-serif;
+  --fuente-mono: "JetBrains Mono", ui-monospace, monospace;
+  --barra-alto: 72px;
+  --cruz: 14px;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  border-radius: 0;
+}
+
+html {
+  background: var(--papel);
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  padding-top: var(--barra-alto);
+  color: var(--tinta);
+  font-family: var(--fuente-texto);
+  font-size: 17px;
+  font-weight: 400;
+  line-height: 1.5;
+  /* Deriva muy sutil: el papel se entibia arriba a la derecha y se enfría abajo a la izquierda. */
+  background:
+    radial-gradient(ellipse at 100% 0%, var(--papel-tibio), transparent 60%),
+    radial-gradient(ellipse at 0% 100%, var(--papel-frio), transparent 60%),
+    var(--papel);
+  background-attachment: fixed;
+  font-variant-numeric: tabular-nums;
+}
+
+::selection {
+  background: var(--sello);
+  color: var(--sello-tinta);
+}
+
+.display {
+  font-size: 92px;
+  font-weight: 400;
+  letter-spacing: -0.02em;
+  line-height: 1;
+  text-wrap: balance;
+}
+
+.cuerpo {
+  font-size: 18px;
+  line-height: 1.5;
+  max-width: 70ch;
+}
+
+.etiqueta {
+  font-family: var(--fuente-mono);
+  font-size: 13px;
+  font-weight: 400;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.meta {
+  color: var(--tinta-secundaria);
+}
+
+.hairline {
+  border: 0;
+  border-top: 1px solid var(--hairline);
+  margin: 0;
+}
+
+/* Lámina de anuario: las cruces de registro viven en el padding, así que nunca tapan contenido. */
+.lamina {
+  position: relative;
+  padding: calc(var(--cruz) * 2);
+  border: 1px solid var(--hairline);
+  --cruz-trazo: linear-gradient(var(--tinta), var(--tinta));
+  background:
+    var(--cruz-trazo) left calc(var(--cruz) / 2) top 0 / 1px var(--cruz) no-repeat,
+    var(--cruz-trazo) left 0 top calc(var(--cruz) / 2) / var(--cruz) 1px no-repeat,
+    var(--cruz-trazo) right calc(var(--cruz) / 2) top 0 / 1px var(--cruz) no-repeat,
+    var(--cruz-trazo) right 0 top calc(var(--cruz) / 2) / var(--cruz) 1px no-repeat,
+    var(--cruz-trazo) left calc(var(--cruz) / 2) bottom 0 / 1px var(--cruz) no-repeat,
+    var(--cruz-trazo) left 0 bottom calc(var(--cruz) / 2) / var(--cruz) 1px no-repeat,
+    var(--cruz-trazo) right calc(var(--cruz) / 2) bottom 0 / 1px var(--cruz) no-repeat,
+    var(--cruz-trazo) right 0 bottom calc(var(--cruz) / 2) / var(--cruz) 1px no-repeat;
+}
+
+.placa-alerta {
+  background: var(--placa);
+  color: var(--placa-texto);
+}
+
+.alerta {
+  color: var(--alerta);
+}
+
+.sello {
+  background: var(--sello);
+  color: var(--sello-tinta);
+}
+
+:focus-visible {
+  outline: 2px solid var(--foco);
+  outline-offset: 3px;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+}
+
+.barra {
+  position: fixed;
+  inset: 0 0 auto 0;
+  z-index: 10;
+  height: var(--barra-alto);
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  padding: 0 32px;
+  background: var(--papel);
+  border-bottom: 1px solid var(--hairline);
+}
+
+.marca {
+  font-family: var(--fuente-mono);
+  font-size: 13px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.barra-espacio {
+  flex: 1;
+}
+
+.boton-tema {
+  min-height: 44px;
+  padding: 0 16px;
+  background: transparent;
+  border: 1px solid var(--hairline);
+  cursor: pointer;
+  font-family: var(--fuente-mono);
+  font-size: 13px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.boton-tema:hover {
+  background: var(--sello);
+  color: var(--sello-tinta);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
+}

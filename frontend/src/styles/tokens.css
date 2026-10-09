@@ -1,0 +1,55 @@
+/* Tema claro por defecto. El oscuro sale del mismo mundo (papel entintado, tinta clara,
+   sello lavanda apagado) y se declara dos veces: por preferencia del sistema y por elección manual. */
+:root {
+  --papel: #f5f4f6;
+  --papel-tibio: #faf6f5;
+  --papel-frio: #eef3ef;
+  --tinta: #16181a;
+  --tinta-secundaria: #4a4d52;
+  --hairline: #c9c7c4;
+  --sello: #dcddf3;
+  --sello-tinta: #16181a;
+  --alerta: #b3261e;
+  --placa: #16181a;
+  --placa-texto: #ff7b5c;
+  --foco: #16181a;
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --papel: #141517;
+    --papel-tibio: #1a1716;
+    --papel-frio: #121816;
+    --tinta: #ecebee;
+    --tinta-secundaria: #a8aab2;
+    --hairline: #3d3e42;
+    --sello: #3b3d63;
+    --sello-tinta: #ecebee;
+    --alerta: #ff7b5c;
+    --placa: #ecebee;
+    --placa-texto: #a8200f;
+    --foco: #ecebee;
+    color-scheme: dark;
+  }
+}
+
+[data-theme="dark"] {
+  --papel: #141517;
+  --papel-tibio: #1a1716;
+  --papel-frio: #121816;
+  --tinta: #ecebee;
+  --tinta-secundaria: #a8aab2;
+  --hairline: #3d3e42;
+  --sello: #3b3d63;
+  --sello-tinta: #ecebee;
+  --alerta: #ff7b5c;
+  --placa: #ecebee;
+  --placa-texto: #a8200f;
+  --foco: #ecebee;
+  color-scheme: dark;
+}
+
+[data-theme="light"] {
+  color-scheme: light;
+}
