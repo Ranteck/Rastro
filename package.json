@@ -1,0 +1,33 @@
+{
+  "name": "rastro",
+  "version": "1.0.0",
+  "description": "Memoria de equipo con evidencia",
+  "scripts": {
+    "test": "node --test \"test/**/*.test.ts\"",
+    "typecheck": "tsc -p .",
+    "check": "npm run typecheck && npm test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Ranteck/Rastro.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Ranteck/Rastro/issues"
+  },
+  "homepage": "https://github.com/Ranteck/Rastro#readme",
+  "devDependencies": {
+    "@types/node": "^22.20.5",
+    "typescript": "^7.0.2"
+  },
+  "type": "module",
+  "bin": {
+    "rastro": "bin/rastro.js"
+  },
+  "engines": {
+    "node": ">=22.18"
+  },
+  "private": true
+}
