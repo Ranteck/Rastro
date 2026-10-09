@@ -114,7 +114,7 @@ export function pedidoPlan(propuesta: string, semana: Fecha): PedidoLlm<Infer<ty
         "- entregable: qué se va a poder mostrar o reproducir el viernes, concreto y verificable.",
         '- tareas: entre 2 y 7. nombre: de 1 a 3 palabras, sin el carácter ":" (se usa como etiqueta [Nombre] en los commits). objetivo: una oración en infinitivo.',
       ].join("\n"),
-      { propuesta: propuesta.slice(0, 30_000) },
+      { propuesta: redactar(propuesta).slice(0, 30_000) },
     ),
     esquema: objeto({ entregable: TEXTO, tareas: lista(objeto({ nombre: TEXTO, objetivo: TEXTO })) }),
     validar: checkPlan,

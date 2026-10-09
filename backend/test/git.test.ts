@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { commitsDe, lineasAgregadas, recolectarGit, urlBaseDe } from "../src/git.ts";
+import { commitsDe, diffResumido, lineasAgregadas, recolectarGit, urlBaseDe } from "../src/git.ts";
 import { crearRepo } from "./helpers/repo.ts";
 
 test("los commits de una rama mergeada conservan su rama y se marca la rama como mergeada", () => {
@@ -96,4 +96,17 @@ test("un archivo con el nombre de la rama principal no rompe la recolección", (
   const datos = recolectarGit(r.dir, "2026-10-08");
   assert.equal(datos.commits.length, 1);
   assert.equal(commitsDe(r.dir, "HEAD", "2026-10-08").length, 1);
+});
+
+test("el diff se redacta antes de truncarlo, así un token cortado no se filtra", () => {
+  const r = crearRepo();
+  r.escribir("a.ts", "uno\n");
+  r.commit("uno", "2026-10-09T10:00:00-03:00");
+  const token = `ghp_${"a".repeat(36)}`;
+  r.escribir("a.ts", `uno\nconst t = "${token}";\n`);
+  const sha = r.commit("dos", "2026-10-09T10:05:00-03:00");
+  const completo = diffResumido(r.dir, sha, 100_000);
+  assert.ok(!completo.includes("ghp_"));
+  const corte = completo.indexOf("[redactado]") + 3;
+  assert.ok(!diffResumido(r.dir, sha, corte).includes("ghp_"));
 });

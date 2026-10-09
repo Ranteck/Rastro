@@ -1,5 +1,6 @@
 import { execFileSync } from "node:child_process";
 import { ErrorUsuario } from "./errores.ts";
+import { redactar } from "./redactar.ts";
 
 export type Commit = { sha: string; fecha: Date; padres: string[]; asunto: string; cuerpo: string; archivos: string[]; rama: string };
 export type Rama = { nombre: string; ultimoCommit: Date; sha: string; mergeada: boolean };
@@ -118,6 +119,7 @@ export function lineasAgregadas(repo: string, sha: string): LineaAgregada[] {
 }
 
 export function diffResumido(repo: string, sha: string, maxBytes: number): string {
-  const d = git(repo, ["show", "--format=", "--stat", "--patch", "--unified=1", "--no-color", sha]);
+  // Se redacta todo el diff antes de cortarlo: un token partido por el corte ya no coincide con ningún patrón.
+  const d = redactar(git(repo, ["show", "--format=", "--stat", "--patch", "--unified=1", "--no-color", sha]));
   return d.length > maxBytes ? `${d.slice(0, maxBytes)}\n[diff truncado]` : d;
 }

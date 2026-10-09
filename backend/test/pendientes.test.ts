@@ -120,6 +120,14 @@ test("un TODO en markdown, en un string, en una regex o en un test no cuenta", (
   assert.equal(sin("src/a.py", "# TODO: algo"), 1);
 });
 
+test("el TODO nuevo se redacta antes de cortarlo a 80 caracteres", () => {
+  const c = commit({ sha: "eeeeeee4" });
+  const token = `ghp_${"a".repeat(36)}`;
+  const linea = `// TODO ${"x".repeat(80 - "// TODO ".length - " rotar ".length - 5)} rotar ${token}`;
+  const [p] = deTipo(entrada({ commitsPeriodo: [c], lineasAgregadas: agregadas("src/a.ts", linea) }), "todo-nuevo");
+  assert.ok(!(p?.texto ?? "").includes("ghp_"), p?.texto);
+});
+
 test("código sin doc: por tarea, salvo que se toque README o docs/ o solo tests", () => {
   const conCodigo = commit({ sha: "fffffff1", archivos: ["src/a.ts"], vinculo: { tarea: "central", tipo: "nombre" } });
   assert.equal(deTipo(entrada({ commitsPeriodo: [conCodigo] }), "codigo-sin-doc").length, 1);

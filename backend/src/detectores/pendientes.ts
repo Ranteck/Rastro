@@ -1,6 +1,7 @@
 import type { Evidencia, Pendiente, Plan } from "../contract/snapshot.ts";
 import { diasEntre } from "../fechas.ts";
 import type { Commit, LineaAgregada, Rama } from "../git.ts";
+import { redactar } from "../redactar.ts";
 import { escaparRegex, normalizar } from "../texto.ts";
 import { ramaContieneSlug, vincularPorNombre, type Vinculo } from "./vinculo.ts";
 
@@ -118,7 +119,7 @@ function todosNuevos(e: EntradaPendientes): Pendiente[] {
     res.push({
       tipo: "todo-nuevo",
       tarea: c.vinculo.tarea,
-      texto: `${todos.length === 1 ? "Se agregó un TODO/FIXME" : `Se agregaron ${todos.length} TODO/FIXME, por ejemplo`}: "${primera.trim().slice(0, 80)}".`,
+      texto: `${todos.length === 1 ? "Se agregó un TODO/FIXME" : `Se agregaron ${todos.length} TODO/FIXME, por ejemplo`}: "${redactar(primera.trim()).slice(0, 80)}".`,
       evidencia: [e.evidenciaCommit(c.sha)],
       proximoPaso: "Resolverlo o sumarlo como tarea al plan.",
     });
