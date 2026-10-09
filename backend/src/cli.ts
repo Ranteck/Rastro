@@ -22,6 +22,8 @@ const comandos: Readonly<Record<string, () => Promise<Comando>>> = {
   daily: async () => (await import("./daily.ts")).cmdDaily,
   plan: async () => (await import("./planCmd.ts")).cmdPlan,
   serve: async () => (await import("./central/cmd.ts")).cmdServe,
+  publish: async () => (await import("./publish.ts")).cmdPublish,
+  "seed-demo": async () => (await import("./central/seed.ts")).cmdSeedDemo,
 };
 
 export async function main(argv: string[]): Promise<number> {
