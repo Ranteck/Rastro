@@ -1,6 +1,6 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
-import { checkEquipo } from "../../backend/src/contract/equipo.ts";
+import { checkEquipo, type FilaEquipo } from "../../backend/src/contract/equipo.ts";
 import { formatearUltimoUpdate, vistaEquipo } from "../src/views/equipo.ts";
 
 const filas = checkEquipo(JSON.parse(readFileSync("ejemplos/equipo.json", "utf8")), "equipo").equipo;
@@ -32,8 +32,25 @@ describe("vista Equipo", () => {
   });
 
   it("ordena el resto por nombre, no por porcentaje", () => {
-    const nombres = [...montar().querySelectorAll(".persona-nombre")].map((n) => n.textContent);
-    expect(nombres).toEqual(["Tomás Ríos", "Denis", "Lucía Gómez"]);
+    const base = filas[0] as FilaEquipo;
+    const fila = (nombre: string, pct: number): FilaEquipo => ({
+      ...base,
+      persona: { id: nombre.toLowerCase(), nombre, equipo: base.persona.equipo },
+      fueraDelPlanPct: pct,
+      alerta: false,
+    });
+    const nombres = [...montar([fila("Zoe", 5), fila("Ana", 90), fila("Mario", 40)]).querySelectorAll(".persona-nombre")].map(
+      (n) => n.textContent,
+    );
+    expect(nombres).toEqual(["Ana", "Mario", "Zoe"]);
+  });
+
+  it("usa el singular con una sola persona", () => {
+    expect(montar([filas[0] as FilaEquipo]).querySelector(".protagonista")?.textContent).toMatch(/de 1 persona$/);
+  });
+
+  it("tiene un h1 para la vista", () => {
+    expect(montar().querySelector("h1")?.textContent).toBe("Equipo");
   });
 
   it("muestra el número de personas con desvío y el total", () => {

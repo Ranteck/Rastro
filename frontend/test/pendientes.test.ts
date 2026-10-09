@@ -39,11 +39,27 @@ describe("vista Pendientes", () => {
     expect(texto).toContain("Rama quieta");
     expect(texto).toContain("TODO nuevo");
     expect(texto).toContain("Código sin documentar");
-    expect(texto).toContain("Pendientes");
     expect(texto).toContain("inexistente");
     expect(texto).toContain("sin tarea");
     expect(texto).toContain("Documentar la función.");
     expect(texto).toContain(base.texto);
+  });
+
+  it("muestra de la tarea el nombre del plan y, si no está, el slug", () => {
+    const base = snapshot.pendientes[0] as Pendiente;
+    const raiz = montar(
+      conPendientes([
+        { ...base, texto: "x", tarea: "bitacora" },
+        { ...base, texto: "x", tarea: "inexistente" },
+      ]),
+    );
+    const tareas = [...raiz.querySelectorAll(".pendiente .dato.meta")].map((n) => n.textContent);
+    expect(tareas).toEqual(["Bitácora", "inexistente"]);
+  });
+
+  it("deja que un token largo se parta en vez de desbordar la lámina", () => {
+    const css = readFileSync("src/styles/base.css", "utf8");
+    expect(css).toMatch(/\.lamina \{[^}]*overflow-wrap: anywhere/);
   });
 
   it("muestra la evidencia sin url como texto, sin link", () => {

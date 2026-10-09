@@ -91,6 +91,9 @@ table {
 /* Lámina de anuario (.sello y .placa-alerta solo fijan background-color para no pisar las cruces): las cruces de registro viven en el padding, así que nunca tapan contenido. */
 .lamina {
   position: relative;
+  /* El texto viene de commits y del LLM: un token largo no puede desbordar ni pisar a la lámina vecina. */
+  min-width: 0;
+  overflow-wrap: anywhere;
   padding: calc(var(--cruz) * 2);
   border: 1px solid var(--hairline);
   --cruz-trazo: linear-gradient(var(--tinta), var(--tinta));

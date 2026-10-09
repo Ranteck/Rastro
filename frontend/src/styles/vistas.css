@@ -19,6 +19,21 @@
   gap: 32px;
 }
 
+/* Para proyector, los datos (la razón de las vistas) no pueden ser lo más chico de la lámina. */
+.persona-lamina .dato,
+.pendiente .dato {
+  font-size: 17px;
+}
+
+.solo-lectores {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
 /* Equipo */
 .protagonista {
   display: flex;
@@ -47,6 +62,10 @@ a.persona-lamina {
 
 a.persona-lamina:hover {
   border-color: var(--tinta);
+}
+
+a.persona-lamina.placa-alerta:hover {
+  border-color: var(--placa-texto);
 }
 
 .persona-cabecera {
@@ -88,10 +107,6 @@ a.persona-lamina:hover {
 
 .placa-alerta .meta {
   color: inherit;
-}
-
-.placa-alerta:hover {
-  border-color: var(--placa-texto);
 }
 
 .desvio {
@@ -161,6 +176,10 @@ a.persona-lamina:hover {
   grid-column: 1 / -1;
   padding: 48px 176px 48px 48px;
   border-color: var(--tinta);
+}
+
+.pendiente-principal .proximo-paso {
+  max-width: 60ch;
 }
 
 .pendiente-principal .pendiente-tipo {

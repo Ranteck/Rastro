@@ -60,6 +60,7 @@ export function vistaEquipo(filas: FilaEquipo[], ahora: Date = new Date()): Node
   return h(
     "section",
     { class: "equipo", "aria-label": "Equipo" },
+    h("h1", { class: "solo-lectores" }, "Equipo"),
     h(
       "div",
       { class: "protagonista" },
