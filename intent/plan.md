@@ -46,6 +46,8 @@ Acordado con Denis el 2026-10-09: proceso `superpowers:subagent-driven-developme
 
 El repo ya existe: Denis lo creó y subió `main` (`82132de`, con intent, spec, plan, frontend y propuesta) a `github.com/Ranteck/Rastro`. Todas las tareas, la 1 incluida, van en la rama `feat/rastro-mvp`, con commits locales; el push y el PR a `main` solo con el OK de Denis.
 
+**Estructura (pedido de Denis, 2026-10-09):** el motor vive en `backend/`, junto a `frontend/`. Todas las rutas de código de este plan (`package.json`, `tsconfig.json`, `bin/`, `src/`, `test/`) son relativas a `backend/`, y los comandos `npm`, `node --test` y `git add` de cada tarea se corren desde `backend/`. En la raíz quedan `intent/`, `frontend/`, la propuesta, `.gitignore` y `README.md`. Desde el código, `frontend/` está en `../frontend/` respecto de `backend/`.
+
 ## Archivos
 
 Todos son nuevos salvo `intent/`, `frontend/` y la propuesta, que ya existen.
@@ -118,7 +120,7 @@ Tasks 1 a 8 dejan el núcleo determinístico. Con la Task 11, `rastro daily` ya 
 - [ ] **Step 1: Dependencias (el repo ya existe: no correr `git init`)**
 
 ```bash
-cd /home/denis-legion/Documentos/AI-Day/Rastro
+cd /home/denis-legion/Documentos/AI-Day/Rastro/backend
 npm init -y
 npm i -D typescript@7.0.2 @types/node@22
 ```
@@ -321,7 +323,7 @@ import { validarSnapshot } from "../src/contract/snapshot.ts";
 import { ErrorValidacion } from "../src/contract/validar.ts";
 
 const ejemplo = (): Record<string, unknown> =>
-  JSON.parse(readFileSync(new URL("../frontend/ejemplos/persona-denis.json", import.meta.url), "utf8")) as Record<string, unknown>;
+  JSON.parse(readFileSync(new URL("../../frontend/ejemplos/persona-denis.json", import.meta.url), "utf8")) as Record<string, unknown>;
 
 test("el ejemplo de frontend cumple el contrato", () => {
   const s = validarSnapshot(ejemplo());
@@ -3298,7 +3300,7 @@ import { Almacen } from "../src/central/almacen.ts";
 import { crearCentral } from "../src/central/servidor.ts";
 import { checkEquipo } from "../src/contract/equipo.ts";
 
-const ejemplo = (nombre: string): unknown => JSON.parse(readFileSync(new URL(`../frontend/ejemplos/${nombre}`, import.meta.url), "utf8"));
+const ejemplo = (nombre: string): unknown => JSON.parse(readFileSync(new URL(`../../frontend/ejemplos/${nombre}`, import.meta.url), "utf8"));
 
 async function levantar(estaticos = join(tmpdir(), "rastro-sin-dist")) {
   const servidor = crearCentral({ almacen: new Almacen(mkdtempSync(join(tmpdir(), "rastro-central-"))), estaticos });
@@ -3615,7 +3617,7 @@ import { ErrorUsuario } from "../errores.ts";
 import { Almacen } from "./almacen.ts";
 import { crearCentral } from "./servidor.ts";
 
-export const ESTATICOS = fileURLToPath(new URL("../../frontend/dist", import.meta.url));
+export const ESTATICOS = fileURLToPath(new URL("../../../frontend/dist", import.meta.url));
 
 export async function cmdServe(args: string[]): Promise<number> {
   const { values } = parseArgs({
@@ -3710,7 +3712,7 @@ import { validarSnapshot, type Snapshot } from "../src/contract/snapshot.ts";
 import { paraCompartir, publicar, publicarConConfirmacion } from "../src/publish.ts";
 
 const snapshot = (): Snapshot =>
-  validarSnapshot(JSON.parse(readFileSync(new URL("../frontend/ejemplos/persona-denis.json", import.meta.url), "utf8")));
+  validarSnapshot(JSON.parse(readFileSync(new URL("../../frontend/ejemplos/persona-denis.json", import.meta.url), "utf8")));
 const config = configPorDefecto({ id: "denis", nombre: "Denis", equipo: "AI Day" });
 
 class ConectorFalso implements Conector {
@@ -4715,7 +4717,7 @@ import { validarSnapshot, type Snapshot } from "../src/contract/snapshot.ts";
 import type { Ejecutor } from "../src/llm/claudeCli.ts";
 
 const snapshot = (): Snapshot =>
-  validarSnapshot(JSON.parse(readFileSync(new URL("../frontend/ejemplos/persona-denis.json", import.meta.url), "utf8")));
+  validarSnapshot(JSON.parse(readFileSync(new URL("../../frontend/ejemplos/persona-denis.json", import.meta.url), "utf8")));
 
 test("con claude usa solo herramientas de Notion, corre fuera del repo y manda las entradas", async () => {
   const llamadas: { args: readonly string[]; entrada: string; cwd: string | undefined }[] = [];
