@@ -14,13 +14,17 @@ const DIA_LARGO = new Intl.DateTimeFormat("es-AR", { timeZone: "UTC", day: "nume
 // Las fechas del contrato son YYYY-MM-DD sin zona: se leen en UTC para que no corran un día.
 const aMs = (iso: string): number => Date.parse(`${iso}T00:00:00Z`);
 
-function columnas(snapshot: Snapshot): number[] {
+/** Un `hasta` absurdo pasa la validación del contrato; sin tope generaría millones de columnas. */
+const MAX_DIAS = 31;
+
+function columnas(snapshot: Snapshot): { dias: number[]; recortado: boolean } {
   const rangos = snapshot.gantt.barras.flatMap((b) => [b.plan, b.real]).filter((r): r is Rango => r !== null);
   const inicioSemana = snapshot.plan === null ? null : aMs(snapshot.plan.semana);
   const desde = rangos.length > 0 ? Math.min(...rangos.map((r) => aMs(r.desde))) : inicioSemana;
   const hasta = rangos.length > 0 ? Math.max(...rangos.map((r) => aMs(r.hasta))) : inicioSemana === null ? null : inicioSemana + (DIAS_SEMANA_LABORAL - 1) * DIA_MS;
-  if (desde === null || hasta === null) return [];
-  return Array.from({ length: Math.round((hasta - desde) / DIA_MS) + 1 }, (_, i) => desde + i * DIA_MS);
+  if (desde === null || hasta === null) return { dias: [], recortado: false };
+  const total = Math.round((hasta - desde) / DIA_MS) + 1;
+  return { dias: Array.from({ length: Math.min(total, MAX_DIAS) }, (_, i) => desde + i * DIA_MS), recortado: total > MAX_DIAS };
 }
 
 function descripcion(rango: Rango): string {
@@ -29,15 +33,16 @@ function descripcion(rango: Rango): string {
     : `${DIA_LARGO.format(aMs(rango.desde))} al ${DIA_LARGO.format(aMs(rango.hasta))}`;
 }
 
-function barra(tipo: "plan" | "real", rango: Rango, primero: number, fantasma: boolean): HTMLElement {
+function barra(tipo: "plan" | "real", rango: Rango, primero: number, dias: number, fantasma: boolean): HTMLElement[] {
   const inicio = Math.round((aMs(rango.desde) - primero) / DIA_MS) + 1;
-  const fin = Math.round((aMs(rango.hasta) - primero) / DIA_MS) + 2;
-  return h("span", {
+  if (inicio > dias) return [];
+  const fin = Math.min(Math.round((aMs(rango.hasta) - primero) / DIA_MS) + 2, dias + 1);
+  return [h("span", {
     class: fantasma ? `gantt-barra gantt-barra-${tipo} gantt-barra-fantasma` : `gantt-barra gantt-barra-${tipo}`,
     style: `grid-column: ${inicio} / ${fin}`,
     role: "img",
     "aria-label": `${tipo === "plan" ? "Plan" : "Real"}: ${descripcion(rango)}`,
-  });
+  })];
 }
 
 function fila(snapshot: Snapshot, b: Barra, primero: number, dias: number): HTMLElement {
@@ -48,15 +53,15 @@ function fila(snapshot: Snapshot, b: Barra, primero: number, dias: number): HTML
     h(
       "div",
       { class: "gantt-tarea" },
-      h("p", { class: "dato gantt-nombre" }, nombreDeTarea(snapshot, b.tarea)),
+      h("p", { class: "gantt-nombre" }, nombreDeTarea(snapshot, b.tarea)),
       ...(fantasma ? [h("p", { class: "etiqueta gantt-leyenda-fantasma" }, "FANTASMA · NO ESTABA EN EL PLAN")] : []),
       ...(b.real === null ? [h("p", { class: "etiqueta meta" }, "sin actividad")] : []),
     ),
     h(
       "div",
       { class: "gantt-pista", style: `--dias: ${dias}` },
-      ...(b.plan === null ? [] : [barra("plan", b.plan, primero, false)]),
-      ...(b.real === null ? [] : [barra("real", b.real, primero, fantasma)]),
+      ...(b.plan === null ? [] : barra("plan", b.plan, primero, dias, false)),
+      ...(b.real === null ? [] : barra("real", b.real, primero, dias, fantasma)),
     ),
   );
 }
@@ -74,16 +79,20 @@ function leyenda(): HTMLElement {
 }
 
 export function gantt(snapshot: Snapshot): HTMLElement {
-  const dias = columnas(snapshot);
+  const { dias, recortado } = columnas(snapshot);
   const primero = dias[0] ?? 0;
   return h(
     "section",
     { class: "gantt", "aria-label": "Plan contra real" },
-    h("div", { class: "gantt-titulo" }, h("h2", { class: "etiqueta" }, "PLAN CONTRA REAL"), ...(snapshot.gantt.mock ? [etiquetaMock()] : [])),
+    h("div", { class: "gantt-titulo" }, h("h2", { class: "gantt-heading" }, "Plan contra real"), ...(snapshot.gantt.mock ? [etiquetaMock()] : [])),
     leyenda(),
+    ...(recortado ? [h("p", { class: "etiqueta gantt-recorte", role: "status" }, `Rango recortado a ${MAX_DIAS} días`)] : []),
     h(
       "div",
-      { class: "gantt-tabla" },
+      { class: "gantt-scroll", tabindex: "0", role: "region", "aria-label": "Plan contra real, desplazable" },
+      h(
+      "div",
+      { class: "gantt-tabla", style: `--dias: ${dias.length}` },
       h(
         "div",
         { class: "gantt-fila gantt-cabecera" },
@@ -95,6 +104,7 @@ export function gantt(snapshot: Snapshot): HTMLElement {
         ),
       ),
       ...snapshot.gantt.barras.map((b) => fila(snapshot, b, primero, dias.length)),
+      ),
     ),
   );
 }

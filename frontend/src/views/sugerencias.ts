@@ -3,10 +3,11 @@ import { h } from "../ui/dom.ts";
 import { vacio } from "../ui/estado.ts";
 
 const FUENTES: Record<Sugerencia["fuente"], string> = { zsh: "terminal", "claude-code": "Claude Code" };
-const TIPOS: Record<Sugerencia["propuesta"]["tipo"], string> = { alias: "alias", script: "script", hook: "hook", skill: "skill" };
 
 function copiar(contenido: string, aviso: HTMLElement): () => Promise<void> {
   return async () => {
+    // Se vacía antes de intentar: un mismo texto repetido no se vuelve a anunciar en aria-live.
+    aviso.textContent = "";
     try {
       await navigator.clipboard.writeText(contenido);
       aviso.textContent = "Copiado";
@@ -25,7 +26,7 @@ function lamina(s: Sugerencia): HTMLElement {
     { class: "lamina sugerencia" },
     h("p", { class: "dato sugerencia-patron" }, s.patron),
     h("p", { class: "dato meta" }, `${FUENTES[s.fuente]} · ${s.ocurrencias} ${s.ocurrencias === 1 ? "vez" : "veces"} en ${s.dias} ${s.dias === 1 ? "día" : "días"}`),
-    h("p", { class: "etiqueta sugerencia-tipo" }, TIPOS[s.propuesta.tipo].toUpperCase()),
+    h("p", { class: "etiqueta sugerencia-tipo" }, s.propuesta.tipo.toUpperCase()),
     h("p", { class: "sugerencia-porque" }, s.propuesta.porque),
     h("pre", { class: "sugerencia-codigo", tabindex: "0" }, h("code", {}, s.propuesta.contenido)),
     h("div", { class: "sugerencia-acciones" }, h("button", { type: "button", class: "boton", onclick: copiar(s.propuesta.contenido, aviso) }, "Copiar"), aviso),

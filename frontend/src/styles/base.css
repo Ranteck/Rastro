@@ -227,7 +227,9 @@ a.boton {
 .etiqueta-mock {
   display: inline-block;
   padding: 4px 8px;
-  border: 1px solid var(--hairline);
+  border: 2px solid var(--tinta);
+  font-size: 14px;
+  font-weight: 700;
 }
 
 #contenido:focus {

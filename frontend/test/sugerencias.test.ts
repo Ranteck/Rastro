@@ -45,6 +45,26 @@ describe("vista Sugerencias", () => {
     await vi.waitFor(() => expect(raiz.querySelector(".copiar-aviso")?.textContent).toBe("No pude copiar; seleccioná el texto"));
   });
 
+  it("avisa cuando el navegador no tiene portapapeles", async () => {
+    vi.spyOn(console, "error").mockImplementation(() => undefined);
+    Object.defineProperty(navigator, "clipboard", { value: undefined, configurable: true });
+    const raiz = montar();
+    raiz.querySelector("button")?.click();
+    await vi.waitFor(() => expect(raiz.querySelector(".copiar-aviso")?.textContent).toBe("No pude copiar; seleccioná el texto"));
+  });
+
+  it("vacía el aviso antes de cada intento", async () => {
+    let resolver: () => void = () => undefined;
+    simularClipboard(() => new Promise<void>((r) => (resolver = r)));
+    const raiz = montar();
+    const aviso = raiz.querySelector(".copiar-aviso");
+    if (aviso) aviso.textContent = "Copiado";
+    raiz.querySelector("button")?.click();
+    expect(aviso?.textContent).toBe("");
+    resolver();
+    await vi.waitFor(() => expect(aviso?.textContent).toBe("Copiado"));
+  });
+
   it("con la lista vacía muestra una frase neutra", () => {
     expect(montar({ ...snapshot, sugerencias: [] }).textContent).toContain("No hay sugerencias compartidas.");
   });

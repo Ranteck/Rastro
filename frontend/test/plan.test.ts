@@ -36,6 +36,8 @@ describe("vista Plan", () => {
     const fila = raiz.querySelectorAll(".gantt-fila")[1];
     expect(fila?.querySelectorAll(".gantt-barra")).toHaveLength(2);
     expect(raiz.textContent).toContain("sin actividad");
+    const repeticiones = [...raiz.querySelectorAll(".gantt-fila")].find((f) => f.textContent?.includes("Repeticiones"));
+    expect(repeticiones?.querySelectorAll(".gantt-barra")).toHaveLength(1);
   });
 
   it("marca como fantasma la barra sin plan y con real", () => {
@@ -43,10 +45,22 @@ describe("vista Plan", () => {
     const raiz = montar(gantt(fantasma));
     expect(raiz.textContent).toContain("FANTASMA · NO ESTABA EN EL PLAN");
     expect(raiz.querySelectorAll(".gantt-barra")).toHaveLength(1);
+    expect(raiz.querySelector(".gantt-barra-fantasma")).not.toBeNull();
   });
 
-  it("muestra la etiqueta mock", () => {
+  it("muestra la etiqueta mock solo si el Gantt es mock", () => {
     expect(montar(vistaPlan(snapshot)).textContent).toContain("MOCK · VISIÓN");
+    // El contrato fija `mock: true`; el caso falso protege la condición del brief si el contrato cambia.
+    const sinMock = { ...snapshot, gantt: { ...snapshot.gantt, mock: false } } as unknown as Snapshot;
+    expect(montar(vistaPlan(sinMock)).textContent).not.toContain("MOCK · VISIÓN");
+  });
+
+  it("recorta a 31 días un rango absurdo y lo avisa", () => {
+    const largo: Snapshot = { ...snapshot, gantt: { mock: true, barras: [{ tarea: "bitacora", plan: null, real: { desde: "2026-10-05", hasta: "2099-12-31" } }] } };
+    const raiz = montar(gantt(largo));
+    expect(raiz.querySelectorAll(".gantt-dia")).toHaveLength(31);
+    expect(raiz.textContent).toContain("Rango recortado a 31 días");
+    expect(montar(gantt(snapshot)).textContent).not.toContain("Rango recortado");
   });
 
   it("sin plan muestra la frase y no un error", () => {
