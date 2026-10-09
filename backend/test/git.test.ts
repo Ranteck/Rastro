@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { lineasAgregadas, recolectarGit, urlBaseDe } from "../src/git.ts";
+import { commitsDe, lineasAgregadas, recolectarGit, urlBaseDe } from "../src/git.ts";
 import { crearRepo } from "./helpers/repo.ts";
 
 test("los commits de una rama mergeada conservan su rama y se marca la rama como mergeada", () => {
@@ -76,4 +76,24 @@ test("las líneas agregadas de un commit", () => {
   r.escribir("a.ts", "uno\n// TODO: dos\n");
   const sha = r.commit("dos", "2026-10-09T10:05:00-03:00");
   assert.deepEqual(lineasAgregadas(r.dir, sha), ["// TODO: dos"]);
+});
+
+test("una rama con el nombre de un directorio no rompe la recolección", () => {
+  const r = crearRepo();
+  r.escribir("frontend/index.ts", "export const a = 1;\n");
+  r.commit("inicio", "2026-10-09T10:00:00-03:00");
+  r.git("checkout", "-q", "-b", "frontend");
+  r.escribir("frontend/b.ts", "export const b = 1;\n");
+  r.commit("trabajo", "2026-10-09T11:00:00-03:00");
+  const datos = recolectarGit(r.dir, "2026-10-08");
+  assert.ok(datos.commits.some((c) => c.asunto === "trabajo" && c.rama === "frontend"));
+});
+
+test("un archivo con el nombre de la rama principal no rompe la recolección", () => {
+  const r = crearRepo();
+  r.escribir("main", "no soy una rama\n");
+  r.commit("inicio", "2026-10-09T10:00:00-03:00");
+  const datos = recolectarGit(r.dir, "2026-10-08");
+  assert.equal(datos.commits.length, 1);
+  assert.equal(commitsDe(r.dir, "HEAD", "2026-10-08").length, 1);
 });

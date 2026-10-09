@@ -55,7 +55,7 @@ function urlRemota(repo: string): string | null {
 /** Commits alcanzables desde `ref` desde `desdeGit` (cualquier fecha que acepte --since). Con `soloPrimerPadre` sigue solo la línea principal de los merges. */
 export function commitsDe(repo: string, ref: string, desdeGit: string, soloPrimerPadre = false): Omit<Commit, "rama">[] {
   const opciones = soloPrimerPadre ? ["--first-parent"] : [];
-  const salida = git(repo, ["log", ref, ...opciones, `--since=${desdeGit}`, "--name-only", "--format=%x1e%H%x1f%aI%x1f%P%x1f%s%x1f%b%x1d"]);
+  const salida = git(repo, ["log", ref, ...opciones, `--since=${desdeGit}`, "--name-only", "--format=%x1e%H%x1f%aI%x1f%P%x1f%s%x1f%b%x1d", "--"]);
   return salida
     .split("\x1e")
     .filter((registro) => registro.trim() !== "")
@@ -84,7 +84,7 @@ export function recolectarGit(repo: string, desdeGit: string): DatosGit {
   const existePrincipal = ramasCrudas.some((r) => r.nombre === principal);
   const mergeadas = existePrincipal ? new Set(lineas(git(repo, ["branch", "--merged", principal, "--format=%(refname:short)"]))) : new Set<string>();
   // Una rama vacía o avanzada por fast-forward tiene la punta en la línea principal: está en --merged pero no se mergeó con un merge commit.
-  const enLineaPrincipal = existePrincipal ? new Set(lineas(git(repo, ["rev-list", "--first-parent", principal]))) : new Set<string>();
+  const enLineaPrincipal = existePrincipal ? new Set(lineas(git(repo, ["rev-list", "--first-parent", principal, "--"]))) : new Set<string>();
   const ramas: Rama[] = ramasCrudas.map((r) => ({ ...r, mergeada: r.nombre !== principal && mergeadas.has(r.nombre) && !enLineaPrincipal.has(r.sha) }));
 
   const porSha = new Map<string, Commit>();
