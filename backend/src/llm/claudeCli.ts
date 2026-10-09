@@ -43,6 +43,10 @@ const checkSalida = objAbierto(
   { structured_output: desconocido },
 );
 
+class ErrorClaudeNoEncontrado extends ErrorLlm {
+  override name = "ErrorClaudeNoEncontrado";
+}
+
 export class ClaudeCli implements Llm {
   readonly #modelo: string;
   readonly #binario: string;
@@ -67,6 +71,7 @@ export class ClaudeCli implements Llm {
     try {
       return await this.#intentar(pedido);
     } catch (e) {
+      if (e instanceof ErrorClaudeNoEncontrado) throw e; // Reintentar no instala el binario.
       log("warn", "llm_reintento", { uso: pedido.uso, detalle: e instanceof Error ? e.message : String(e) });
     }
     try {
@@ -90,7 +95,15 @@ export class ClaudeCli implements Llm {
       "--system-prompt", pedido.sistema,
       "--json-schema", JSON.stringify(pedido.esquema),
     ];
-    const r = await this.#ejecutar(this.#binario, args, pedido.prompt, this.#timeoutMs);
+    let r: Awaited<ReturnType<Ejecutor>>;
+    try {
+      r = await this.#ejecutar(this.#binario, args, pedido.prompt, this.#timeoutMs);
+    } catch (e) {
+      if ((e as NodeJS.ErrnoException).code === "ENOENT") {
+        throw new ErrorClaudeNoEncontrado(`No encontré \`claude\` en el PATH: instalá Claude Code o corré sin LLM.`, { cause: e });
+      }
+      throw e;
+    }
     if (r.codigo !== 0) throw new ErrorLlm(`claude salió con ${String(r.codigo)}: ${r.stderr.slice(0, 200)}`);
     const salida = checkSalida(JSON.parse(r.stdout), "claude");
     const u = salida.usage;

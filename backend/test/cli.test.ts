@@ -22,3 +22,11 @@ test("un nombre heredado de Object.prototype no es un comando", () => {
   assert.equal(r.status, 2);
   assert.match(r.stderr, /Comando desconocido: constructor/);
 });
+
+test("una opción desconocida sale con 2, explica el error y muestra el uso", () => {
+  const r = spawnSync(process.execPath, [BIN, "daily", "--foo"], { encoding: "utf8" });
+  assert.equal(r.status, 2);
+  assert.match(r.stderr, /--foo/);
+  assert.match(r.stderr, /Uso:/);
+  assert.doesNotMatch(r.stderr, /error inesperado/);
+});

@@ -7,6 +7,8 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { Almacen } from "../src/central/almacen.ts";
 import { snapshotsDemo } from "../src/central/demo.ts";
+import { cmdSeedDemo } from "../src/central/seed.ts";
+import { ErrorUsuario } from "../src/errores.ts";
 import { crearCentral } from "../src/central/servidor.ts";
 import { configPorDefecto } from "../src/config.ts";
 import { ConectorCentral } from "../src/conectores/central.ts";
@@ -152,4 +154,15 @@ test("un central que no responde corta por timeout con un mensaje claro", async 
   });
   const url = `http://127.0.0.1:${(colgado.address() as AddressInfo).port}`;
   await assert.rejects(new ConectorCentral(url, 100).publicar(snapshot()), /no respondió en 0\.1 s/);
+});
+
+test("seed-demo con el central caído pide levantar rastro serve", async () => {
+  const cerrado = createServer();
+  await new Promise<void>((resolve) => cerrado.listen(0, "127.0.0.1", resolve));
+  const puerto = (cerrado.address() as AddressInfo).port;
+  await new Promise<void>((resolve) => cerrado.close(() => resolve()));
+  await assert.rejects(
+    cmdSeedDemo(["--central", `http://127.0.0.1:${puerto}`]),
+    (e) => e instanceof ErrorUsuario && /No pude conectar con el central en http:\/\/127\.0\.0\.1:\d+; levantá `rastro serve` primero\./.test(e.message),
+  );
 });

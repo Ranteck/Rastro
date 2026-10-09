@@ -60,8 +60,17 @@ test("una salida que no cumple el esquema cuenta como falla", async () => {
   await assert.rejects(new ClaudeCli({ modelo: "haiku", ejecutar }).completar(pedido), ErrorLlm);
 });
 
-test("si el binario de claude no existe, ErrorLlm", async () => {
-  await assert.rejects(new ClaudeCli({ modelo: "haiku", binario: "/no/existe/claude" }).completar(pedido), ErrorLlm);
+test("si el binario de claude no existe, ErrorLlm que lo dice y sin reintento", async () => {
+  let intentos = 0;
+  const real: Ejecutor = (...a) => {
+    intentos++;
+    return ejecutarProceso(...a);
+  };
+  await assert.rejects(
+    new ClaudeCli({ modelo: "haiku", binario: "/no/existe/claude", ejecutar: real }).completar(pedido),
+    (e) => e instanceof ErrorLlm && /No encontré `claude` en el PATH/.test(e.message),
+  );
+  assert.equal(intentos, 1);
 });
 
 test("ejecutarProceso corta el proceso al vencer el timeout", async () => {

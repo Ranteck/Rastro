@@ -45,6 +45,10 @@ export async function main(argv: string[]): Promise<number> {
       process.stderr.write(`rastro: ${e.message}\n`);
       return 1;
     }
+    if (e instanceof Error && (e as NodeJS.ErrnoException).code?.startsWith("ERR_PARSE_ARGS_") === true) {
+      process.stderr.write(`rastro: ${e.message}\n\n${AYUDA}`);
+      return 2;
+    }
     log("error", "fallo_inesperado", { comando: nombre, detalle: e instanceof Error ? e.message : String(e) });
     if (e instanceof Error && e.stack !== undefined) log("debug", "stack", { stack: e.stack });
     process.stderr.write("rastro: error inesperado; corré con RASTRO_LOG=debug para ver el detalle.\n");
