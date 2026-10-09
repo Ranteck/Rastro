@@ -45,10 +45,26 @@ export function parsearPlan(md: string, hoy: Fecha): Plan | null {
 
 export type TareaARenderizar = { nombre: string; objetivo: string; estado?: Tarea["estado"] };
 
+// El texto puede venir de un LLM: se aplana y se quitan los marcadores para que plan.md siga legible y se relea igual.
+function limpiar(texto: string): string {
+  let previo: string;
+  let actual = texto;
+  do {
+    previo = actual;
+    actual = actual.replace(/\*\*|~~/g, "");
+  } while (actual !== previo);
+  return actual.replace(/\s+/g, " ").trim();
+}
+
 export function renderizarPlan(semana: Fecha, entregable: string, tareas: readonly TareaARenderizar[]): string {
-  const linea = (t: TareaARenderizar): string =>
+  const limpias = tareas.map((t) => {
+    const nombre = limpiar(t.nombre).replaceAll(":", "").trim();
+    if (slugDe(nombre) === "") throw new ErrorUsuario(`El nombre de tarea "${nombre}" no tiene letras ni números`);
+    return { nombre, objetivo: limpiar(t.objetivo), estado: t.estado };
+  });
+  const linea = (t: (typeof limpias)[number]): string =>
     t.estado === "sacada"
       ? `- [ ] ~~**${t.nombre}:** ${t.objetivo}~~`
       : `- [${t.estado === "hecha" ? "x" : " "}] **${t.nombre}:** ${t.objetivo}`;
-  return [`## Plan semana ${ddmm(semana)}`, `- **Entregable del viernes:** ${entregable}`, ...tareas.map(linea), ""].join("\n");
+  return [`## Plan semana ${ddmm(semana)}`, `- **Entregable del viernes:** ${limpiar(entregable)}`, ...limpias.map(linea), ""].join("\n");
 }

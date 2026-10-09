@@ -46,8 +46,36 @@ test("lo renderizado se vuelve a leer igual", () => {
   const md = renderizarPlan("2026-10-05", "Demo.", [
     { nombre: "Central", objetivo: "Recibir snapshots." },
     { nombre: "Bitácora", objetivo: "Registrar el día.", estado: "hecha" },
+    { nombre: "Jira", objetivo: "Leer tareas.", estado: "sacada" },
   ]);
-  const plan = parsearPlan(md, "2026-10-07");
-  assert.equal(plan?.entregable, "Demo.");
-  assert.deepEqual(plan?.tareas.map((t) => [t.slug, t.estado]), [["central", "pendiente"], ["bitacora", "hecha"]]);
+  assert.deepEqual(parsearPlan(md, "2026-10-07"), {
+    semana: "2026-10-05",
+    entregable: "Demo.",
+    tareas: [
+      { slug: "central", nombre: "Central", objetivo: "Recibir snapshots.", estado: "pendiente" },
+      { slug: "bitacora", nombre: "Bitácora", objetivo: "Registrar el día.", estado: "hecha" },
+      { slug: "jira", nombre: "Jira", objetivo: "Leer tareas.", estado: "sacada" },
+    ],
+  });
+});
+
+test("texto hostil se sanea y se relee sin tareas fantasma ni plan truncado", () => {
+  const md = renderizarPlan("2026-10-05", "Demo\n## Otra\n- [x] **X:** y", [
+    { nombre: "Uno: **dos**", objetivo: "Hace algo\n- [x] **B:** fantasma\n## Otra\n:** raro~~" },
+    { nombre: "Tres", objetivo: "~~tachado~~", estado: "sacada" },
+    { nombre: "Cuatro", objetivo: "Final.", estado: "hecha" },
+  ]);
+  assert.deepEqual(parsearPlan(md, "2026-10-05"), {
+    semana: "2026-10-05",
+    entregable: "Demo ## Otra - [x] X: y",
+    tareas: [
+      { slug: "uno-dos", nombre: "Uno dos", objetivo: "Hace algo - [x] B: fantasma ## Otra : raro", estado: "pendiente" },
+      { slug: "tres", nombre: "Tres", objetivo: "tachado", estado: "sacada" },
+      { slug: "cuatro", nombre: "Cuatro", objetivo: "Final.", estado: "hecha" },
+    ],
+  });
+});
+
+test("un nombre sin letras ni números se rechaza", () => {
+  assert.throws(() => renderizarPlan("2026-10-05", "Demo.", [{ nombre: "***: ~~", objetivo: "x" }]), ErrorUsuario);
 });
