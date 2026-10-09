@@ -24,6 +24,16 @@ test("los commits de una rama mergeada conservan su rama y se marca la rama como
   assert.equal(datos.urlBase, null);
 });
 
+test("una rama recién cortada de main sin commits no cuenta como mergeada", () => {
+  const r = crearRepo();
+  r.escribir("README.md", "hola\n");
+  r.commit("inicio", "2026-10-09T10:00:00-03:00");
+  r.git("branch", "feat/vacia");
+
+  const datos = recolectarGit(r.dir, "2026-10-08");
+  assert.equal(datos.ramas.find((x) => x.nombre === "feat/vacia")?.mergeada, false);
+});
+
 test("un commit hecho en main antes de bifurcar la rama de feature conserva la rama principal", () => {
   const r = crearRepo();
   r.escribir("README.md", "hola\n");

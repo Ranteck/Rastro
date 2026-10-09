@@ -83,7 +83,9 @@ export function recolectarGit(repo: string, desdeGit: string): DatosGit {
   );
   const existePrincipal = ramasCrudas.some((r) => r.nombre === principal);
   const mergeadas = existePrincipal ? new Set(lineas(git(repo, ["branch", "--merged", principal, "--format=%(refname:short)"]))) : new Set<string>();
-  const ramas: Rama[] = ramasCrudas.map((r) => ({ ...r, mergeada: r.nombre !== principal && mergeadas.has(r.nombre) }));
+  // Una rama vacía o avanzada por fast-forward tiene la punta en la línea principal: está en --merged pero no se mergeó con un merge commit.
+  const enLineaPrincipal = existePrincipal ? new Set(lineas(git(repo, ["rev-list", "--first-parent", principal]))) : new Set<string>();
+  const ramas: Rama[] = ramasCrudas.map((r) => ({ ...r, mergeada: r.nombre !== principal && mergeadas.has(r.nombre) && !enLineaPrincipal.has(r.sha) }));
 
   const porSha = new Map<string, Commit>();
   const asignar = (nombre: string, soloPrimerPadre: boolean): void => {

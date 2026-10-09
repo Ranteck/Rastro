@@ -64,6 +64,20 @@ test("resuelto sin cerrar: un commit que dice cierra [Central]", () => {
   assert.equal(p?.tarea, "central");
 });
 
+test("resuelto sin cerrar: una rama mergeada con el slug de una tarea abierta", () => {
+  const rama = { nombre: "feat/central", ultimoCommit: new Date("2026-10-08T10:00:00-03:00"), sha: "abcdef9999", mergeada: true };
+  const [p] = deTipo(entrada({ ramas: [rama] }), "resuelto-sin-cerrar");
+  assert.equal(p?.tarea, "central");
+  assert.deepEqual(p?.evidencia, [{ tipo: "rama", ref: "feat/central" }, { tipo: "commit", ref: "abcdef9" }]);
+});
+
+test("no es resuelto sin cerrar: rama sin mergear, o cierre de una tarea que ya está hecha", () => {
+  const sinMergear = { nombre: "feat/central", ultimoCommit: new Date("2026-10-08T10:00:00-03:00"), sha: "abcdef9999", mergeada: false };
+  assert.equal(deTipo(entrada({ ramas: [sinMergear] }), "resuelto-sin-cerrar").length, 0);
+  const c = commit({ sha: "1234567890", asunto: "Cierra [Bitácora]", vinculo: { tarea: "bitacora", tipo: "nombre" } });
+  assert.equal(deTipo(entrada({ commitsSemana: [c] }), "resuelto-sin-cerrar").length, 0);
+});
+
 test("cerrado sin evidencia: tarea hecha sin commits vinculados", () => {
   assert.deepEqual(deTipo(entrada(), "cerrado-sin-evidencia").map((p) => p.tarea), ["bitacora"]);
   const c = commit({ sha: "aaaaaaa1", vinculo: { tarea: "bitacora", tipo: "nombre" } });
