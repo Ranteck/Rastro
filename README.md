@@ -40,7 +40,12 @@ Desde otro repo, llamá a la ruta absoluta de `backend/bin/rastro.js`. Otras opc
 
 `.rastro/config.json` (lo crea `init`): persona, zona horaria, conectores (`central`, `notion`), umbrales de pendientes, desvíos y repeticiones, y el LLM (`claude-cli` con `haiku` por defecto, o `ninguno`).
 
-`notion.modo` es `mock` (por defecto: escribe `.rastro/notion-preview.md`) o `claude` (publica en la página Daily con `claude -p`, usando la skill daily-flock instalada en `~/.claude/skills/daily-flock`).
+`notion.modo` es `mock` (por defecto: escribe `.rastro/notion-preview.md`) o `claude` (publica en la página Daily con `claude -p`, usando la skill daily-flock instalada en `~/.claude/skills/daily-flock`). En modo `claude`, `claude -p` corre solo con la skill daily-flock y las dos herramientas de Notion (`notion-fetch` y `notion-update-page`), y cuesta unos centavos por publicación.
+
+## Limitaciones conocidas
+
+- El hook post-commit llama a `node` del PATH. Con gestores de versiones como fnm, los commits hechos desde clientes gráficos pueden no registrar el evento; la bitácora basada en git sigue funcionando.
+- "Resuelto sin cerrar" asume merge commits (`--no-ff` o merges de PR): los merges squash o fast-forward todavía no se detectan.
 
 ## Desarrollo
 
