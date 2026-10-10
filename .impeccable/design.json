@@ -1,0 +1,494 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-10-10T15:30:00-03:00",
+  "title": "Design System: Rastro",
+  "extensions": {
+    "colorMeta": {
+      "sello": {
+        "role": "primary",
+        "displayName": "Lavanda de sello",
+        "canonical": "oklch(90.3% 0.030 284)",
+        "tonalRamp": [
+          "#0a0917",
+          "#242535",
+          "#404052",
+          "#616174",
+          "#808195",
+          "#a5a6ba",
+          "#c7c8de",
+          "#ecedff"
+        ]
+      },
+      "sello-oscuro": {
+        "role": "primary",
+        "displayName": "Lavanda apagado (tema oscuro)",
+        "canonical": "oklch(37.6% 0.065 281)",
+        "tonalRamp": [
+          "#080525",
+          "#212245",
+          "#3c3e64",
+          "#5c5f88",
+          "#7b7faa",
+          "#a0a4d0",
+          "#c2c7f5",
+          "#ebedff"
+        ]
+      },
+      "placa-texto": {
+        "role": "secondary",
+        "displayName": "Bermellón de placa",
+        "canonical": "oklch(73.1% 0.168 34)",
+        "tonalRamp": [
+          "#1f0000",
+          "#4b0a00",
+          "#7a1a01",
+          "#ae300f",
+          "#d45437",
+          "#ff7b5c",
+          "#ffb6a4",
+          "#ffe9e3"
+        ]
+      },
+      "placa-texto-oscuro": {
+        "role": "secondary",
+        "displayName": "Bermellón profundo (tema oscuro)",
+        "canonical": "oklch(47.5% 0.174 31)",
+        "tonalRamp": [
+          "#200000",
+          "#4e0300",
+          "#800900",
+          "#b12a19",
+          "#d7503d",
+          "#fe7a65",
+          "#feb6a8",
+          "#fee9e5"
+        ]
+      },
+      "tinta": {
+        "role": "neutral",
+        "displayName": "Tinta",
+        "canonical": "oklch(20.8% 0.005 248)",
+        "tonalRamp": [
+          "#0a0b0d",
+          "#252729",
+          "#404345",
+          "#616366",
+          "#818386",
+          "#a5a8ab",
+          "#c8cbce",
+          "#eceff2"
+        ]
+      },
+      "papel": {
+        "role": "neutral",
+        "displayName": "Papel",
+        "canonical": "oklch(96.8% 0.003 308)",
+        "tonalRamp": [
+          "#0b0b0c",
+          "#272627",
+          "#434243",
+          "#646364",
+          "#848384",
+          "#a8a7a9",
+          "#cbcacc",
+          "#efeef0"
+        ]
+      },
+      "papel-tibio": {
+        "role": "neutral",
+        "displayName": "Papel tibio",
+        "canonical": "oklch(97.6% 0.004 34)",
+        "tonalRamp": [
+          "#0d0a0a",
+          "#292625",
+          "#454141",
+          "#666261",
+          "#868281",
+          "#aaa7a6",
+          "#cdc9c8",
+          "#f1edec"
+        ]
+      },
+      "papel-frio": {
+        "role": "neutral",
+        "displayName": "Papel frío",
+        "canonical": "oklch(95.9% 0.007 152)",
+        "tonalRamp": [
+          "#090c0a",
+          "#242825",
+          "#404440",
+          "#606461",
+          "#808481",
+          "#a4a9a5",
+          "#c7ccc8",
+          "#ebf0ec"
+        ]
+      },
+      "tinta-secundaria": {
+        "role": "neutral",
+        "displayName": "Tinta secundaria",
+        "canonical": "oklch(41.9% 0.009 261)",
+        "tonalRamp": [
+          "#090b0f",
+          "#24272b",
+          "#404247",
+          "#606369",
+          "#808389",
+          "#a4a8ae",
+          "#c7cbd1",
+          "#ebeff5"
+        ]
+      },
+      "hairline": {
+        "role": "neutral",
+        "displayName": "Hairline",
+        "canonical": "oklch(83.0% 0.005 78)",
+        "tonalRamp": [
+          "#0c0b09",
+          "#282624",
+          "#444240",
+          "#656360",
+          "#858380",
+          "#a9a7a4",
+          "#cccac7",
+          "#f0eeeb"
+        ]
+      },
+      "tinta-oscuro": {
+        "role": "neutral",
+        "displayName": "Tinta clara (tema oscuro)",
+        "canonical": "oklch(94.2% 0.004 301)",
+        "tonalRamp": [
+          "#0b0b0d",
+          "#272628",
+          "#434244",
+          "#636365",
+          "#838385",
+          "#a8a7aa",
+          "#cbcacd",
+          "#efeef1"
+        ]
+      },
+      "papel-oscuro": {
+        "role": "neutral",
+        "displayName": "Papel entintado (tema oscuro)",
+        "canonical": "oklch(19.5% 0.004 264)",
+        "tonalRamp": [
+          "#0a0b0d",
+          "#252629",
+          "#414245",
+          "#626366",
+          "#828386",
+          "#a6a8aa",
+          "#c9cacd",
+          "#edeef1"
+        ]
+      },
+      "papel-tibio-oscuro": {
+        "role": "neutral",
+        "displayName": "Papel tibio (tema oscuro)",
+        "canonical": "oklch(20.8% 0.005 39)",
+        "tonalRamp": [
+          "#0d0a0a",
+          "#292625",
+          "#454140",
+          "#666261",
+          "#868281",
+          "#aba7a5",
+          "#cec9c8",
+          "#f2edec"
+        ]
+      },
+      "papel-frio-oscuro": {
+        "role": "neutral",
+        "displayName": "Papel frío (tema oscuro)",
+        "canonical": "oklch(20.2% 0.010 173)",
+        "tonalRamp": [
+          "#070d0b",
+          "#222826",
+          "#3d4442",
+          "#5e6563",
+          "#7d8582",
+          "#a2aaa7",
+          "#c4cdca",
+          "#e8f1ee"
+        ]
+      },
+      "tinta-secundaria-oscuro": {
+        "role": "neutral",
+        "displayName": "Tinta secundaria (tema oscuro)",
+        "canonical": "oklch(78.9% 0.010 273)",
+        "tonalRamp": [
+          "#0a0b0f",
+          "#25262b",
+          "#404248",
+          "#616369",
+          "#818389",
+          "#a5a7ae",
+          "#c8cad1",
+          "#eceef5"
+        ]
+      },
+      "hairline-oscuro": {
+        "role": "neutral",
+        "displayName": "Hairline (tema oscuro)",
+        "canonical": "oklch(36.4% 0.007 275)",
+        "tonalRamp": [
+          "#0a0b0e",
+          "#25262a",
+          "#414246",
+          "#626367",
+          "#828387",
+          "#a6a7ac",
+          "#c9cacf",
+          "#edeef3"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Display",
+        "purpose": "El número que manda en la vista: el % fuera del plan y la cantidad de personas con desvío. Cifras tabulares."
+      },
+      "headline": {
+        "displayName": "Headline",
+        "purpose": "El título de la vista."
+      },
+      "title": {
+        "displayName": "Title",
+        "purpose": "Nombre de una lámina de persona, título de sección y encabezado de la lámina protagonista."
+      },
+      "title-sm": {
+        "displayName": "Title chico",
+        "purpose": "Encabezado de una lámina de pendiente común."
+      },
+      "lead": {
+        "displayName": "Lead",
+        "purpose": "Texto de la lámina protagonista; a 500 es la cantidad de resueltos sin cerrar."
+      },
+      "body-lg": {
+        "displayName": "Body grande",
+        "purpose": "Texto de corrido adentro de una lámina y en estados vacíos o de error, hasta 70ch."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Texto base de listas y filas."
+      },
+      "label": {
+        "displayName": "Label",
+        "purpose": "Mono en mayúsculas: encabezados de columna, nombres de dato, estados, pestañas y botones."
+      },
+      "data": {
+        "displayName": "Data",
+        "purpose": "SHA, ramas, horas, fechas y costos."
+      },
+      "data-lg": {
+        "displayName": "Data en lámina",
+        "purpose": "El mismo dato adentro de una lámina de persona o de pendiente, más grande para proyector."
+      }
+    },
+    "shadows": [],
+    "motion": [
+      {
+        "name": "sello-giro",
+        "value": "sello-giro 25s linear infinite",
+        "purpose": "El anillo de texto del sello da una vuelta cada 25s. Es el único movimiento del sistema y se detiene con prefers-reduced-motion."
+      },
+      {
+        "name": "hover",
+        "value": "none",
+        "purpose": "Los cambios de estado son instantáneos: no hay transiciones."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "barra-dos-filas",
+        "value": "1024px"
+      },
+      {
+        "name": "resumen-dos-columnas",
+        "value": "960px"
+      },
+      {
+        "name": "pestanas-wrap-sello-adentro",
+        "value": "720px"
+      },
+      {
+        "name": "una-columna",
+        "value": "560px"
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Botón primario",
+      "kind": "button",
+      "refersTo": "boton-primario",
+      "description": "La acción principal de una lámina, rellena de tinta. Una por lámina.",
+      "html": "<button type=\"button\" class=\"ds-boton-primario\">Ver pendientes</button>",
+      "css": ".ds-boton-primario { display: inline-flex; align-items: center; min-height: 44px; padding: 0 16px; background: var(--tinta); border: 1px solid var(--tinta); border-radius: 0; color: var(--papel); cursor: pointer; font-family: var(--fuente-mono); font-size: 13px; font-weight: 400; letter-spacing: 0.14em; text-transform: uppercase; } .ds-boton-primario:hover { background: var(--tinta-secundaria); } .ds-boton-primario:focus-visible { outline: 2px solid var(--foco); outline-offset: 3px; }"
+    },
+    {
+      "name": "Botón secundario",
+      "kind": "button",
+      "refersTo": "boton",
+      "description": "Acciones de apoyo y el cambio de tema: transparente con borde hairline.",
+      "html": "<button type=\"button\" class=\"ds-boton\">Reintentar</button>",
+      "css": ".ds-boton { display: inline-flex; align-items: center; min-height: 44px; padding: 0 16px; background: transparent; border: 1px solid var(--hairline); border-radius: 0; color: var(--tinta); cursor: pointer; font-family: var(--fuente-mono); font-size: 13px; font-weight: 400; letter-spacing: 0.14em; text-transform: uppercase; } .ds-boton:hover { border-color: var(--tinta); } .ds-boton:focus-visible { outline: 2px solid var(--foco); outline-offset: 3px; }"
+    },
+    {
+      "name": "Pestañas",
+      "kind": "nav",
+      "refersTo": "pestana",
+      "description": "Navegación de la barra fija en mono; la activa lleva subrayado de 2px de tinta y el token de persona se intercala después de Equipo.",
+      "html": "<nav class=\"ds-navegacion\" aria-label=\"Secciones\"><a class=\"ds-pestana\" href=\"#\">Equipo</a><span class=\"ds-token-persona\">Denis</span><a class=\"ds-pestana\" href=\"#\" aria-current=\"page\">Mi día</a><a class=\"ds-pestana\" href=\"#\">Pendientes</a><a class=\"ds-pestana\" href=\"#\">Plan</a></nav>",
+      "css": ".ds-navegacion { display: flex; align-items: center; gap: 8px; padding: 6px; } .ds-pestana { display: inline-flex; align-items: center; min-height: 44px; padding: 0 12px; border-bottom: 2px solid transparent; color: var(--tinta-secundaria); text-decoration: none; font-family: var(--fuente-mono); font-size: 13px; font-weight: 400; letter-spacing: 0.14em; text-transform: uppercase; } .ds-pestana[aria-current=\"page\"] { color: var(--tinta); border-bottom-color: var(--tinta); } .ds-pestana:focus-visible { outline: 2px solid var(--foco); outline-offset: 3px; } .ds-token-persona { white-space: nowrap; padding: 4px 8px; border: 1px solid var(--hairline); color: var(--tinta); font-family: var(--fuente-mono); font-size: 13px; }"
+    },
+    {
+      "name": "Etiqueta de mock",
+      "kind": "chip",
+      "refersTo": "etiqueta-mock",
+      "description": "Marca lo que todavía es visión o datos de ejemplo. Borde de 2px de tinta.",
+      "html": "<span class=\"ds-etiqueta-mock\">MOCK · VISIÓN</span>",
+      "css": ".ds-etiqueta-mock { display: inline-block; padding: 4px 8px; border: 2px solid var(--tinta); color: var(--tinta); white-space: nowrap; font-family: var(--fuente-mono); font-size: 14px; letter-spacing: 0.14em; text-transform: uppercase; }"
+    },
+    {
+      "name": "Lámina de persona",
+      "kind": "card",
+      "refersTo": "lamina",
+      "description": "La lámina base con cruces de registro; acá es un link entero a la persona.",
+      "html": "<a class=\"ds-lamina\" href=\"#\"><h2 class=\"ds-lamina-nombre\">Lucía Gómez</h2><p class=\"ds-lamina-meta\">AI Day · portal-clientes</p><dl class=\"ds-lamina-datos\"><dt>Hechas</dt><dd>3 de 5</dd><dt>Pendientes</dt><dd>2</dd><dt>Fuera del plan</dt><dd>10%</dd></dl></a>",
+      "css": ".ds-lamina { display: block; position: relative; max-width: 440px; padding: 28px; border: 1px solid var(--hairline); border-radius: 0; color: var(--tinta); text-decoration: none; font-family: var(--fuente-texto); --ds-cruz: 14px; --ds-trazo: linear-gradient(var(--tinta), var(--tinta)); background-image: var(--ds-trazo), var(--ds-trazo), var(--ds-trazo), var(--ds-trazo), var(--ds-trazo), var(--ds-trazo), var(--ds-trazo), var(--ds-trazo); background-repeat: no-repeat; background-position: left 7px top 0, left 0 top 7px, right 7px top 0, right 0 top 7px, left 7px bottom 0, left 0 bottom 7px, right 7px bottom 0, right 0 bottom 7px; background-size: 1px 14px, 14px 1px, 1px 14px, 14px 1px, 1px 14px, 14px 1px, 1px 14px, 14px 1px; } .ds-lamina:hover { border-color: var(--tinta); } .ds-lamina:focus-visible { outline: 2px solid var(--foco); outline-offset: 3px; } .ds-lamina-nombre { margin: 0; font-size: 28px; font-weight: 500; line-height: 1.2; } .ds-lamina-meta { margin: 4px 0 0; font-size: 17px; color: var(--tinta-secundaria); } .ds-lamina-datos { display: grid; grid-template-columns: auto 1fr; gap: 8px 24px; margin: 24px 0 0; } .ds-lamina-datos dt { margin: 0; align-self: baseline; color: var(--tinta-secundaria); font-family: var(--fuente-mono); font-size: 13px; font-weight: 400; letter-spacing: 0.14em; text-transform: uppercase; } .ds-lamina-datos dd { margin: 0; align-self: baseline; font-family: var(--fuente-mono); font-size: 17px; letter-spacing: 0.04em; }"
+    },
+    {
+      "name": "Placa de alerta",
+      "kind": "card",
+      "refersTo": "placa-alerta",
+      "description": "La lámina invertida cuando hay desvío: fondo de tinta, texto y cruces en papel, DESVÍO en bermellón.",
+      "html": "<a class=\"ds-placa\" href=\"#\"><div class=\"ds-placa-cabecera\"><h2 class=\"ds-placa-nombre\">Tomás Ríos</h2><span class=\"ds-placa-desvio\">DESVÍO</span></div><p class=\"ds-placa-meta\">AI Day · pipeline-datos</p><dl class=\"ds-placa-datos\"><dt>Hechas</dt><dd>0 de 3</dd><dt>Fuera del plan</dt><dd>70%</dd></dl></a>",
+      "css": ".ds-placa { display: block; position: relative; max-width: 440px; padding: 28px; border: 1px solid var(--hairline); border-radius: 0; background-color: var(--placa); color: var(--papel); text-decoration: none; font-family: var(--fuente-texto); --ds-cruz: 14px; --ds-trazo: linear-gradient(var(--papel), var(--papel)); background-image: var(--ds-trazo), var(--ds-trazo), var(--ds-trazo), var(--ds-trazo), var(--ds-trazo), var(--ds-trazo), var(--ds-trazo), var(--ds-trazo); background-repeat: no-repeat; background-position: left 7px top 0, left 0 top 7px, right 7px top 0, right 0 top 7px, left 7px bottom 0, left 0 bottom 7px, right 7px bottom 0, right 0 bottom 7px; background-size: 1px 14px, 14px 1px, 1px 14px, 14px 1px, 1px 14px, 14px 1px, 1px 14px, 14px 1px; } .ds-placa:hover { border-color: var(--placa-texto); } .ds-placa:focus-visible { outline: 2px solid var(--foco); outline-offset: 3px; } .ds-placa-cabecera { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; } .ds-placa-nombre { margin: 0; font-size: 28px; font-weight: 500; line-height: 1.2; } .ds-placa-desvio { color: var(--placa-texto); font-family: var(--fuente-mono); font-size: 22px; letter-spacing: 0.14em; } .ds-placa-meta { margin: 4px 0 0; font-size: 17px; } .ds-placa-datos { display: grid; grid-template-columns: auto 1fr; gap: 8px 24px; margin: 24px 0 0; } .ds-placa-datos dt { margin: 0; align-self: baseline; font-family: var(--fuente-mono); font-size: 13px; font-weight: 400; letter-spacing: 0.14em; text-transform: uppercase; } .ds-placa-datos dd { margin: 0; align-self: baseline; font-family: var(--fuente-mono); font-size: 17px; letter-spacing: 0.04em; }"
+    },
+    {
+      "name": "Lámina sellada",
+      "kind": "custom",
+      "refersTo": "sello",
+      "description": "El componente firma: la lámina protagonista de \"resuelto sin cerrar\" con el sello lavanda pisando el borde. Solo gira el anillo de texto, 25s lineal.",
+      "html": "<article class=\"ds-sellada\"><div class=\"ds-sello-posicion\"><svg class=\"ds-sello-svg\" viewBox=\"0 0 150 150\" width=\"150\" height=\"150\" aria-hidden=\"true\" focusable=\"false\"><circle class=\"ds-sello-disco\" cx=\"75\" cy=\"75\" r=\"73\"/><circle class=\"ds-sello-borde\" cx=\"75\" cy=\"75\" r=\"67\"/><circle class=\"ds-sello-borde\" cx=\"75\" cy=\"75\" r=\"32\"/><path class=\"ds-sello-tilde\" d=\"M63 76 l8 9 l16 -19\"/><g class=\"ds-sello-giro\"><path id=\"ds-sello-anillo\" fill=\"none\" d=\"M75 19 a56 56 0 1 1 0 112 a56 56 0 1 1 0 -112\"/><text class=\"ds-sello-texto\"><textPath href=\"#ds-sello-anillo\" textLength=\"347.86\" lengthAdjust=\"spacing\">RESUELTO · SIN CERRAR ·</textPath></text></g></svg></div><p class=\"ds-sellada-cantidad\">1 resuelto sin cerrar</p><a class=\"ds-sellada-boton\" href=\"#\">Ver pendientes</a></article>",
+      "css": ".ds-sellada { position: relative; max-width: 520px; margin: 40px 28px 0 0; padding: 40px 188px 40px 40px; border: 1px solid var(--tinta); border-radius: 0; color: var(--tinta); font-family: var(--fuente-texto); --ds-cruz: 14px; --ds-trazo: linear-gradient(var(--tinta), var(--tinta)); background-image: var(--ds-trazo), var(--ds-trazo), var(--ds-trazo), var(--ds-trazo), var(--ds-trazo), var(--ds-trazo), var(--ds-trazo), var(--ds-trazo); background-repeat: no-repeat; background-position: left 7px top 0, left 0 top 7px, right 7px top 0, right 0 top 7px, left 7px bottom 0, left 0 bottom 7px, right 7px bottom 0, right 0 bottom 7px; background-size: 1px 14px, 14px 1px, 1px 14px, 14px 1px, 1px 14px, 14px 1px, 1px 14px, 14px 1px; } .ds-sello-posicion { position: absolute; top: -36px; right: -24px; width: 200px; height: 200px; } .ds-sellada-cantidad { margin: 0; font-size: 26px; font-weight: 500; line-height: 1.25; } .ds-sellada-boton { display: inline-flex; align-items: center; min-height: 44px; margin-top: 16px; padding: 0 16px; background: var(--tinta); border: 1px solid var(--tinta); color: var(--papel); text-decoration: none; font-family: var(--fuente-mono); font-size: 13px; font-weight: 400; letter-spacing: 0.14em; text-transform: uppercase; } .ds-sellada-boton:hover { background: var(--tinta-secundaria); } .ds-sellada-boton:focus-visible { outline: 2px solid var(--foco); outline-offset: 3px; } .ds-sello-svg { display: block; width: 100%; height: 100%; } .ds-sello-disco { fill: var(--sello); } .ds-sello-borde, .ds-sello-tilde { fill: none; stroke: var(--sello-tinta); stroke-width: 1; } .ds-sello-tilde { stroke-width: 3; stroke-linecap: square; } .ds-sello-texto { fill: var(--sello-tinta); font-family: var(--fuente-mono); font-size: 13px; } .ds-sello-giro { transform-box: fill-box; transform-origin: center; animation: ds-sello-giro 25s linear infinite; } @keyframes ds-sello-giro { to { transform: rotate(360deg); } } @media (prefers-reduced-motion: reduce) { .ds-sello-giro { animation: none; } }"
+    },
+    {
+      "name": "Fila de bitácora",
+      "kind": "custom",
+      "description": "Entrada inferida: hora, marca de vínculo, texto, evidencia y la razón de la inferencia con su regla de tinta.",
+      "html": "<ol class=\"ds-bitacora\"><li class=\"ds-entrada\"><span class=\"ds-entrada-dato\">16:10</span><span class=\"ds-entrada-marca\"><span class=\"ds-marca ds-marca-hueco\" aria-hidden=\"true\"></span><span class=\"ds-entrada-etiqueta\">Inferido</span></span><div><p class=\"ds-entrada-p\">Central</p><p class=\"ds-entrada-p\">Se corrigió la validación de snapshots.</p><p class=\"ds-entrada-dato ds-entrada-meta\">main</p></div><div><p class=\"ds-entrada-evidencia\"><span class=\"ds-entrada-etiqueta\">commit</span> <a class=\"ds-entrada-dato\" href=\"#\">4e81d07</a></p><p class=\"ds-entrada-razon\">El commit toca la validación del endpoint de publicación del central.</p></div></li></ol>",
+      "css": ".ds-bitacora { margin: 0; padding: 0; list-style: none; border-top: 1px solid var(--tinta); color: var(--tinta); font-family: var(--fuente-texto); font-size: 17px; line-height: 1.5; } .ds-entrada { display: grid; grid-template-columns: 72px 148px minmax(0, 1fr) minmax(0, 280px); gap: 8px 24px; align-items: start; padding: 20px 0; border-bottom: 1px solid var(--hairline); } .ds-entrada-p { margin: 0 0 4px; } .ds-entrada-dato { margin: 0; color: var(--tinta); font-family: var(--fuente-mono); font-size: 14px; letter-spacing: 0.04em; text-underline-offset: 3px; } .ds-entrada-dato:focus-visible { outline: 2px solid var(--foco); outline-offset: 3px; } .ds-entrada-meta { color: var(--tinta-secundaria); } .ds-entrada-marca { display: flex; align-items: center; gap: 10px; padding-top: 2px; } .ds-entrada-etiqueta { color: var(--tinta-secundaria); font-family: var(--fuente-mono); font-size: 13px; font-weight: 400; letter-spacing: 0.14em; text-transform: uppercase; } .ds-entrada-evidencia { margin: 0; } .ds-marca { flex: none; display: inline-block; width: 12px; height: 12px; } .ds-marca-hueco { border: 2px solid var(--tinta); } .ds-entrada-razon { margin: 12px 0 0; padding-left: 12px; border-left: 1px solid var(--tinta); color: var(--tinta-secundaria); font-size: 15px; line-height: 1.4; }"
+    },
+    {
+      "name": "Marcas de estado",
+      "kind": "custom",
+      "description": "El estado se dice con forma, en una sola tinta: lleno, hueco y raya; plan, real y fantasma.",
+      "html": "<ul class=\"ds-marcas\"><li><span class=\"ds-m ds-m-lleno\"></span>Hecha</li><li><span class=\"ds-m ds-m-hueco\"></span>Pendiente</li><li><span class=\"ds-m ds-m-raya\"></span>Sacada</li><li><span class=\"ds-b ds-b-plan\"></span>Plan</li><li><span class=\"ds-b ds-b-real\"></span>Real</li><li><span class=\"ds-b ds-b-fantasma\"></span>Fuera del plan</li></ul>",
+      "css": ".ds-marcas { display: flex; flex-wrap: wrap; gap: 8px 32px; margin: 0; padding: 0; list-style: none; color: var(--tinta); font-family: var(--fuente-mono); font-size: 13px; font-weight: 400; letter-spacing: 0.14em; text-transform: uppercase; } .ds-marcas li { display: flex; align-items: center; gap: 8px; } .ds-m { display: inline-block; width: 12px; height: 12px; } .ds-m-lleno { background: var(--tinta); } .ds-m-hueco { border: 2px solid var(--tinta); } .ds-m-raya { height: 2px; background: var(--tinta); } .ds-b { display: inline-block; width: 32px; height: 12px; } .ds-b-plan { border: 1px solid var(--tinta); } .ds-b-real { background: var(--tinta); } .ds-b-fantasma { border: 2px dashed var(--tinta); }"
+    },
+    {
+      "name": "Bloque de código",
+      "kind": "custom",
+      "refersTo": "bloque-codigo",
+      "description": "El contenido copiable de una sugerencia, con borde de 1px de tinta.",
+      "html": "<pre class=\"ds-codigo\" tabindex=\"0\"><code>rastro daily &amp;&amp; rastro publish --yes</code></pre>",
+      "css": ".ds-codigo { margin: 0; padding: 12px 16px; white-space: pre-wrap; overflow-wrap: anywhere; border: 1px solid var(--tinta); border-radius: 0; color: var(--tinta); font-family: var(--fuente-mono); font-size: 15px; line-height: 1.5; } .ds-codigo:focus-visible { outline: 2px solid var(--foco); outline-offset: 3px; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "Lámina de anuario",
+    "overview": "Rastro se lee como la sección de láminas de un anuario de diseño. Cada persona y cada pendiente es una lámina registrada: un rectángulo de borde fino sobre papel, con cruces de registro en las cuatro esquinas, como una prueba de imprenta. Lo que está resuelto en el código y nadie cerró lleva un sello impreso encima del borde. Ese sello es lo único que tiene color, lo único redondo y lo único que se mueve.\n\nEl sistema es de tinta sobre papel. No hay sombras, no hay radios y no hay rellenos de color para ordenar la información: la jerarquía sale del tamaño de la letra, del peso de la línea (hairline o tinta) y de la inversión. La alerta de desvío no es un cartel rojo: es una placa que invierte el papel, tinta de fondo y texto en color de papel, con la palabra en bermellón. Los datos (SHA, horas, ramas, conteos) van en mono porque son evidencia, y la prosa va en un solo grotesco.\n\nTiene que leerse desde lejos en un proyector, en claro y en oscuro. Por eso el cuerpo es grande, los datos de las láminas suben de tamaño y los pares de texto y fondo cumplen contraste AA en los dos temas. El sistema rechaza de forma explícita el dashboard SaaS de sidebar gris, tarjetas KPI y gráficos de dona.",
+    "keyCharacteristics": [
+      "Tinta sobre papel: un solo acento (el sello lavanda) y un solo color de alerta (el bermellón de la placa).",
+      "Láminas de borde de 1px con cruces de registro de 14px en las cuatro esquinas.",
+      "Radio 0 en todas las cajas. La única curva es el sello.",
+      "Sin sombras. La profundidad sale de la inversión y de la superposición del sello sobre el borde.",
+      "Un grotesco para leer y una mono en mayúsculas para etiquetar y dar evidencia.",
+      "El estado se dibuja con forma (lleno, hueco, raya, punteado), no con color.",
+      "Claro y oscuro son el mismo mundo: papel entintado, tinta clara y sello lavanda apagado."
+    ],
+    "rules": [
+      {
+        "name": "La Regla del Sello Único",
+        "body": "El lavanda significa \"resuelto sin cerrar\" y nada más. No se usa para fondos, estados, hovers ni decoración. Si aparece lavanda en pantalla, hay algo resuelto que nadie cerró.",
+        "section": "colors"
+      },
+      {
+        "name": "La Regla de la Placa",
+        "body": "La alerta se dice invirtiendo, no pintando. Adentro de la placa todo el texto va en color de papel, nunca en gris, y solo la palabra de alerta va en bermellón. Las cruces de registro también pasan a color de papel.",
+        "section": "colors"
+      },
+      {
+        "name": "La Regla de los Pares",
+        "body": "Todo par de texto y fondo que la interfaz combina cumple 4.5:1 en claro y en oscuro. Un color nuevo entra recién cuando su par pasa esa prueba en los dos temas.",
+        "section": "colors"
+      },
+      {
+        "name": "La Regla de la Evidencia en Mono",
+        "body": "Lo que viene del repo o del reloj va en mono: SHA, rama, hora, conteo, comando. Lo que escribe una persona o resume el LLM va en grotesco. Así se distingue de un vistazo el dato de la afirmación.",
+        "section": "typography"
+      },
+      {
+        "name": "La Regla del Piso de 13",
+        "body": "La mono nunca baja de 13px. Las etiquetas van a 13px con tracking 0.14em y los datos a 14px o más.",
+        "section": "typography"
+      },
+      {
+        "name": "La Regla de las Cifras",
+        "body": "Las cifras tabulares van solo en el número display. En la prosa, la coma y el punto con ancho de cifra dejan el texto espaciado.",
+        "section": "typography"
+      },
+      {
+        "name": "La Regla de la Etiqueta con Dato",
+        "body": "Una etiqueta en mono mayúscula nombra un dato, una columna o un estado. Los títulos de vista van solos, sin una etiqueta chica encima.",
+        "section": "typography"
+      },
+      {
+        "name": "La Regla de la Cruz en el Margen",
+        "body": "Las cruces de registro viven en el padding de la lámina. El padding es siempre el doble de la cruz (28px para una cruz de 14px) o más, así una cruz nunca tapa contenido.",
+        "section": "layout"
+      },
+      {
+        "name": "La Regla del Papel Plano",
+        "body": "Ninguna superficie se levanta. Lo que importa más se invierte o se sella; no se le pone sombra.",
+        "section": "elevation"
+      },
+      {
+        "name": "La Regla de la Forma por Estado",
+        "body": "El estado se distingue por forma y no por color. Lleno es detectado o hecho, hueco es inferido o pendiente, raya es sin tarea o sacada, y la tarea sacada lleva además el nombre tachado. En el Gantt, contorno es plan, relleno es real y punteado es fuera del plan.",
+        "section": "shapes"
+      },
+      {
+        "name": "La Regla del Punteado",
+        "body": "La línea punteada significa una sola cosa: trabajo que no estaba en el plan. No se usa como separador ni como borde decorativo.",
+        "section": "shapes"
+      }
+    ],
+    "dos": [
+      "Do poné cada persona, pendiente o sugerencia en una lámina: borde de 1px, 28px de padding, radio 0 y cruces de registro de 14px en las cuatro esquinas.",
+      "Do acompañá cada afirmación con su evidencia en mono (commit, rama, doc, sesión), con link cuando hay URL.",
+      "Do marcá la alerta invirtiendo: placa de tinta, texto en color de papel y solo la palabra de alerta en bermellón.",
+      "Do distinguí el estado por forma: lleno, hueco, raya y punteado.",
+      "Do dejá que un número a 92px mande en la vista cuando hay un dato que tiene que leerse desde lejos.",
+      "Do usá el borde en tinta, y no el hairline, para la lámina que es protagonista de la vista.",
+      "Do probá todo par nuevo de texto y fondo a 4.5:1 en claro y en oscuro.",
+      "Do etiquetá a la vista lo que es mock o visión con la etiqueta de borde de 2px.",
+      "Do mantené en 44px o más el alto de botones y pestañas."
+    ],
+    "donts": [
+      "Don't uses el lavanda para otra cosa que el sello de \"resuelto sin cerrar\".",
+      "Don't armes un dashboard SaaS: nada de sidebar gris, tarjetas KPI ni gráficos de dona.",
+      "Don't agregues sombras ni radios a las cajas. La única curva es el sello.",
+      "Don't pongas texto gris adentro de la placa de alerta, ni bermellón afuera de ella.",
+      "Don't bajes la mono de 13px.",
+      "Don't uses la línea punteada para algo que no sea trabajo fuera del plan.",
+      "Don't dejes que una cruz de registro pise contenido: el padding de la lámina es el doble de la cruz o más.",
+      "Don't escondas las pestañas en un menú en pantallas angostas: la barra crece y las pestañas hacen wrap.",
+      "Don't presentes un mock como si fuera real."
+    ]
+  }
+}
