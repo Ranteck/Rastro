@@ -59,10 +59,10 @@
   "bitacora": [
     {
       "fecha": "2026-10-09",
-      "hora": "10:05",
+      "hora": "08:45",
       "tarea": "facturas",
       "rama": "feat/facturas",
-      "texto": "Se terminó el listado de facturas con paginación.",
+      "texto": "Se armó la consulta del listado de facturas por cliente.",
       "vinculo": "nombre",
       "evidencia": [
         {
@@ -78,7 +78,53 @@
     },
     {
       "fecha": "2026-10-09",
-      "hora": "14:20",
+      "hora": "09:30",
+      "tarea": "facturas",
+      "rama": "feat/facturas",
+      "texto": "Se agregó la paginación del listado de facturas.",
+      "vinculo": "nombre",
+      "evidencia": [
+        {
+          "tipo": "commit",
+          "ref": "2b3c4d5",
+          "url": "https://github.com/ejemplo/portal-clientes/commit/2b3c4d5"
+        }
+      ]
+    },
+    {
+      "fecha": "2026-10-09",
+      "hora": "10:05",
+      "tarea": "facturas",
+      "rama": "feat/facturas",
+      "texto": "Se terminó el estilo de la tabla de facturas.",
+      "vinculo": "nombre",
+      "evidencia": [
+        {
+          "tipo": "commit",
+          "ref": "3c4d5e6",
+          "url": "https://github.com/ejemplo/portal-clientes/commit/3c4d5e6"
+        }
+      ]
+    },
+    {
+      "fecha": "2026-10-09",
+      "hora": "11:00",
+      "tarea": "facturas",
+      "rama": "feat/facturas",
+      "texto": "Se corrigió el orden por fecha en el listado.",
+      "vinculo": "inferido",
+      "razon": "El commit toca la consulta que alimenta el listado de facturas.",
+      "evidencia": [
+        {
+          "tipo": "commit",
+          "ref": "4d5e6f7",
+          "url": "https://github.com/ejemplo/portal-clientes/commit/4d5e6f7"
+        }
+      ]
+    },
+    {
+      "fecha": "2026-10-09",
+      "hora": "12:10",
       "tarea": "descargas",
       "rama": "feat/descargas",
       "texto": "Se agregó el endpoint que genera el PDF de una factura.",
@@ -93,7 +139,52 @@
     },
     {
       "fecha": "2026-10-09",
-      "hora": "17:10",
+      "hora": "13:15",
+      "tarea": "descargas",
+      "rama": "feat/descargas",
+      "texto": "Se agregó el encabezado con el logo al PDF.",
+      "vinculo": "nombre",
+      "evidencia": [
+        {
+          "tipo": "commit",
+          "ref": "6e7f809",
+          "url": "https://github.com/ejemplo/portal-clientes/commit/6e7f809"
+        }
+      ]
+    },
+    {
+      "fecha": "2026-10-09",
+      "hora": "14:20",
+      "tarea": null,
+      "rama": "main",
+      "texto": "Se actualizó la versión de Node en el workflow de CI.",
+      "vinculo": "sin-tarea",
+      "evidencia": [
+        {
+          "tipo": "commit",
+          "ref": "7f8091a",
+          "url": "https://github.com/ejemplo/portal-clientes/commit/7f8091a"
+        }
+      ]
+    },
+    {
+      "fecha": "2026-10-09",
+      "hora": "15:30",
+      "tarea": "descargas",
+      "rama": "feat/descargas",
+      "texto": "Se agregaron tests del endpoint de PDF.",
+      "vinculo": "nombre",
+      "evidencia": [
+        {
+          "tipo": "commit",
+          "ref": "8091a2b",
+          "url": "https://github.com/ejemplo/portal-clientes/commit/8091a2b"
+        }
+      ]
+    },
+    {
+      "fecha": "2026-10-09",
+      "hora": "16:25",
       "tarea": "avisos",
       "rama": "feat/descargas",
       "texto": "Se dejó la plantilla del correo de aviso.",
@@ -104,6 +195,21 @@
           "tipo": "commit",
           "ref": "9a0b1c2",
           "url": "https://github.com/ejemplo/portal-clientes/commit/9a0b1c2"
+        }
+      ]
+    },
+    {
+      "fecha": "2026-10-09",
+      "hora": "17:10",
+      "tarea": "avisos",
+      "rama": "feat/avisos",
+      "texto": "Se creó el servicio que envía el correo de aviso.",
+      "vinculo": "nombre",
+      "evidencia": [
+        {
+          "tipo": "commit",
+          "ref": "ab1c2d3",
+          "url": "https://github.com/ejemplo/portal-clientes/commit/ab1c2d3"
         }
       ]
     }

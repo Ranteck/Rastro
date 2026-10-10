@@ -14,6 +14,15 @@ describe("ejemplos del modo ejemplos", () => {
     });
   }
 
+  it("todas las entradas caen dentro del periodo y el % fuera del plan es el de entradas sin tarea", () => {
+    for (const fila of filas) {
+      const { bitacora, periodo, desvios } = validarSnapshot(leer(`persona-${fila.persona.id}.json`));
+      expect(bitacora.every((e) => e.fecha >= periodo.desde && e.fecha <= periodo.hasta), fila.persona.id).toBe(true);
+      const sinTarea = bitacora.filter((e) => e.vinculo === "sin-tarea").length;
+      expect(desvios.fueraDelPlanPct, fila.persona.id).toBe(Math.round((sinTarea / bitacora.length) * 100));
+    }
+  });
+
   it("Tomás tiene un desvío real: entradas sin tarea, tareas sin actividad y un resuelto sin cerrar", () => {
     const tomas = validarSnapshot(leer("persona-tomas.json"));
     expect(tomas.desvios.alerta).toBe(true);

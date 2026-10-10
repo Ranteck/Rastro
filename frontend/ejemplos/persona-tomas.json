@@ -47,7 +47,7 @@
   "bitacora": [
     {
       "fecha": "2026-10-09",
-      "hora": "09:40",
+      "hora": "08:50",
       "tarea": null,
       "rama": "feat/refactor-logs",
       "texto": "Se unificó el formato de logs de todos los jobs.",
@@ -62,7 +62,7 @@
     },
     {
       "fecha": "2026-10-09",
-      "hora": "11:15",
+      "hora": "09:40",
       "tarea": null,
       "rama": "feat/refactor-logs",
       "texto": "Se renombraron las variables de entorno del pipeline.",
@@ -77,7 +77,26 @@
     },
     {
       "fecha": "2026-10-09",
-      "hora": "13:30",
+      "hora": "10:30",
+      "tarea": "ingesta",
+      "rama": "feat/ingesta",
+      "texto": "Se implementó la lectura de pedidos desde el bucket.",
+      "vinculo": "nombre",
+      "evidencia": [
+        {
+          "tipo": "commit",
+          "ref": "f0a1b2c",
+          "url": "https://github.com/ejemplo/pipeline-datos/commit/f0a1b2c"
+        },
+        {
+          "tipo": "rama",
+          "ref": "feat/ingesta"
+        }
+      ]
+    },
+    {
+      "fecha": "2026-10-09",
+      "hora": "11:15",
       "tarea": null,
       "rama": "chore/deps",
       "texto": "Se actualizaron las dependencias de Python y se regeneró el lockfile.",
@@ -92,7 +111,22 @@
     },
     {
       "fecha": "2026-10-09",
-      "hora": "14:50",
+      "hora": "12:10",
+      "tarea": null,
+      "rama": "chore/deps",
+      "texto": "Se fijó la versión de Python en el Dockerfile.",
+      "vinculo": "sin-tarea",
+      "evidencia": [
+        {
+          "tipo": "commit",
+          "ref": "d4e5f60",
+          "url": "https://github.com/ejemplo/pipeline-datos/commit/d4e5f60"
+        }
+      ]
+    },
+    {
+      "fecha": "2026-10-09",
+      "hora": "13:20",
       "tarea": null,
       "rama": "feat/refactor-logs",
       "texto": "Se movió la configuración de logs a un módulo común.",
@@ -107,7 +141,22 @@
     },
     {
       "fecha": "2026-10-09",
-      "hora": "15:40",
+      "hora": "14:05",
+      "tarea": null,
+      "rama": "feat/refactor-logs",
+      "texto": "Se agregaron tests para el formato de logs.",
+      "vinculo": "sin-tarea",
+      "evidencia": [
+        {
+          "tipo": "commit",
+          "ref": "e6f7081",
+          "url": "https://github.com/ejemplo/pipeline-datos/commit/e6f7081"
+        }
+      ]
+    },
+    {
+      "fecha": "2026-10-09",
+      "hora": "14:50",
       "tarea": "validacion",
       "rama": "feat/validacion",
       "texto": "Se agregó el esquema de pedidos y su primer chequeo.",
@@ -122,21 +171,32 @@
       ]
     },
     {
-      "fecha": "2026-10-08",
-      "hora": "17:20",
-      "tarea": "ingesta",
-      "rama": "feat/ingesta",
-      "texto": "Se implementó la lectura de pedidos desde el bucket.",
+      "fecha": "2026-10-09",
+      "hora": "15:20",
+      "tarea": null,
+      "rama": "chore/ci",
+      "texto": "Se cambió el workflow de CI para cachear las dependencias.",
+      "vinculo": "sin-tarea",
+      "evidencia": [
+        {
+          "tipo": "commit",
+          "ref": "f7a8b92",
+          "url": "https://github.com/ejemplo/pipeline-datos/commit/f7a8b92"
+        }
+      ]
+    },
+    {
+      "fecha": "2026-10-09",
+      "hora": "15:55",
+      "tarea": "validacion",
+      "rama": "feat/validacion",
+      "texto": "Se dejó un TODO sobre los campos opcionales del pedido.",
       "vinculo": "nombre",
       "evidencia": [
         {
           "tipo": "commit",
-          "ref": "f0a1b2c",
-          "url": "https://github.com/ejemplo/pipeline-datos/commit/f0a1b2c"
-        },
-        {
-          "tipo": "rama",
-          "ref": "feat/ingesta"
+          "ref": "e8f9a01",
+          "url": "https://github.com/ejemplo/pipeline-datos/commit/e8f9a01"
         }
       ]
     }
