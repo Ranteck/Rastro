@@ -1,0 +1,26 @@
+{
+  "hook": {
+    "enabled": true,
+    "limits": {
+      "maxFindings": 5,
+      "maxChars": 8000
+    }
+  },
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [
+      ".impeccable/mocks/**"
+    ],
+    "ignoreValues": [
+      {
+        "rule": "overused-font",
+        "value": "inter",
+        "files": [
+          ".impeccable/mocks/decision/canon.html"
+        ],
+        "createdAt": "2026-10-09T18:54:29.422Z",
+        "reason": "Agent: la carta canon muestra a propósito el estándar de la categoría (Inter); es un boceto de decisión, no UI que se publica"
+      }
+    ]
+  }
+}

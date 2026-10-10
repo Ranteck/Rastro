@@ -1,0 +1,332 @@
+{
+  "schemaVersion": 1,
+  "generadoEn": "2026-10-09T16:05:00-03:00",
+  "persona": {
+    "id": "tomas",
+    "nombre": "Tomás Ríos",
+    "equipo": "AI Day"
+  },
+  "repo": {
+    "nombre": "pipeline-datos",
+    "url": "https://github.com/ejemplo/pipeline-datos"
+  },
+  "periodo": {
+    "desde": "2026-10-09",
+    "hasta": "2026-10-09"
+  },
+  "plan": {
+    "semana": "2026-10-05",
+    "entregable": "Pipeline de ingesta de pedidos con validación y reintentos listo para staging.",
+    "tareas": [
+      {
+        "slug": "ingesta",
+        "nombre": "Ingesta de pedidos",
+        "objetivo": "Leer los pedidos del bucket y normalizarlos.",
+        "estado": "pendiente"
+      },
+      {
+        "slug": "validacion",
+        "nombre": "Validación de esquema",
+        "objetivo": "Rechazar filas que no cumplen el esquema.",
+        "estado": "pendiente"
+      },
+      {
+        "slug": "reintentos",
+        "nombre": "Reintentos",
+        "objetivo": "Reintentar con espera creciente los lotes fallidos.",
+        "estado": "pendiente"
+      },
+      {
+        "slug": "dashboard-viejo",
+        "nombre": "Dashboard viejo",
+        "objetivo": "Migrar el tablero anterior.",
+        "estado": "sacada"
+      }
+    ]
+  },
+  "bitacora": [
+    {
+      "fecha": "2026-10-09",
+      "hora": "08:50",
+      "tarea": null,
+      "rama": "feat/refactor-logs",
+      "texto": "Se unificó el formato de logs de todos los jobs.",
+      "vinculo": "sin-tarea",
+      "evidencia": [
+        {
+          "tipo": "commit",
+          "ref": "a1b2c3d",
+          "url": "https://github.com/ejemplo/pipeline-datos/commit/a1b2c3d"
+        }
+      ]
+    },
+    {
+      "fecha": "2026-10-09",
+      "hora": "09:40",
+      "tarea": null,
+      "rama": "feat/refactor-logs",
+      "texto": "Se renombraron las variables de entorno del pipeline.",
+      "vinculo": "sin-tarea",
+      "evidencia": [
+        {
+          "tipo": "commit",
+          "ref": "b7c8d9e",
+          "url": "https://github.com/ejemplo/pipeline-datos/commit/b7c8d9e"
+        }
+      ]
+    },
+    {
+      "fecha": "2026-10-09",
+      "hora": "10:30",
+      "tarea": "ingesta",
+      "rama": "feat/ingesta",
+      "texto": "Se implementó la lectura de pedidos desde el bucket.",
+      "vinculo": "nombre",
+      "evidencia": [
+        {
+          "tipo": "commit",
+          "ref": "f0a1b2c",
+          "url": "https://github.com/ejemplo/pipeline-datos/commit/f0a1b2c"
+        },
+        {
+          "tipo": "rama",
+          "ref": "feat/ingesta"
+        }
+      ]
+    },
+    {
+      "fecha": "2026-10-09",
+      "hora": "11:15",
+      "tarea": null,
+      "rama": "chore/deps",
+      "texto": "Se actualizaron las dependencias de Python y se regeneró el lockfile.",
+      "vinculo": "sin-tarea",
+      "evidencia": [
+        {
+          "tipo": "commit",
+          "ref": "c3d4e5f",
+          "url": "https://github.com/ejemplo/pipeline-datos/commit/c3d4e5f"
+        }
+      ]
+    },
+    {
+      "fecha": "2026-10-09",
+      "hora": "12:10",
+      "tarea": null,
+      "rama": "chore/deps",
+      "texto": "Se fijó la versión de Python en el Dockerfile.",
+      "vinculo": "sin-tarea",
+      "evidencia": [
+        {
+          "tipo": "commit",
+          "ref": "d4e5f60",
+          "url": "https://github.com/ejemplo/pipeline-datos/commit/d4e5f60"
+        }
+      ]
+    },
+    {
+      "fecha": "2026-10-09",
+      "hora": "13:20",
+      "tarea": null,
+      "rama": "feat/refactor-logs",
+      "texto": "Se movió la configuración de logs a un módulo común.",
+      "vinculo": "sin-tarea",
+      "evidencia": [
+        {
+          "tipo": "commit",
+          "ref": "d5e6f70",
+          "url": "https://github.com/ejemplo/pipeline-datos/commit/d5e6f70"
+        }
+      ]
+    },
+    {
+      "fecha": "2026-10-09",
+      "hora": "14:05",
+      "tarea": null,
+      "rama": "feat/refactor-logs",
+      "texto": "Se agregaron tests para el formato de logs.",
+      "vinculo": "sin-tarea",
+      "evidencia": [
+        {
+          "tipo": "commit",
+          "ref": "e6f7081",
+          "url": "https://github.com/ejemplo/pipeline-datos/commit/e6f7081"
+        }
+      ]
+    },
+    {
+      "fecha": "2026-10-09",
+      "hora": "14:50",
+      "tarea": "validacion",
+      "rama": "feat/validacion",
+      "texto": "Se agregó el esquema de pedidos y su primer chequeo.",
+      "vinculo": "inferido",
+      "razon": "El commit crea el esquema que usa la validación de filas.",
+      "evidencia": [
+        {
+          "tipo": "commit",
+          "ref": "e8f9a01",
+          "url": "https://github.com/ejemplo/pipeline-datos/commit/e8f9a01"
+        }
+      ]
+    },
+    {
+      "fecha": "2026-10-09",
+      "hora": "15:20",
+      "tarea": null,
+      "rama": "chore/ci",
+      "texto": "Se cambió el workflow de CI para cachear las dependencias.",
+      "vinculo": "sin-tarea",
+      "evidencia": [
+        {
+          "tipo": "commit",
+          "ref": "f7a8b92",
+          "url": "https://github.com/ejemplo/pipeline-datos/commit/f7a8b92"
+        }
+      ]
+    },
+    {
+      "fecha": "2026-10-09",
+      "hora": "15:55",
+      "tarea": "validacion",
+      "rama": "feat/validacion",
+      "texto": "Se dejó un TODO sobre los campos opcionales del pedido.",
+      "vinculo": "nombre",
+      "evidencia": [
+        {
+          "tipo": "commit",
+          "ref": "a9b0c1d",
+          "url": "https://github.com/ejemplo/pipeline-datos/commit/a9b0c1d"
+        }
+      ]
+    }
+  ],
+  "pendientes": [
+    {
+      "tipo": "resuelto-sin-cerrar",
+      "tarea": "ingesta",
+      "texto": "La rama feat/ingesta está mergeada a main, pero la tarea Ingesta de pedidos sigue abierta en el plan.",
+      "evidencia": [
+        {
+          "tipo": "commit",
+          "ref": "f0a1b2c",
+          "url": "https://github.com/ejemplo/pipeline-datos/commit/f0a1b2c"
+        }
+      ],
+      "proximoPaso": "Tildar Ingesta de pedidos en el plan."
+    },
+    {
+      "tipo": "rama-quieta",
+      "tarea": "reintentos",
+      "texto": "La rama feat/reintentos no tiene commits hace 4 días.",
+      "evidencia": [
+        {
+          "tipo": "rama",
+          "ref": "feat/reintentos"
+        }
+      ],
+      "proximoPaso": "Retomar la rama o cerrarla."
+    },
+    {
+      "tipo": "todo-nuevo",
+      "tarea": "validacion",
+      "texto": "Se agregó un TODO en el esquema: \"definir campos opcionales\".",
+      "evidencia": [
+        {
+          "tipo": "commit",
+          "ref": "a9b0c1d",
+          "url": "https://github.com/ejemplo/pipeline-datos/commit/a9b0c1d"
+        }
+      ],
+      "proximoPaso": "Resolver el TODO o sumarlo como tarea al plan."
+    },
+    {
+      "tipo": "codigo-sin-doc",
+      "tarea": null,
+      "texto": "Cambiaron las variables de entorno y no se actualizó el README.",
+      "evidencia": [
+        {
+          "tipo": "commit",
+          "ref": "b7c8d9e",
+          "url": "https://github.com/ejemplo/pipeline-datos/commit/b7c8d9e"
+        },
+        {
+          "tipo": "doc",
+          "ref": "README.md"
+        }
+      ],
+      "proximoPaso": "Documentar las variables nuevas en el README."
+    }
+  ],
+  "desvios": {
+    "fueraDelPlanPct": 70,
+    "alerta": true,
+    "tareasSinActividad": [
+      "reintentos"
+    ]
+  },
+  "resumen": {
+    "hice": [
+      "Se unificó el formato de logs y se renombraron las variables de entorno."
+    ],
+    "avance": [
+      "Se agregó el esquema de pedidos para la validación."
+    ],
+    "sigue": [
+      "Tildar Ingesta de pedidos: la rama ya está mergeada.",
+      "Reintentos no tuvo actividad esta semana."
+    ],
+    "bloqueos": [
+      "Falta definir qué campos del pedido son opcionales."
+    ]
+  },
+  "sugerencias": [],
+  "gantt": {
+    "mock": true,
+    "barras": [
+      {
+        "tarea": "ingesta",
+        "plan": {
+          "desde": "2026-10-05",
+          "hasta": "2026-10-07"
+        },
+        "real": {
+          "desde": "2026-10-07",
+          "hasta": "2026-10-08"
+        }
+      },
+      {
+        "tarea": "validacion",
+        "plan": {
+          "desde": "2026-10-07",
+          "hasta": "2026-10-08"
+        },
+        "real": {
+          "desde": "2026-10-09",
+          "hasta": "2026-10-09"
+        }
+      },
+      {
+        "tarea": "reintentos",
+        "plan": {
+          "desde": "2026-10-08",
+          "hasta": "2026-10-09"
+        },
+        "real": null
+      },
+      {
+        "tarea": "refactor-logs",
+        "plan": null,
+        "real": {
+          "desde": "2026-10-09",
+          "hasta": "2026-10-09"
+        }
+      }
+    ]
+  },
+  "costo": {
+    "llamadas": 3,
+    "usd": 0.0614,
+    "tokens": 14200
+  }
+}
