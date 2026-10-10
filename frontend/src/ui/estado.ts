@@ -13,12 +13,11 @@ export function errorCentral(mensaje: string, alReintentar: () => void): HTMLEle
   );
 }
 
-export function personaInexistente(mensaje: string, detalle?: string): HTMLElement {
+export function personaInexistente(mensaje: string): HTMLElement {
   return h(
     "section",
     { class: "estado lamina" },
     h("p", { class: "cuerpo" }, mensaje),
-    ...(detalle === undefined ? [] : [h("p", { class: "cuerpo meta" }, detalle)]),
     h("a", { class: "boton", href: "#/equipo" }, "Volver a Equipo"),
   );
 }

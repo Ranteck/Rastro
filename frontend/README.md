@@ -9,7 +9,7 @@ Requiere Node ≥ 22.18.
 ```sh
 npm ci                # dependencias
 npm run dev           # dev server; reenvía /api al central en 127.0.0.1:4317 (rastro serve)
-npm run dev:ejemplos  # dev server sin central, con los JSON de ejemplos/ (solo en dev; en la barra lleva la etiqueta MODO EJEMPLOS y solo Denis tiene detalle)
+npm run dev:ejemplos  # dev server sin central, con los JSON de ejemplos/ (solo en dev; en la barra lleva la etiqueta MODO EJEMPLOS: son datos de demostración)
 npm run check         # typecheck + tests + build
 npm run build         # deja dist/, que `rastro serve` sirve tal cual
 ```

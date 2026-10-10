@@ -259,6 +259,21 @@ a.boton-primario {
   }
 }
 
+/* Donde las cinco pestañas no entran en una fila hacen wrap: todas quedan a la vista y el anillo de foco no tiene un contenedor que lo recorte. */
+@media (max-width: 720px) {
+  :root {
+    --barra-alto: 168px;
+  }
+
+  .navegacion {
+    flex-wrap: wrap;
+    gap: 0 8px;
+    padding: 0;
+    margin: 0;
+    overflow: visible;
+  }
+}
+
 /* A 390px la marca, la etiqueta de modo ejemplos y el botón de tema tienen que entrar juntos en la primera fila. */
 @media (max-width: 560px) {
   .barra {

@@ -14,12 +14,11 @@ export interface OpcionesApp {
   raiz: HTMLElement;
   api: Api;
   vistas: Vistas;
-  /** En modo ejemplos solo hay detalle de Denis: el aviso de persona inexistente lo aclara. */
+  /** Marca la barra con la etiqueta de datos de demostración. */
   modoEjemplos?: boolean;
 }
 
 const MENSAJE_VISTA = "No pude mostrar esta vista";
-const DETALLE_EJEMPLOS = "En modo ejemplos solo Denis tiene detalle.";
 
 /** Monta la app y devuelve la función que quita sus listeners. */
 export function montarApp({ raiz, api, vistas, modoEjemplos = false }: OpcionesApp): () => void {
@@ -78,7 +77,7 @@ export function montarApp({ raiz, api, vistas, modoEjemplos = false }: OpcionesA
       if (error instanceof ErrorApi) {
         if (error.tipo === "no-encontrada") {
           // Una persona inexistente es un rechazo esperado: no es un error del sistema.
-          mostrar(personaInexistente(error.message, modoEjemplos ? DETALLE_EJEMPLOS : undefined));
+          mostrar(personaInexistente(error.message));
           return;
         }
         // Único punto donde se registra la causa; al usuario solo le llega el mensaje.

@@ -186,14 +186,6 @@ describe("montarApp", () => {
     expect(console.error).not.toHaveBeenCalled();
   });
 
-  it("en modo ejemplos el aviso de persona inexistente aclara que solo Denis tiene detalle", async () => {
-    await irA("#/persona/tomas/plan");
-    const api = apiDoble({ cargarPersona: vi.fn(async () => Promise.reject(new ErrorApi("no-encontrada"))) });
-    montar({ raiz, api, vistas, modoEjemplos: true });
-    await pausa();
-    expect(raiz.querySelector("#contenido")?.textContent).toContain("En modo ejemplos solo Denis tiene detalle.");
-  });
-
   it("la etiqueta de modo ejemplos está en la barra solo en ese modo", async () => {
     await irA("#/equipo");
     montar({ raiz, api: apiDoble(), vistas });
