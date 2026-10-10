@@ -1,6 +1,6 @@
 import type { FilaEquipo } from "../../../backend/src/contract/equipo.ts";
 import { h } from "../ui/dom.ts";
-import { vacio } from "../ui/estado.ts";
+import { vistaVacia } from "../ui/estado.ts";
 import { hashDe } from "../router.ts";
 
 const ZONA = "America/Argentina/Buenos_Aires";
@@ -40,7 +40,7 @@ function lamina(fila: FilaEquipo, ahora: Date): HTMLElement {
       h("h2", { class: "persona-nombre" }, fila.persona.nombre),
       ...(fila.alerta ? [h("span", { class: "desvio" }, "DESVÍO")] : []),
     ),
-    h("p", { class: "dato meta" }, `${fila.persona.equipo} · ${fila.repo}`),
+    h("p", { class: "persona-equipo meta" }, `${fila.persona.equipo} · ${fila.repo}`),
     h(
       "dl",
       { class: "persona-datos" },
@@ -54,7 +54,7 @@ function lamina(fila: FilaEquipo, ahora: Date): HTMLElement {
 
 export function vistaEquipo(filas: FilaEquipo[], ahora: Date = new Date()): Node {
   if (filas.length === 0) {
-    return vacio("Todavía nadie publicó su día. Cuando alguien corra `rastro publish`, aparece acá.");
+    return vistaVacia("equipo", "Equipo", "Todavía nadie publicó su día. Cuando alguien corra ", h("code", {}, "rastro publish"), ", aparece acá.");
   }
   const conDesvio = filas.filter((f) => f.alerta).length;
   return h(

@@ -1,6 +1,6 @@
 import type { Pendiente, Snapshot } from "../../../backend/src/contract/snapshot.ts";
 import { h } from "../ui/dom.ts";
-import { vacio } from "../ui/estado.ts";
+import { vistaVacia } from "../ui/estado.ts";
 import { listaEvidencia } from "../ui/evidencia.ts";
 import { crearSello } from "../ui/sello.ts";
 import { nombreDeTarea } from "../ui/tarea.ts";
@@ -19,14 +19,14 @@ function lamina(snapshot: Snapshot, p: Pendiente): HTMLElement {
     "article",
     { class: principal ? "lamina pendiente pendiente-principal" : "lamina pendiente" },
     ...(principal ? [h("div", { class: "sello-posicion" }, crearSello())] : []),
-    h("p", { class: "etiqueta pendiente-tipo" }, TIPOS[p.tipo]),
-    h("p", { class: "dato meta" }, nombreDeTarea(snapshot, p.tarea)),
+    h("h2", { class: "pendiente-tipo" }, TIPOS[p.tipo]),
+    h("p", { class: "pendiente-tarea meta" }, nombreDeTarea(snapshot, p.tarea)),
     h("p", { class: "cuerpo pendiente-texto" }, p.texto),
     ...listaEvidencia(p.evidencia),
     h(
       "div",
       { class: "proximo-paso" },
-      h("p", { class: "etiqueta" }, "Próximo paso"),
+      h("p", { class: "etiqueta meta" }, "Próximo paso"),
       h("p", { class: "cuerpo" }, p.proximoPaso),
     ),
   );
@@ -39,7 +39,7 @@ function ordenar(pendientes: readonly Pendiente[]): Pendiente[] {
 }
 
 export function vistaPendientes(snapshot: Snapshot): Node {
-  if (snapshot.pendientes.length === 0) return vacio("No hay pendientes: todo lo resuelto está cerrado.");
+  if (snapshot.pendientes.length === 0) return vistaVacia("pendientes", "Pendientes", "No hay pendientes: todo lo resuelto está cerrado.");
   return h(
     "section",
     { class: "pendientes", "aria-label": "Pendientes" },

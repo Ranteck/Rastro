@@ -9,7 +9,6 @@
   --hairline: #c9c7c4;
   --sello: #dcddf3;
   --sello-tinta: #16181a;
-  --alerta: #b3261e;
   --placa: #16181a;
   --placa-texto: #ff7b5c;
   --foco: #16181a;
@@ -26,8 +25,7 @@
     --hairline: #3d3e42;
     --sello: #3b3d63;
     --sello-tinta: #ecebee;
-    --alerta: #ff7b5c;
-    --placa: #ecebee;
+      --placa: #ecebee;
     --placa-texto: #a8200f;
     --foco: #ecebee;
     color-scheme: dark;
@@ -43,7 +41,6 @@
   --hairline: #3d3e42;
   --sello: #3b3d63;
   --sello-tinta: #ecebee;
-  --alerta: #ff7b5c;
   --placa: #ecebee;
   --placa-texto: #a8200f;
   --foco: #ecebee;

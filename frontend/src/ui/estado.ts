@@ -1,4 +1,4 @@
-import { h } from "./dom.ts";
+import { h, type Hijo } from "./dom.ts";
 
 export function cargando(): HTMLElement {
   return h("p", { class: "estado etiqueta meta", role: "status" }, "Cargando…");
@@ -13,11 +13,12 @@ export function errorCentral(mensaje: string, alReintentar: () => void): HTMLEle
   );
 }
 
-export function personaInexistente(mensaje: string): HTMLElement {
+export function personaInexistente(mensaje: string, detalle?: string): HTMLElement {
   return h(
     "section",
     { class: "estado lamina" },
     h("p", { class: "cuerpo" }, mensaje),
+    ...(detalle === undefined ? [] : [h("p", { class: "cuerpo meta" }, detalle)]),
     h("a", { class: "boton", href: "#/equipo" }, "Volver a Equipo"),
   );
 }
@@ -31,10 +32,15 @@ export function paginaNoEncontrada(): HTMLElement {
   );
 }
 
-export function vacio(frase: string): HTMLElement {
-  return h("p", { class: "estado cuerpo meta" }, frase);
+export function vacio(...frase: Hijo[]): HTMLElement {
+  return h("p", { class: "estado cuerpo meta" }, ...frase);
 }
 
-export function etiquetaMock(): HTMLElement {
-  return h("span", { class: "etiqueta etiqueta-mock" }, "MOCK · VISIÓN");
+/** Una vista sin datos conserva su `section` y su título: así se ubica igual que con datos. */
+export function vistaVacia(clase: string, titulo: string, ...frase: Hijo[]): HTMLElement {
+  return h("section", { class: clase, "aria-label": titulo }, h("h1", { class: "titulo" }, titulo), vacio(...frase));
+}
+
+export function etiquetaMock(texto = "MOCK · VISIÓN"): HTMLElement {
+  return h("span", { class: "etiqueta etiqueta-mock" }, texto);
 }

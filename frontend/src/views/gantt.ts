@@ -1,6 +1,7 @@
 import type { Snapshot } from "../../../backend/src/contract/snapshot.ts";
 import { h } from "../ui/dom.ts";
 import { etiquetaMock } from "../ui/estado.ts";
+import { aMs, formatearDia } from "../ui/fecha.ts";
 import { nombreDeTarea } from "../ui/tarea.ts";
 
 type Barra = Snapshot["gantt"]["barras"][number];
@@ -10,9 +11,6 @@ const DIA_MS = 86_400_000;
 const DIAS_SEMANA_LABORAL = 5;
 const DIA_CORTO = new Intl.DateTimeFormat("es-AR", { timeZone: "UTC", weekday: "short", day: "numeric" });
 const DIA_LARGO = new Intl.DateTimeFormat("es-AR", { timeZone: "UTC", day: "numeric", month: "short" });
-
-// Las fechas del contrato son YYYY-MM-DD sin zona: se leen en UTC para que no corran un día.
-const aMs = (iso: string): number => Date.parse(`${iso}T00:00:00Z`);
 
 /** Un `hasta` absurdo pasa la validación del contrato; sin tope generaría millones de columnas. */
 const MAX_DIAS = 31;
@@ -28,9 +26,8 @@ function columnas(snapshot: Snapshot): { dias: number[]; recortado: boolean } {
 }
 
 function descripcion(rango: Rango): string {
-  return rango.desde === rango.hasta
-    ? DIA_LARGO.format(aMs(rango.desde))
-    : `${DIA_LARGO.format(aMs(rango.desde))} al ${DIA_LARGO.format(aMs(rango.hasta))}`;
+  const dia = (iso: string): string => formatearDia(DIA_LARGO, iso);
+  return rango.desde === rango.hasta ? dia(rango.desde) : `${dia(rango.desde)} al ${dia(rango.hasta)}`;
 }
 
 function barra(tipo: "plan" | "real", rango: Rango, primero: number, dias: number, fantasma: boolean): HTMLElement[] {
@@ -84,26 +81,26 @@ export function gantt(snapshot: Snapshot): HTMLElement {
   return h(
     "section",
     { class: "gantt", "aria-label": "Plan contra real" },
-    h("div", { class: "gantt-titulo" }, h("h2", { class: "gantt-heading" }, "Plan contra real"), ...(snapshot.gantt.mock ? [etiquetaMock()] : [])),
+    h("div", { class: "gantt-titulo" }, h("h2", {}, "Plan contra real"), ...(snapshot.gantt.mock ? [etiquetaMock()] : [])),
     leyenda(),
     ...(recortado ? [h("p", { class: "etiqueta gantt-recorte", role: "status" }, `Rango recortado a ${MAX_DIAS} días`)] : []),
     h(
       "div",
       { class: "gantt-scroll", tabindex: "0", role: "region", "aria-label": "Plan contra real, desplazable" },
       h(
-      "div",
-      { class: "gantt-tabla", style: `--dias: ${dias.length}` },
-      h(
         "div",
-        { class: "gantt-fila gantt-cabecera" },
-        h("div"),
+        { class: "gantt-tabla", style: `--dias: ${dias.length}` },
         h(
           "div",
-          { class: "gantt-pista", style: `--dias: ${dias.length}` },
-          ...dias.map((d) => h("span", { class: "dato meta gantt-dia" }, DIA_CORTO.format(d))),
+          { class: "gantt-fila gantt-cabecera" },
+          h("div"),
+          h(
+            "div",
+            { class: "gantt-pista", style: `--dias: ${dias.length}` },
+            ...dias.map((d) => h("span", { class: "dato meta gantt-dia" }, DIA_CORTO.format(d))),
+          ),
         ),
-      ),
-      ...snapshot.gantt.barras.map((b) => fila(snapshot, b, primero, dias.length)),
+        ...snapshot.gantt.barras.map((b) => fila(snapshot, b, primero, dias.length)),
       ),
     ),
   );

@@ -36,12 +36,8 @@ const pares: [string, string][] = [
   ["tinta-secundaria", "papel"],
   ["tinta-secundaria", "papel-tibio"],
   ["tinta-secundaria", "papel-frio"],
-  ["alerta", "papel"],
-  ["alerta", "papel-tibio"],
-  ["alerta", "papel-frio"],
   ["placa-texto", "placa"],
   ["sello-tinta", "sello"],
-  // --alerta no se mide sobre el sello: el sello es solo para "resuelto sin cerrar" y la alerta vive en placa.
   ["tinta-secundaria", "sello"],
 ];
 

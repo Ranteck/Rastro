@@ -4,6 +4,7 @@ import { ErrorApi, type Api } from "../src/api.ts";
 import { montarApp, type Vistas } from "../src/app.ts";
 import { parsearRuta } from "../src/router.ts";
 import { h } from "../src/ui/dom.ts";
+import { vistas as vistasReales } from "../src/views/index.ts";
 import { validarSnapshot } from "../../backend/src/contract/snapshot.ts";
 import { checkEquipo } from "../../backend/src/contract/equipo.ts";
 
@@ -13,8 +14,10 @@ const filas = checkEquipo(JSON.parse(readFileSync("ejemplos/equipo.json", "utf8"
 const vistas: Vistas = {
   equipo: (f) => h("p", {}, `equipo:${f.length}`),
   persona: {
+    "mi-dia": (s) => h("p", {}, `mi-dia:${s.persona.id}`),
     pendientes: (s) => h("p", {}, `pendientes:${s.persona.id}`),
     plan: (s) => h("p", {}, `plan:${s.persona.id}`),
+    sugerencias: (s) => h("p", {}, `sugerencias:${s.persona.id}`),
   },
 };
 
@@ -43,6 +46,9 @@ afterEach(() => {
 });
 beforeEach(() => {
   vi.spyOn(console, "error").mockImplementation(() => undefined);
+  // jsdom no implementa ninguno de los dos.
+  Object.defineProperty(Element.prototype, "scrollIntoView", { value: vi.fn(), configurable: true, writable: true });
+  vi.spyOn(window, "scrollTo").mockImplementation(() => undefined);
   vi.stubGlobal("matchMedia", (consulta: string) => ({ matches: false, media: consulta, addEventListener: vi.fn() }));
   document.body.innerHTML = '<div id="app"></div>';
   raiz = document.getElementById("app") as HTMLElement;
@@ -82,8 +88,38 @@ describe("montarApp", () => {
     expect(api.cargarPersona).toHaveBeenCalledTimes(1);
   });
 
-  it("una ruta desconocida o sin vista registrada muestra el aviso con link a Equipo", async () => {
-    for (const hash of ["#/nada", "#/persona/denis/sugerencias"]) {
+  it("volver a una persona o a Equipo pide los datos de nuevo", async () => {
+    await irA("#/persona/denis/mi-dia");
+    const api = apiDoble();
+    montar({ raiz, api, vistas });
+    await pausa();
+    await irA("#/equipo");
+    await irA("#/persona/denis/mi-dia");
+    expect(api.cargarPersona).toHaveBeenCalledTimes(2);
+    expect(api.cargarEquipo).toHaveBeenCalledTimes(1);
+  });
+
+  it("al cambiar de vista vuelve arriba, y no en la carga inicial", async () => {
+    await irA("#/persona/denis/pendientes");
+    montar({ raiz, api: apiDoble(), vistas });
+    await pausa();
+    expect(window.scrollTo).not.toHaveBeenCalled();
+    await irA("#/persona/denis/plan");
+    expect(window.scrollTo).toHaveBeenCalledWith(0, 0);
+    expect(document.activeElement).toBe(raiz.querySelector("#contenido"));
+  });
+
+  it("lleva la pestaña activa a la vista", async () => {
+    await irA("#/persona/denis/plan");
+    montar({ raiz, api: apiDoble(), vistas });
+    await pausa();
+    const scrollIntoView = vi.mocked(Element.prototype.scrollIntoView);
+    const llamada = scrollIntoView.mock.contexts.at(-1) as HTMLElement;
+    expect(llamada.textContent).toBe("Plan");
+  });
+
+  it("una ruta desconocida muestra el aviso con link a Equipo", async () => {
+    for (const hash of ["#/nada", "#/persona/denis/otra"]) {
       await irA(hash);
       montar({ raiz, api: apiDoble(), vistas });
       await pausa();
@@ -142,9 +178,57 @@ describe("montarApp", () => {
     expect(raiz.querySelector("#contenido")?.textContent).toContain("No pude mostrar esta vista");
   });
 
+  it("una persona inexistente es un rechazo esperado: no se registra como error", async () => {
+    await irA("#/persona/nadie/plan");
+    const api = apiDoble({ cargarPersona: vi.fn(async () => Promise.reject(new ErrorApi("no-encontrada"))) });
+    montar({ raiz, api, vistas });
+    await pausa();
+    expect(console.error).not.toHaveBeenCalled();
+  });
+
+  it("en modo ejemplos el aviso de persona inexistente aclara que solo Denis tiene detalle", async () => {
+    await irA("#/persona/tomas/plan");
+    const api = apiDoble({ cargarPersona: vi.fn(async () => Promise.reject(new ErrorApi("no-encontrada"))) });
+    montar({ raiz, api, vistas, modoEjemplos: true });
+    await pausa();
+    expect(raiz.querySelector("#contenido")?.textContent).toContain("En modo ejemplos solo Denis tiene detalle.");
+  });
+
+  it("la etiqueta de modo ejemplos está en la barra solo en ese modo", async () => {
+    await irA("#/equipo");
+    montar({ raiz, api: apiDoble(), vistas });
+    expect(raiz.querySelector(".barra .etiqueta-mock")).toBeNull();
+    document.body.innerHTML = '<div id="app"></div>';
+    const otra = document.getElementById("app") as HTMLElement;
+    montar({ raiz: otra, api: apiDoble(), vistas, modoEjemplos: true });
+    expect(otra.querySelector(".barra .etiqueta-mock")?.textContent).toBe("MODO EJEMPLOS");
+  });
+
   it("el botón de tema sigue en la barra", async () => {
     await irA("#/equipo");
     montar({ raiz, api: apiDoble(), vistas });
     expect(raiz.querySelector(".boton-tema")).not.toBeNull();
+  });
+});
+
+describe("montarApp con las vistas reales", () => {
+  const secciones: [string, string][] = [
+    ["#/equipo", "Equipo"],
+    ["#/persona/denis/mi-dia", "Mi día"],
+    ["#/persona/denis/pendientes", "Pendientes"],
+    ["#/persona/denis/plan", "Plan"],
+    ["#/persona/denis/sugerencias", "Sugerencias"],
+  ];
+
+  it("cada hash monta su vista", async () => {
+    await irA("#/equipo");
+    montar({ raiz, api: apiDoble(), vistas: vistasReales });
+    await pausa();
+    for (const [hash, etiqueta] of secciones) {
+      await irA(hash);
+      const seccion = raiz.querySelector("#contenido > section");
+      expect(seccion?.getAttribute("aria-label"), hash).toBe(etiqueta);
+      expect(seccion?.querySelector("h1"), hash).not.toBeNull();
+    }
   });
 });

@@ -95,4 +95,30 @@ describe("vista Mi día", () => {
     const raiz = montar({ ...snapshot, bitacora: [{ ...base, evidencia: [] }] });
     expect(raiz.querySelector(".entrada ul")).toBeNull();
   });
+
+  it("sin plan no presenta 0% fuera del plan: dice que no hay plan", () => {
+    const raiz = montar({ ...snapshot, plan: null, desvios: { ...snapshot.desvios, fueraDelPlanPct: 0 } });
+    expect(raiz.textContent).toContain("Sin plan esta semana");
+    expect(raiz.textContent).not.toContain("0%");
+    expect(raiz.textContent).not.toContain("FUERA DEL PLAN");
+  });
+
+  it("deja como texto el HTML hostil de la bitácora y del resumen", () => {
+    const malo = "<img src=x onerror=alert(1)>";
+    const raiz = montar({
+      ...snapshot,
+      resumen: { hice: [malo], avance: [], sigue: [], bloqueos: [] },
+      bitacora: [{ ...base, texto: malo, rama: malo, razon: malo, evidencia: [{ tipo: "rama", ref: malo }] }],
+    });
+    expect(raiz.querySelector("img")).toBeNull();
+    expect(raiz.querySelector(".entrada-texto")?.textContent).toBe(malo);
+    expect(raiz.querySelector(".razon")?.textContent).toBe(malo);
+    expect(raiz.querySelector(".resumen-lista li")?.textContent).toBe(malo);
+  });
+
+  it("la lámina sellada lleva el sello completo, con el texto en anillo", () => {
+    const sello = montar(snapshot).querySelector("aside");
+    expect(sello?.querySelector("textPath")?.textContent).toBe("RESUELTO · SIN CERRAR ·");
+    expect(sello?.querySelector("a.boton-primario")).not.toBeNull();
+  });
 });

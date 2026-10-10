@@ -6,21 +6,24 @@ import { montarShell, pintarNavegacion } from "./shell.ts";
 import { cargando, errorCentral, paginaNoEncontrada, personaInexistente } from "./ui/estado.ts";
 
 export interface Vistas {
-  equipo?: (filas: FilaEquipo[]) => Node;
-  persona: Partial<Record<VistaPersona, (snapshot: Snapshot) => Node>>;
+  equipo: (filas: FilaEquipo[]) => Node;
+  persona: Record<VistaPersona, (snapshot: Snapshot) => Node>;
 }
 
 export interface OpcionesApp {
   raiz: HTMLElement;
   api: Api;
   vistas: Vistas;
+  /** En modo ejemplos solo hay detalle de Denis: el aviso de persona inexistente lo aclara. */
+  modoEjemplos?: boolean;
 }
 
 const MENSAJE_VISTA = "No pude mostrar esta vista";
+const DETALLE_EJEMPLOS = "En modo ejemplos solo Denis tiene detalle.";
 
 /** Monta la app y devuelve la función que quita sus listeners. */
-export function montarApp({ raiz, api, vistas }: OpcionesApp): () => void {
-  const contenido = montarShell(raiz);
+export function montarApp({ raiz, api, vistas, modoEjemplos = false }: OpcionesApp): () => void {
+  const contenido = montarShell(raiz, modoEjemplos);
   let navegacion = 0;
   let personaCargada: { id: string; snapshot: Snapshot } | null = null;
 
@@ -37,40 +40,50 @@ export function montarApp({ raiz, api, vistas }: OpcionesApp): () => void {
 
   async function pintar(ruta: Ruta, enfocar: boolean): Promise<void> {
     const turno = ++navegacion;
+    // El caché sirve solo para cambiar de pestaña: volver a una persona o a Equipo pide datos nuevos.
+    if (ruta.tipo !== "persona") personaCargada = null;
     pintarNavegacion(raiz, ruta, nombreCargado(ruta));
 
     const mostrar = (nodo: Node): void => {
       if (turno !== navegacion) return;
       contenido.replaceChildren(nodo);
       // Sin esto, al reemplazar el contenido el foco del teclado cae al body.
-      if (enfocar) contenido.focus();
+      if (enfocar) {
+        contenido.focus({ preventScroll: true });
+        window.scrollTo(0, 0);
+      }
     };
     const reintentar = (): void => void pintar(ruta, true);
 
-    const vistaPersona = ruta.tipo === "persona" ? vistas.persona[ruta.vista] : undefined;
-    const vistaEquipo = ruta.tipo === "equipo" ? vistas.equipo : undefined;
-    if (!vistaPersona && !vistaEquipo) {
+    if (ruta.tipo === "desconocida") {
       mostrar(paginaNoEncontrada());
       return;
     }
 
     mostrar(cargando());
     try {
-      if (ruta.tipo === "persona" && vistaPersona) {
+      if (ruta.tipo === "persona") {
         const snapshot = await resolverPersona(ruta.id);
         if (turno !== navegacion) return;
         pintarNavegacion(raiz, ruta, snapshot.persona.nombre);
-        mostrar(vistaPersona(snapshot));
-      } else if (vistaEquipo) {
+        mostrar(vistas.persona[ruta.vista](snapshot));
+      } else {
         const filas = await api.cargarEquipo();
         if (turno !== navegacion) return;
-        mostrar(vistaEquipo(filas));
+        mostrar(vistas.equipo(filas));
       }
     } catch (error) {
+      // Para que Reintentar vuelva a pedir y no reuse un snapshot de antes del error.
+      personaCargada = null;
       if (error instanceof ErrorApi) {
+        if (error.tipo === "no-encontrada") {
+          // Una persona inexistente es un rechazo esperado: no es un error del sistema.
+          mostrar(personaInexistente(error.message, modoEjemplos ? DETALLE_EJEMPLOS : undefined));
+          return;
+        }
         // Único punto donde se registra la causa; al usuario solo le llega el mensaje.
         console.error(error.message, error.cause);
-        mostrar(error.tipo === "no-encontrada" ? personaInexistente(error.mensajeUsuario) : errorCentral(error.mensajeUsuario, reintentar));
+        mostrar(errorCentral(error.message, reintentar));
         return;
       }
       console.error(MENSAJE_VISTA, error);

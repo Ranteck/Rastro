@@ -18,11 +18,6 @@ export class ErrorApi extends Error {
     super(MENSAJES[tipo], causa === undefined ? undefined : { cause: causa });
     this.tipo = tipo;
   }
-
-  /** Mensaje apto para el usuario; la causa queda en `cause` y no se muestra. */
-  get mensajeUsuario(): string {
-    return MENSAJES[this.tipo];
-  }
 }
 
 export interface Api {
@@ -37,8 +32,9 @@ export interface OpcionesApi {
   fetch?: typeof fetch;
 }
 
+/** Los ejemplos no existen en `dist/`: fuera del dev server una variable olvidada no puede activar el modo. */
 export function fuenteDeEntorno(): Fuente {
-  return import.meta.env["VITE_RASTRO_FUENTE"] === "ejemplos" ? "ejemplos" : "central";
+  return import.meta.env.DEV && import.meta.env["VITE_RASTRO_FUENTE"] === "ejemplos" ? "ejemplos" : "central";
 }
 
 export function crearApi({ fuente = fuenteDeEntorno(), fetch: pedir = (...args) => fetch(...args) }: OpcionesApi = {}): Api {

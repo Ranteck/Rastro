@@ -69,7 +69,10 @@ describe("vista Equipo", () => {
   });
 
   it("muestra la frase cuando no hay nadie", () => {
-    expect(montar([]).textContent).toBe("Todavía nadie publicó su día. Cuando alguien corra `rastro publish`, aparece acá.");
+    const vacia = montar([]);
+    expect(vacia.querySelector("section[aria-label='Equipo'] h1")?.textContent).toBe("Equipo");
+    expect(vacia.textContent).toContain("Todavía nadie publicó su día. Cuando alguien corra rastro publish, aparece acá.");
+    expect(vacia.querySelector("code")?.textContent).toBe("rastro publish");
   });
 });
 

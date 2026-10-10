@@ -1,9 +1,11 @@
-import type { Desvios, EntradaBitacora, Resumen, Snapshot } from "../../../backend/src/contract/snapshot.ts";
+import type { EntradaBitacora, Resumen, Snapshot } from "../../../backend/src/contract/snapshot.ts";
 import { hashDe } from "../router.ts";
 import { h } from "../ui/dom.ts";
 import { vacio } from "../ui/estado.ts";
 import { listaEvidencia } from "../ui/evidencia.ts";
-import { crearSelloChico } from "../ui/sello.ts";
+import { formatearDia } from "../ui/fecha.ts";
+import { placaFueraDelPlan } from "../ui/placa.ts";
+import { crearSello } from "../ui/sello.ts";
 import { nombreDeTarea } from "../ui/tarea.ts";
 
 const FECHA = new Intl.DateTimeFormat("es-AR", { timeZone: "UTC", weekday: "long", day: "numeric", month: "long", year: "numeric" });
@@ -11,9 +13,9 @@ const NUMERO = new Intl.NumberFormat("es-AR");
 const USD = new Intl.NumberFormat("es-AR", { minimumFractionDigits: 4, maximumFractionDigits: 4 });
 
 const MARCAS: Record<EntradaBitacora["vinculo"], { clase: string; texto: string }> = {
-  nombre: { clase: "marca-nombre", texto: "por nombre" },
-  inferido: { clase: "marca-inferido", texto: "inferido" },
-  "sin-tarea": { clase: "marca-sin-tarea", texto: "sin tarea" },
+  nombre: { clase: "marca-lleno", texto: "por nombre" },
+  inferido: { clase: "marca-hueco", texto: "inferido" },
+  "sin-tarea": { clase: "marca-raya", texto: "sin tarea" },
 };
 
 const COLUMNAS: ReadonlyArray<{ clave: keyof Resumen; titulo: string }> = [
@@ -23,16 +25,9 @@ const COLUMNAS: ReadonlyArray<{ clave: keyof Resumen; titulo: string }> = [
   { clave: "bloqueos", titulo: "Bloqueos" },
 ];
 
-function formatearDia(iso: string): string {
-  // Las fechas del contrato son YYYY-MM-DD sin zona: se leen en UTC para que no corran un día.
-  const fecha = new Date(`${iso}T00:00:00Z`);
-  // El contrato acepta "2026-13-45" y format() lanzaría: mejor mostrar el dato crudo que perder toda la vista.
-  if (Number.isNaN(fecha.getTime())) return iso;
-  return FECHA.format(fecha);
-}
-
 function formatearPeriodo(desde: string, hasta: string): string {
-  return desde === hasta ? formatearDia(desde) : `${formatearDia(desde)} – ${formatearDia(hasta)}`;
+  const dia = (iso: string): string => formatearDia(FECHA, iso);
+  return desde === hasta ? dia(desde) : `${dia(desde)} – ${dia(hasta)}`;
 }
 
 function formatearCosto(costo: Snapshot["costo"]): string {
@@ -40,14 +35,10 @@ function formatearCosto(costo: Snapshot["costo"]): string {
   return `${llamadas} · US$${USD.format(costo.usd)} · ${NUMERO.format(costo.tokens)} tokens`;
 }
 
-function fueraDelPlan(desvios: Desvios): HTMLElement {
-  const clase = desvios.alerta ? "lamina fuera-del-plan placa-alerta" : "fuera-del-plan";
-  return h(
-    "div",
-    { class: clase },
-    h("p", { class: "display" }, `${desvios.fueraDelPlanPct}%`),
-    h("p", { class: "etiqueta" }, "FUERA DEL PLAN"),
-  );
+/** Sin plan el backend manda 0%, pero eso es una ausencia y no un dato. */
+function fueraDelPlan(snapshot: Snapshot): HTMLElement {
+  if (snapshot.plan === null) return h("p", { class: "fuera-del-plan sin-plan" }, "Sin plan esta semana");
+  return placaFueraDelPlan(snapshot.desvios);
 }
 
 function resueltosSinCerrar(snapshot: Snapshot): HTMLElement | null {
@@ -55,14 +46,10 @@ function resueltosSinCerrar(snapshot: Snapshot): HTMLElement | null {
   if (cantidad === 0) return null;
   return h(
     "aside",
-    { class: "lamina sello sin-cerrar" },
-    crearSelloChico(),
-    h(
-      "div",
-      {},
-      h("p", { class: "sin-cerrar-cantidad" }, `${cantidad} ${cantidad === 1 ? "resuelto" : "resueltos"} sin cerrar`),
-      h("a", { class: "boton", href: hashDe({ tipo: "persona", id: snapshot.persona.id, vista: "pendientes" }) }, "Ver pendientes"),
-    ),
+    { class: "lamina sin-cerrar" },
+    h("div", { class: "sello-posicion sello-grande" }, crearSello()),
+    h("p", { class: "sin-cerrar-cantidad" }, `${cantidad} ${cantidad === 1 ? "resuelto" : "resueltos"} sin cerrar`),
+    h("a", { class: "boton boton-primario", href: hashDe({ tipo: "persona", id: snapshot.persona.id, vista: "pendientes" }) }, "Ver pendientes"),
   );
 }
 
@@ -93,13 +80,13 @@ function entrada(snapshot: Snapshot, e: EntradaBitacora): HTMLElement {
     h(
       "span",
       { class: "entrada-marca" },
-      h("span", { class: `marca-vinculo ${marca.clase}`, "aria-hidden": "true" }),
+      h("span", { class: `marca-estado ${marca.clase}`, "aria-hidden": "true" }),
       h("span", { class: "etiqueta meta" }, marca.texto),
     ),
     h(
       "div",
       { class: "entrada-cuerpo" },
-      ...(e.tarea === null ? [] : [h("p", { class: "dato entrada-tarea" }, nombreDeTarea(snapshot, e.tarea))]),
+      ...(e.tarea === null ? [] : [h("p", { class: "entrada-tarea" }, nombreDeTarea(snapshot, e.tarea))]),
       h("p", { class: "entrada-texto" }, e.texto),
       h("p", { class: "dato meta" }, e.rama),
     ),
@@ -132,7 +119,7 @@ export function vistaMiDia(snapshot: Snapshot): Node {
       { class: "cabecera-dia" },
       h("h1", { class: "titulo" }, snapshot.persona.nombre),
       h("p", { class: "cuerpo meta cabecera-fecha" }, formatearPeriodo(snapshot.periodo.desde, snapshot.periodo.hasta)),
-      fueraDelPlan(snapshot.desvios),
+      fueraDelPlan(snapshot),
       ...(sello === null ? [] : [sello]),
     ),
     resumen(snapshot.resumen),

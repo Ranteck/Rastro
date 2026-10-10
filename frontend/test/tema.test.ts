@@ -70,7 +70,7 @@ describe("tema", () => {
 });
 
 describe("shell", () => {
-  it("el botón de tema refleja el estado con aria-pressed y alterna", () => {
+  it("el botón de tema nombra su acción y alterna", () => {
     simularSistema(false);
     const raiz = document.createElement("div");
     document.body.append(raiz);
@@ -79,9 +79,9 @@ describe("shell", () => {
     expect(raiz.querySelector(".marca")?.textContent).toBe("RASTRO");
 
     const boton = raiz.querySelector("button");
-    expect(boton?.getAttribute("aria-pressed")).toBe("false");
+    expect(boton?.textContent).toBe("Tema oscuro");
     boton?.click();
-    expect(boton?.getAttribute("aria-pressed")).toBe("true");
+    expect(boton?.textContent).toBe("Tema claro");
     expect(document.documentElement.dataset["theme"]).toBe("dark");
   });
 
@@ -91,11 +91,11 @@ describe("shell", () => {
     document.body.append(raiz);
     montarShell(raiz);
     const boton = raiz.querySelector(".boton-tema");
-    expect(boton?.getAttribute("aria-pressed")).toBe("false");
+    expect(boton?.textContent).toBe("Tema oscuro");
     simularSistema(true);
     // El stub nuevo reemplaza matchMedia: el listener viejo consulta el sistema actualizado.
     avisarCambio();
-    expect(boton?.getAttribute("aria-pressed")).toBe("true");
+    expect(boton?.textContent).toBe("Tema claro");
   });
 
   it("con elección manual ignora los cambios del sistema", () => {
@@ -107,6 +107,6 @@ describe("shell", () => {
     boton?.click();
     simularSistema(false);
     avisarCambio();
-    expect(boton?.getAttribute("aria-pressed")).toBe("true");
+    expect(boton?.textContent).toBe("Tema claro");
   });
 });

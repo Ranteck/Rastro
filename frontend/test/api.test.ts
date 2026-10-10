@@ -1,6 +1,6 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, it, vi } from "vitest";
-import { ErrorApi, crearApi } from "../src/api.ts";
+import { ErrorApi, crearApi, fuenteDeEntorno } from "../src/api.ts";
 
 const leer = (n: string): string => readFileSync(`ejemplos/${n}`, "utf8");
 const json = (cuerpo: string, status = 200): Response =>
@@ -65,5 +65,14 @@ describe("api", () => {
       "./ejemplos/equipo.json",
       "./ejemplos/persona-otra.json",
     ]);
+  });
+
+  it("el modo ejemplos solo se activa en dev, aunque la variable esté puesta", () => {
+    vi.stubEnv("VITE_RASTRO_FUENTE", "ejemplos");
+    vi.stubEnv("DEV", true);
+    expect(fuenteDeEntorno()).toBe("ejemplos");
+    vi.stubEnv("DEV", false);
+    expect(fuenteDeEntorno()).toBe("central");
+    vi.unstubAllEnvs();
   });
 });

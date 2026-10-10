@@ -37,17 +37,14 @@ body {
   background-attachment: fixed;
 }
 
-/* Con cifras tabulares la coma y el punto de Schibsted Grotesk ocupan ancho de cifra y la prosa sale espaciada; en mono no cambia nada. Solo el número grande las necesita para alinear. */
-.display {
-  font-variant-numeric: tabular-nums;
-}
-
 ::selection {
   background: var(--tinta);
   color: var(--papel);
 }
 
+/* Con cifras tabulares la coma y el punto de Schibsted Grotesk ocupan ancho de cifra y la prosa sale espaciada; solo el número grande las necesita para alinear. */
 .display {
+  font-variant-numeric: tabular-nums;
   font-size: 92px;
   font-weight: 400;
   letter-spacing: -0.02em;
@@ -73,12 +70,6 @@ body {
   color: var(--tinta-secundaria);
 }
 
-.hairline {
-  border: 0;
-  border-top: 1px solid var(--hairline);
-  margin: 0;
-}
-
 /* Lámina de anuario (.sello y .placa-alerta solo fijan background-color para no pisar las cruces): las cruces de registro viven en el padding, así que nunca tapan contenido. */
 .lamina {
   position: relative;
@@ -102,10 +93,6 @@ body {
 .placa-alerta {
   background-color: var(--placa);
   color: var(--placa-texto);
-}
-
-.alerta {
-  color: var(--alerta);
 }
 
 .sello {
@@ -137,6 +124,7 @@ button {
 }
 
 .marca {
+  flex: none;
   font-family: var(--fuente-mono);
   font-size: 13px;
   letter-spacing: 0.14em;
@@ -148,6 +136,8 @@ button {
 }
 
 .boton-tema {
+  flex: none;
+  white-space: nowrap;
   min-height: 44px;
   padding: 0 16px;
   background: transparent;
@@ -185,13 +175,30 @@ a.boton {
   border-color: var(--tinta);
 }
 
+/* La acción principal de la lámina va rellena de tinta; el tema queda como secundario. */
+button.boton-primario,
+a.boton-primario {
+  background: var(--tinta);
+  border-color: var(--tinta);
+  color: var(--papel);
+}
+
+.boton-primario:hover {
+  border-color: var(--tinta);
+  background: var(--tinta-secundaria);
+}
+
+/* El padding y el margen negativo dan aire al anillo de foco: overflow-x fuerza overflow-y y lo recortaría. */
 .navegacion {
   display: flex;
   align-items: center;
   gap: 8px;
   flex-wrap: nowrap;
   min-width: 0;
+  padding: 6px;
+  margin: -6px;
   overflow-x: auto;
+  scrollbar-width: none;
 }
 
 .navegacion > * {
@@ -218,6 +225,7 @@ a.boton {
 }
 
 .token-persona {
+  white-space: nowrap;
   padding: 4px 8px;
   border: 1px solid var(--hairline);
   font-family: var(--fuente-mono);
@@ -229,7 +237,43 @@ a.boton {
   padding: 4px 8px;
   border: 2px solid var(--tinta);
   font-size: 14px;
-  font-weight: 700;
+  white-space: nowrap;
+}
+
+/* Dos filas: la marca y el tema arriba, las pestañas abajo con desplazamiento propio. */
+@media (max-width: 1024px) {
+  :root {
+    --barra-alto: 124px;
+  }
+
+  .barra {
+    flex-wrap: wrap;
+    align-content: center;
+    gap: 8px 16px;
+    padding: 0 16px;
+  }
+
+  .navegacion {
+    order: 1;
+    flex-basis: 100%;
+  }
+}
+
+/* A 390px la marca, la etiqueta de modo ejemplos y el botón de tema tienen que entrar juntos en la primera fila. */
+@media (max-width: 560px) {
+  .barra {
+    column-gap: 8px;
+  }
+
+  .etiqueta-mock {
+    padding: 4px 6px;
+    letter-spacing: 0.06em;
+  }
+
+  .boton-tema {
+    padding: 0 10px;
+    letter-spacing: 0.08em;
+  }
 }
 
 #contenido:focus {

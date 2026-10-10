@@ -4,12 +4,22 @@ Estado: borrador · Fecha: 2026-10-09 · Contrato: `intent/spec.md`, sección "C
 
 ## Cómo correrlo
 
+Requiere Node ≥ 22.18.
+
 ```sh
-npm install           # dependencias
+npm ci                # dependencias
 npm run dev           # dev server; reenvía /api al central en 127.0.0.1:4317 (rastro serve)
-npm run dev:ejemplos  # dev server sin central, con los JSON de ejemplos/
+npm run dev:ejemplos  # dev server sin central, con los JSON de ejemplos/ (solo en dev; en la barra lleva la etiqueta MODO EJEMPLOS y solo Denis tiene detalle)
 npm run check         # typecheck + tests + build
 npm run build         # deja dist/, que `rastro serve` sirve tal cual
+```
+
+Para la demo completa, desde `frontend/` y con `dist/` ya construido (sin `npm ci && npm run build`,
+`rastro serve` responde que la UI todavía no está construida):
+
+```sh
+node ../backend/bin/rastro.js serve              # el central, con la UI en http://127.0.0.1:4317
+node ../backend/bin/rastro.js seed-demo          # en otra terminal: carga personas de demostración
 ```
 
 ## Qué es

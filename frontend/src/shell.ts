@@ -1,14 +1,14 @@
 import { ETIQUETAS_VISTA, VISTAS_PERSONA, hashDe, type Ruta } from "./router.ts";
 import { h } from "./ui/dom.ts";
+import { etiquetaMock } from "./ui/estado.ts";
 import { alternarTema, iniciarTema, seguirSistema, type Tema } from "./tema.ts";
 
 function crearBotonTema(): HTMLButtonElement {
   const boton = document.createElement("button");
   boton.type = "button";
   boton.className = "boton-tema";
-  boton.textContent = "Tema oscuro";
   const pintar = (tema: Tema): void => {
-    boton.setAttribute("aria-pressed", String(tema === "dark"));
+    boton.textContent = tema === "dark" ? "Tema claro" : "Tema oscuro";
   };
   pintar(iniciarTema());
   seguirSistema(pintar);
@@ -17,7 +17,7 @@ function crearBotonTema(): HTMLButtonElement {
 }
 
 /** Monta la barra fija y devuelve el `<main>` donde van las vistas. */
-export function montarShell(raiz: HTMLElement): HTMLElement {
+export function montarShell(raiz: HTMLElement, modoEjemplos = false): HTMLElement {
   const barra = document.createElement("header");
   barra.className = "barra";
 
@@ -28,7 +28,13 @@ export function montarShell(raiz: HTMLElement): HTMLElement {
   const espacio = document.createElement("span");
   espacio.className = "barra-espacio";
 
-  barra.append(marca, h("nav", { class: "navegacion", "aria-label": "Secciones" }), espacio, crearBotonTema());
+  barra.append(
+    marca,
+    h("nav", { class: "navegacion", "aria-label": "Secciones" }),
+    espacio,
+    ...(modoEjemplos ? [etiquetaMock("MODO EJEMPLOS")] : []),
+    crearBotonTema(),
+  );
 
   const principal = document.createElement("main");
   principal.id = "contenido";
@@ -55,4 +61,6 @@ export function pintarNavegacion(raiz: HTMLElement, ruta: Ruta, nombre?: string)
     }
   }
   nav.replaceChildren(...items);
+  // En pantallas angostas la barra de pestañas se desplaza: la activa tiene que quedar a la vista.
+  nav.querySelector('[aria-current="page"]')?.scrollIntoView({ block: "nearest", inline: "nearest" });
 }

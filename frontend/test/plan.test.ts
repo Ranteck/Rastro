@@ -16,8 +16,8 @@ describe("vista Plan", () => {
   it("tacha la tarea sacada y marca cada estado", () => {
     const raiz = montar(vistaPlan(snapshot));
     expect(raiz.querySelector("s")?.textContent).toBe("Jira");
-    const marcas = [...raiz.querySelectorAll(".plan-marca")].map((n) => n.textContent);
-    expect(marcas).toEqual(["■", "□", "□", "□", "—"]);
+    const marcas = [...raiz.querySelectorAll(".plan-tarea .marca-estado")].map((n) => n.className.replace("marca-estado ", ""));
+    expect(marcas).toEqual(["marca-lleno", "marca-hueco", "marca-hueco", "marca-hueco", "marca-raya"]);
   });
 
   it("muestra el porcentaje y la placa solo con alerta", () => {
@@ -65,7 +65,21 @@ describe("vista Plan", () => {
 
   it("sin plan muestra la frase y no un error", () => {
     const raiz = montar(vistaPlan({ ...snapshot, plan: null }));
-    expect(raiz.textContent).toContain("No hay plan esta semana. Armalo con `rastro plan`.");
+    expect(raiz.querySelector("section[aria-label='Plan'] h1")?.textContent).toBe("Plan");
+    expect(raiz.textContent).toContain("No hay plan esta semana. Armalo con rastro plan.");
+    expect(raiz.querySelector("code")?.textContent).toBe("rastro plan");
     expect(raiz.querySelector("[role=alert]")).toBeNull();
+  });
+
+  it("una fecha imposible se muestra cruda y no tira la vista", () => {
+    const raiz = montar(
+      vistaPlan({
+        ...snapshot,
+        plan: { ...(snapshot.plan as NonNullable<Snapshot["plan"]>), semana: "2026-13-45" },
+        gantt: { mock: true, barras: [{ tarea: "bitacora", plan: { desde: "2026-13-45", hasta: "2026-14-01" }, real: null }] },
+      }),
+    );
+    expect(raiz.textContent).toContain("Semana del 2026-13-45");
+    expect(raiz.querySelector("[aria-label='Plan: 2026-13-45 al 2026-14-01']")).not.toBeNull();
   });
 });

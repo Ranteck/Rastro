@@ -26,6 +26,16 @@ describe("vista Pendientes", () => {
     expect(laminas.slice(1).some((l) => l.querySelector("svg"))).toBe(false);
   });
 
+  it("el tipo es el encabezado de cada lámina y el próximo paso no es una caja", () => {
+    const laminas = [...montar(snapshot).querySelectorAll("article")];
+    expect(laminas.length).toBeGreaterThan(1);
+    for (const lamina of laminas) {
+      expect(lamina.querySelector("h2")?.textContent).toMatch(/\S/);
+      expect(lamina.querySelector(".proximo-paso")?.textContent).toContain("Próximo paso");
+    }
+    expect(laminas[0]?.querySelector("h2")?.textContent).toBe("Resuelto sin cerrar");
+  });
+
   it("muestra tarea (nombre del plan, slug o sin tarea), texto y próximo paso", () => {
     const base = snapshot.pendientes[0] as Pendiente;
     const raiz = montar(
@@ -53,7 +63,7 @@ describe("vista Pendientes", () => {
         { ...base, texto: "x", tarea: "inexistente" },
       ]),
     );
-    const tareas = [...raiz.querySelectorAll(".pendiente .dato.meta")].map((n) => n.textContent);
+    const tareas = [...raiz.querySelectorAll(".pendiente-tarea")].map((n) => n.textContent);
     expect(tareas).toEqual(["Bitácora", "inexistente"]);
   });
 
@@ -87,6 +97,8 @@ describe("vista Pendientes", () => {
   });
 
   it("muestra la frase cuando no hay pendientes", () => {
-    expect(montar(conPendientes([])).textContent).toBe("No hay pendientes: todo lo resuelto está cerrado.");
+    const vacia = montar(conPendientes([]));
+    expect(vacia.querySelector("section[aria-label='Pendientes'] h1")?.textContent).toBe("Pendientes");
+    expect(vacia.textContent).toContain("No hay pendientes: todo lo resuelto está cerrado.");
   });
 });

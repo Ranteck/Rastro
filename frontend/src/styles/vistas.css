@@ -82,7 +82,7 @@ a.persona-lamina.placa-alerta:hover {
   line-height: 1.2;
 }
 
-.persona-lamina > .dato {
+.persona-equipo {
   margin: 4px 0 0;
 }
 
@@ -121,11 +121,15 @@ a.persona-lamina.placa-alerta:hover {
   align-items: start;
 }
 
+/* El tipo es el encabezado de la lámina: nombra de qué pendiente se trata. */
 .pendiente-tipo {
   margin: 0;
+  font-size: 22px;
+  font-weight: 500;
+  line-height: 1.25;
 }
 
-.pendiente .dato {
+.pendiente-tarea {
   margin: 4px 0 0;
 }
 
@@ -159,8 +163,8 @@ a.persona-lamina.placa-alerta:hover {
 
 .proximo-paso {
   margin-top: 24px;
-  padding: 12px 16px;
-  border: 1px solid var(--tinta);
+  padding-top: 12px;
+  border-top: 1px solid var(--hairline);
 }
 
 .proximo-paso p {
@@ -183,7 +187,7 @@ a.persona-lamina.placa-alerta:hover {
 }
 
 .pendiente-principal .pendiente-tipo {
-  font-size: 18px;
+  font-size: 28px;
 }
 
 .pendiente-principal .pendiente-texto {
@@ -202,6 +206,8 @@ a.persona-lamina.placa-alerta:hover {
 
 .sello-svg {
   display: block;
+  width: 100%;
+  height: 100%;
 }
 
 .sello-disco {
@@ -262,6 +268,13 @@ a.persona-lamina.placa-alerta:hover {
   margin-bottom: 64px;
 }
 
+.sin-plan {
+  margin: 0;
+  font-size: 28px;
+  font-weight: 500;
+  line-height: 1.2;
+}
+
 .cabecera-dia .titulo {
   grid-area: nombre;
   margin: 0;
@@ -287,28 +300,38 @@ a.persona-lamina.placa-alerta:hover {
   margin: 0;
 }
 
+/* Lámina sobre papel: el sello estampado sobre el borde es lo que se recuerda del viewport, y el disco lavanda no puede ir sobre su mismo color. */
 .sin-cerrar {
   grid-area: sello;
-  display: flex;
-  align-items: center;
-  gap: 20px;
-  max-width: 420px;
+  max-width: 520px;
+  padding: 40px 188px 40px 40px;
+  border-color: var(--tinta);
 }
 
-.sin-cerrar .sello-svg {
-  flex: none;
+.sello-grande {
+  top: -36px;
+  right: -24px;
+  width: 200px;
+  height: 200px;
 }
 
 .sin-cerrar-cantidad {
   margin: 0;
-  font-size: 22px;
+  font-size: 26px;
   font-weight: 500;
   line-height: 1.25;
 }
 
-.sin-cerrar a.boton {
-  border-color: var(--sello-tinta);
-  margin-top: 12px;
+@media (max-width: 720px) {
+  .sin-cerrar {
+    padding: 32px 24px;
+  }
+
+  .sello-grande {
+    width: 160px;
+    height: 160px;
+    margin: -8px 0 16px auto;
+  }
 }
 
 .resumen {
@@ -378,22 +401,23 @@ a.persona-lamina.placa-alerta:hover {
   padding-top: 2px;
 }
 
-.marca-vinculo {
+/* Marca de estado: un solo trazo y tamaño en Mi día y en Plan. */
+.marca-estado {
   flex: none;
   display: inline-block;
   width: 12px;
   height: 12px;
 }
 
-.marca-nombre {
+.marca-lleno {
   background: var(--tinta);
 }
 
-.marca-inferido {
+.marca-hueco {
   border: 2px solid var(--tinta);
 }
 
-.marca-sin-tarea {
+.marca-raya {
   height: 2px;
   background: var(--tinta);
 }
@@ -501,9 +525,9 @@ a.persona-lamina.placa-alerta:hover {
   border-bottom: 1px solid var(--hairline);
 }
 
-.plan-marca {
-  font-family: var(--fuente-mono);
-  text-align: center;
+.plan-tarea .marca-estado {
+  justify-self: center;
+  align-self: center;
 }
 
 .plan-tarea p {
