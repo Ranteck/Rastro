@@ -195,8 +195,8 @@
       "evidencia": [
         {
           "tipo": "commit",
-          "ref": "e8f9a01",
-          "url": "https://github.com/ejemplo/pipeline-datos/commit/e8f9a01"
+          "ref": "a9b0c1d",
+          "url": "https://github.com/ejemplo/pipeline-datos/commit/a9b0c1d"
         }
       ]
     }
@@ -234,8 +234,8 @@
       "evidencia": [
         {
           "tipo": "commit",
-          "ref": "e8f9a01",
-          "url": "https://github.com/ejemplo/pipeline-datos/commit/e8f9a01"
+          "ref": "a9b0c1d",
+          "url": "https://github.com/ejemplo/pipeline-datos/commit/a9b0c1d"
         }
       ],
       "proximoPaso": "Resolver el TODO o sumarlo como tarea al plan."

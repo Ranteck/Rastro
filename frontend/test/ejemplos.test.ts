@@ -23,6 +23,14 @@ describe("ejemplos del modo ejemplos", () => {
     }
   });
 
+  it("los commits de la bitácora no se repiten dentro de una persona", () => {
+    for (const fila of filas) {
+      const { bitacora } = validarSnapshot(leer(`persona-${fila.persona.id}.json`));
+      const commits = bitacora.flatMap((e) => e.evidencia.filter((ev) => ev.tipo === "commit").map((ev) => ev.ref));
+      expect(new Set(commits).size, fila.persona.id).toBe(commits.length);
+    }
+  });
+
   it("Tomás tiene un desvío real: entradas sin tarea, tareas sin actividad y un resuelto sin cerrar", () => {
     const tomas = validarSnapshot(leer("persona-tomas.json"));
     expect(tomas.desvios.alerta).toBe(true);
