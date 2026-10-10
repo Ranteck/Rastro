@@ -94,3 +94,9 @@ Origen: citas del intent del frontend. "README" es `frontend/README.md`, que el 
   (XSS).
 - Links de evidencia: van a GitHub; sin red no abren.
 - Mock: la etiqueta tiene que verse de lejos. La entrega es hoy y REQ-14 es la válvula.
+
+## Cambios
+2026-10-10: REQ-4, notación del vínculo. En lugar de los glifos `✓ nombre` / `~ inferido`, la UI usa
+marcas dibujadas en celda fija: llena con el texto "por nombre", hueca con "inferido" y su razón, y
+raya con "sin tarea". Motivo: las dos revisiones finales pidieron marcas dibujadas, iguales en Mi día
+y en Plan. OK de Denis.
