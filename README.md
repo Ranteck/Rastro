@@ -10,15 +10,13 @@ Versiones y novedades en el [CHANGELOG](CHANGELOG.md).
 
 - `backend/`: el motor (CLI, `package.json`, `bin/`, `src/`, `test/`).
 - `frontend/`: la UI (ver `frontend/README.md`).
-- `intent/`: intent, spec y plan.
 
 ## Requisitos
 
-Node ≥ 22.18 (ejecuta TypeScript sin compilar) y, para el resumen, `claude` en el PATH.
+[Node](https://nodejs.org) 22.18 o más nuevo (ejecuta TypeScript sin compilar) y [Claude Code](https://claude.com/claude-code) (`claude` en el PATH, que también usa el resumen).
 
 ## Primeros pasos
 
-Necesitás [Node](https://nodejs.org) 22 o más nuevo y [Claude Code](https://claude.com/claude-code).
 El daily automático usa el programador de tu máquina: en Arch y en Ubuntu alcanza con systemd, no hace falta `crontab`. En WSL, activá systemd en `/etc/wsl.conf` (`[boot]` con `systemd=true`) o instalá `cron`.
 
 ### 1. Instalá el plugin (una sola vez)
@@ -33,7 +31,7 @@ Abrí Claude Code en cualquier carpeta y escribí:
 La primera línea agrega este repo como fuente de plugins; la segunda instala Rastro para todas tus
 sesiones. Si `/rastro:init` no aparece todavía, reiniciá Claude Code.
 
-Así seguís `main`, que siempre es la última versión (los cambios están en el [CHANGELOG](CHANGELOG.md)).
+Así seguís la última versión publicada (los cambios están en el [CHANGELOG](CHANGELOG.md)).
 
 ### 2. Prendelo en tu proyecto
 
@@ -61,7 +59,7 @@ ofrecimientos pendientes del repo.
 Desde una propuesta:
 
 ```
-/rastro:plan Docs/propuesta.md
+/rastro:plan propuesta.md
 ```
 
 O pedile que lo sugiera desde el estado del proyecto (la propuesta, el intent y el git del repo):
@@ -140,22 +138,6 @@ rastro cron quitar
 El daily automático corre en tu máquina, no en GitHub. Con systemd, si estaba apagada a esa hora, lo recupera
 al prenderla; con launchd o `crontab`, ese día no corre y "cerrá el día" arma el daily en el momento.
 
-### Para desarrollar Rastro
-
-Desde un clon de este repo, una de las dos (no las dos a la vez, o los hooks corren dos veces):
-
-```bash
-claude plugin marketplace add <ruta al clon>     # instalado, lee del clon
-claude --plugin-dir <ruta al clon>/plugin        # solo para esa sesión
-```
-
-Tests:
-
-```bash
-cd backend && npm run check
-cd ../frontend && npm run check
-```
-
 ## Qué se guarda dónde
 
 - **`~/.rastro/`** (o `$RASTRO_HOME`): lo tuyo, uno solo para toda la máquina. La configuración (`config.json`), el plan (`plan.md` y `plan.sugerido.md`), el último daily (`state.json`), los repos registrados (`repos.json`), el chat y `cron.log`.
@@ -163,10 +145,10 @@ cd ../frontend && npm run check
 
 ## Uso
 
-`plan cambiar`, `plan sincronizar`, `daily`, `siguiente`, `start`, `publish` y `cron` corren desde cualquier carpeta. `plan <propuesta>`, `plan --sugerir`, `plan --confirmar` y `plan --desde-proyecto` (con o sin `--confirmar`) hay que correrlos dentro de un repo registrado, y `rastro init` se corre una vez por repo. Desde la raíz de este repo:
+`plan cambiar`, `plan sincronizar`, `daily`, `siguiente`, `start`, `publish` y `cron` corren desde cualquier carpeta. `plan <propuesta>`, `plan --sugerir`, `plan --confirmar` y `plan --desde-proyecto` (con o sin `--confirmar`) hay que correrlos dentro de un repo registrado, y `rastro init` se corre una vez por repo. Los ejemplos usan `node backend/bin/rastro.js`, desde la raíz de un clon de este repo; con la CLI instalada por `/rastro:init` es lo mismo que `rastro`:
 
 ```bash
-node backend/bin/rastro.js init --equipo "AI Day"    # registra este repo e instala sus hooks (crea ~/.rastro/ si falta)
+node backend/bin/rastro.js init --equipo "Mi equipo"    # registra este repo e instala sus hooks (crea ~/.rastro/ si falta)
 node backend/bin/rastro.js plan propuesta.md         # arma la propuesta ~/.rastro/plan.sugerido.md (no toca plan.md)
 node backend/bin/rastro.js plan --desde-proyecto     # sugiere el plan desde la propuesta, el intent y el git del repo
 node backend/bin/rastro.js plan --confirmar          # la vuelve el plan vigente (~/.rastro/plan.md)
@@ -191,12 +173,12 @@ En el orden en que se usa:
 5. **Chat.** Propone cambios con vista previa y nunca aplica: aplicar es un paso aparte que confirmás vos. Guarda la sesión en `~/.rastro/chat.json` y la retomás en la terminal con `claude --resume <id>` (el comando aparece en la pestaña Chat). Cada mensaje usa tu cuenta de Claude. No escribas en la misma sesión desde dos lados a la vez.
 6. **Plugin.** `claude --plugin-dir <ruta>/plugin` (ver `plugin/README.md`). Trae `/rastro:plan`, `/rastro:siguiente`, la skill `rastro` y los hooks de fin de sesión, de aviso tras un `git commit` y de contexto al abrir la sesión: si el repo está registrado, Claude Code arranca sabiendo `rastro siguiente` (sin LLM ni red; no lee Notion, para eso `plan sincronizar`).
 7. **Para pegar.** `rastro daily --para-pegar [tarea]` imprime la bitácora del último daily, por tarea o de una sola, lista para pegar en otro lado.
-8. **Cerrá el día.** Con el plugin, decile a Claude "cerrá el día" (o "terminé X", "el update de hoy", "qué hice hoy", "armá la daily"): corre `rastro daily`, resume qué hiciste, qué sigue y los desvíos, y ofrece `rastro daily --para-pegar` para pegar en TaskFlow y `rastro publish`, que solo corre con tu OK explícito. Si el daily de hoy ya corrió por cron, lee lo que hay y no lo repite. Al final te pregunta si te abre el dashboard.
+8. **Cerrá el día.** Con el plugin, decile a Claude "cerrá el día" (o "terminé X", "el update de hoy", "qué hice hoy", "armá la daily"): corre `rastro daily`, resume qué hiciste, qué sigue y los desvíos, y ofrece `rastro daily --para-pegar` para pegar en tu sistema de tareas y `rastro publish`, que solo corre con tu OK explícito. Si el daily de hoy ya corrió por cron, lee lo que hay y no lo repite. Al final te pregunta si te abre el dashboard.
 9. **Daily automático.** `rastro cron instalar [--hora HH:MM]` lo instala con el programador de tu máquina, sin `sudo` ni paquetes: un timer de systemd de usuario en Linux (`~/.config/systemd/user/rastro-daily.{service,timer}`, con `Persistent=true`), un LaunchAgent en macOS (`~/Library/LaunchAgents/ar.rastro.daily.plist`) o, si no hay ninguno, una sola línea global en `crontab` (`# rastro:global`). Corre `rastro daily` de lunes a viernes (18:30 por defecto) para todos tus repos y deja la salida en `~/.rastro/cron.log`; fija `RASTRO_HOME`, el `PATH` y `CLAUDE_CONFIG_DIR` (si la tenés definida). Reinstalar reemplaza la tarea, y saca las líneas de Rastro del `crontab` (también las viejas de cada repo). Con systemd, sin la sesión iniciada hace falta `loginctl enable-linger`, que Rastro solo sugiere. Si no hay ningún programador, lo dice y explica qué instalar, sin fallar. `rastro cron quitar` la saca y `rastro cron` muestra el programador, si está instalado y a qué hora, y avisa si quedan líneas viejas por repo. Necesita `rastro init` y `claude` en el PATH. Es lo único que toca fuera de `~/.rastro/` y de los repos, y solo cuando corrés el comando. Cada daily usa tu cuenta de Claude y cuesta alrededor de 1 centavo por día.
 
 ## Privacidad
 
-- Los secretos (`sk-…`, `ghp_…`, `AKIA…`, `Bearer …`, `*_TOKEN=`, `password=`) se redactan antes de llamar al LLM y antes de cualquier conector (`rastro publish`). El `~/.rastro/state.json` local no se redacta.
+- Los secretos (`sk-…`, `ghp_…`, `github_pat_…`, `ntn_…`, `secret_…`, `AKIA…`, `Bearer …`, `*_TOKEN=`, `password=`) se redactan antes de llamar al LLM y antes de cualquier conector (`rastro publish`). El `~/.rastro/state.json` local no se redacta.
 - Las sugerencias de automatización salen de tu terminal y no se comparten salvo que pongas `compartir.sugerencias: true` en `~/.rastro/config.json`.
 - El central escucha solo en localhost: no tiene autenticación todavía. En modo personal (`--personal`), los POST (`/api/cambios` y `/api/chat`) llevan el token de sesión en `X-Rastro-Token`, y se rechazan el host y el origen que no sean locales.
 - El chat manda a `claude -p` el plan vigente y un resumen del último daily con las últimas entradas de la bitácora, ya redactados de secretos. Eso sale de tu máquina hacia Claude con tu cuenta.
@@ -205,7 +187,7 @@ En el orden en que se usa:
 
 `~/.rastro/config.json` (lo crea `init` si no existe, una sola para todos tus repos): persona, zona horaria, conectores (`central`, `notion`), umbrales de pendientes, desvíos y repeticiones (`umbrales.atrasadas` es cuántas tareas atrasadas disparan la alerta de desvío, 1 por defecto), el LLM (`claude-cli` con `haiku` por defecto, o `ninguno`) y `chat.modelo` (el modelo del chat, `sonnet` por defecto).
 
-`notion.modo` es `mock` (por defecto: escribe `~/.rastro/notion-preview.md`) o `claude` (publica en la página Daily con `claude -p`, usando la skill daily-flock instalada en `~/.claude/skills/daily-flock`). En modo `claude`, `claude -p` corre solo con la skill daily-flock y las dos herramientas de Notion (`notion-fetch` y `notion-update-page`), y cuesta unos centavos por publicación; para leer el plan usa la skill, `notion-fetch` y `notion-search`, sin ninguna herramienta que escriba. `notion.pagina` (opcional) es el id de una página de Notion (32 caracteres hexadecimales, con o sin guiones): en modo `claude`, publica al final de esa página en vez de la Daily.
+`notion.modo` es `mock` (por defecto: escribe `~/.rastro/notion-preview.md`) o `claude` (publica en la página Daily con `claude -p`, usando la skill de Notion para tu página Daily que tengas en `~/.claude/skills/daily-flock`). En modo `claude`, `claude -p` corre solo con esa skill y las dos herramientas de Notion (`notion-fetch` y `notion-update-page`), y cuesta unos centavos por publicación; para leer el plan usa la skill, `notion-fetch` y `notion-search`, sin ninguna herramienta que escriba. `notion.pagina` (opcional) es el id de una página de Notion (32 caracteres hexadecimales, con o sin guiones): en modo `claude`, publica al final de esa página en vez de la Daily.
 
 ## Limitaciones conocidas
 
@@ -217,14 +199,11 @@ En el orden en que se usa:
 
 ## Modo equipo
 
-La versión del AI Day está en la rama `ai-day` (tag `ai-day-2026`). `main` es la continuación personal
-(ver `intent/asistente-personal/intent.md`).
-
 El central multipersona, la vista Equipo, `seed-demo` y `publish` siguen funcionando y están en pausa. Lo que cambió: el snapshot es v2 (suma `foco`, `ofrecimientos`, el plan con duraciones y días, y el vínculo `corregido`; el central sigue aceptando v1), `desvios.alerta` también se levanta por tareas atrasadas, y `publish` puede sumar el bloque del plan a Notion, siempre con confirmación.
 
 ## A futuro
 
-Lo que sigue pendiente (ver `intent/asistente-personal/intent.md`):
+Lo que sigue pendiente:
 
 - **Aprender del historial.** Afinar las duraciones sugeridas con lo que ya pasó: dailies,
   checkpoints y bitácora. Es una "proto persona" del estilo de un second brain, quizás guardada en
@@ -233,14 +212,6 @@ Lo que sigue pendiente (ver `intent/asistente-personal/intent.md`):
   lo que se habla en las reuniones.
 - **Filtro por autor.** En un repo compartido, contar solo los commits propios (`git config user.email`).
 - **Merges squash o fast-forward.** Detectarlos como "resuelto sin cerrar".
-- **Puente con daily-flock.** Que la skill tome la bitácora de `rastro daily --para-pegar`.
+- **Puente con la skill de Notion.** Que tome la bitácora de `rastro daily --para-pegar`.
 - **Uso de equipo.** Retomar el central multipersona con un dashboard de admin que muestre lo de cada
   persona.
-
-## Desarrollo
-
-```bash
-cd backend && npm install && npm run check    # tsc estricto + node --test
-```
-
-El contrato entre el motor y la UI está en `intent/spec.md` (sección "Contrato") y en `backend/src/contract/snapshot.ts`. El pedido de la UI está en `frontend/README.md`.

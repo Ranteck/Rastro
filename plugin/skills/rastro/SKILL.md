@@ -1,7 +1,7 @@
 ---
 name: rastro
 description: Esta skill se usa cuando el usuario pregunta "qué sigue", "cómo voy", "voy atrasado", pide "armá el plan", "cambiá la duración de X" o dice "esto no es de esa tarea", "mostrame el dashboard", "abrí el dashboard", "quiero ver el Gantt", "cómo vengo esta semana, en el dashboard", "mostrame el tablero", "sincronizá el plan", "traé el plan de Notion", "traé el plan de la semana que viene", "planeá la semana que viene", "andá armando el plan del lunes", "sugerime el plan de este proyecto", "este repo es de X", "terminé X", "cerrá el día", "el update de hoy", "qué hice hoy" o "armá la daily". Guía el uso de la CLI de Rastro para ver el plan de la semana (y planear la que viene), los desvíos, el cierre del día y corregir duraciones, días o vínculos de commits.
-version: 0.2.3
+version: 0.2.4
 allowed-tools: Bash(${CLAUDE_PLUGIN_ROOT}/scripts/rastro.sh siguiente), Bash(${CLAUDE_PLUGIN_ROOT}/scripts/rastro.sh aviso), Bash(${CLAUDE_PLUGIN_ROOT}/scripts/rastro.sh daily --para-pegar), Bash(${CLAUDE_PLUGIN_ROOT}/scripts/rastro.sh start)
 ---
 

@@ -1,6 +1,6 @@
 {
   "name": "rastro",
-  "version": "0.2.3",
+  "version": "0.2.4",
   "description": "Memoria de equipo con evidencia",
   "scripts": {
     "test": "node --import ./test/helpers/aislar.ts --test \"test/**/*.test.ts\"",

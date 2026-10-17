@@ -2,6 +2,12 @@
 
 Todos los cambios notables de Rastro se documentan acá. El formato sigue [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/) y el versionado, [SemVer](https://semver.org/lang/es/).
 
+## [0.2.4] - 2026-10-16
+
+### Cambiado
+
+- **Cómo se publica Rastro:** desde esta versión, cada release se publica en este repositorio como un solo commit ("Rastro vX.Y.Z"), con su tag y su release, y el contenido es lo mismo que se instala. La instalación no cambia: `/plugin marketplace add Ranteck/Rastro`, `/plugin install rastro@rastro` y `/plugin marketplace update rastro`.
+
 ## [0.2.3] - 2026-10-16
 
 ### Agregado

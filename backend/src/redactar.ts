@@ -1,10 +1,13 @@
 export const REDACTADO = "[redactado]";
 
-const TOKENS: readonly RegExp[] = [
+// Exportada para que publicacion/armar.ts busque en lo que va a publicar los mismos formatos de token que se redactan.
+export const TOKENS: readonly RegExp[] = [
   /-----BEGIN [A-Z ]*PRIVATE KEY-----[\s\S]*?-----END [A-Z ]*PRIVATE KEY-----/g,
   /\bsk-[A-Za-z0-9_-]{10,}/g,
   /\bgh[pousr]_[A-Za-z0-9]{20,}/g,
   /\bAKIA[0-9A-Z]{16}\b/g,
+  /\bgithub_pat_[A-Za-z0-9_]{22,}/g,
+  /\b(?:ntn|secret)_[A-Za-z0-9]{30,}/g,
   /\bxox[abprs]-[A-Za-z0-9-]{10,}/g,
   /\bBearer\s+[A-Za-z0-9._~+/=-]{10,}/g,
 ];

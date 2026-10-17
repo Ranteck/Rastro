@@ -51,8 +51,8 @@ sesión de Claude Code, `rastro daily`). Cada persona decide qué publica.
   de Claude Code y `rastro daily`, a demanda o por cron. `rastro publish` envía el snapshot al
   central o a Notion.
 - El dashboard lo sirve el central local (`127.0.0.1:4317`) y lee dos endpoints:
-  `GET /api/equipo` y `GET /api/persona/:id`. El contrato es `schemaVersion: 1` en
-  `intent/spec.md`, sección "Contrato".
+  `GET /api/equipo` y `GET /api/persona/:id`. El contrato es `schemaVersion: 1`, en
+  `backend/src/contract/snapshot.ts`.
 - Vistas pedidas (en `frontend/README.md`):
   1. **Equipo:** es el inicio del modo equipo. En el modo personal no se muestra y el inicio es Mi día.
   2. **Mi día:** el resumen en Hice, Avancé, Sigue y Bloqueos, la bitácora y el costo.

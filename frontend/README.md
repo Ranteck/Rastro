@@ -1,6 +1,6 @@
 # Pedido de UI: dashboard de Rastro
 
-Estado: borrador · Fecha: 2026-10-09 · Contrato: `intent/spec.md`, sección "Contrato" (`schemaVersion: 1`)
+Estado: borrador · Fecha: 2026-10-09 · Contrato: `backend/src/contract/snapshot.ts` (`schemaVersion: 1`)
 
 ## Cómo correrlo
 

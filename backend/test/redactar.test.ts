@@ -10,6 +10,19 @@ test("redacta tokens conocidos", () => {
   assert.match(r, /GITHUB_TOKEN=\[redactado\]/);
 });
 
+test("redacta tokens de GitHub de acceso fino y de Notion", () => {
+  const tokens = [`github_pat_${"A1b2".repeat(6)}_${"c3D4".repeat(14)}`, `ntn_${"a1B2".repeat(11)}`, `secret_${"x9Y8".repeat(10)}${"z".repeat(3)}`];
+  for (const token of tokens) {
+    const r = redactar(`el token es ${token} y sigue`);
+    assert.ok(!r.includes(token), token.slice(0, 6));
+    assert.equal(r, "el token es [redactado] y sigue");
+  }
+});
+
+test("no redacta nombres comunes que se parecen a un token de Notion", () => {
+  assert.equal(redactar("client_secret_name y secret_key_value y ntn_corto"), "client_secret_name y secret_key_value y ntn_corto");
+});
+
 test("redacta asignaciones de *_KEY, *_TOKEN y password", () => {
   const r = redactar("OPENAI_API_KEY='sk-proj-abc123def456' mysql --password=hunter2 AWS=AKIAABCDEFGHIJKLMNOP");
   assert.ok(!r.includes("sk-proj-abc123def456"));
