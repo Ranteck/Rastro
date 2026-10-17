@@ -1,0 +1,190 @@
+import { test } from "node:test";
+import assert from "node:assert/strict";
+import { mkdirSync, mkdtempSync, readFileSync, symlinkSync, writeFileSync } from "node:fs";
+import { spawn } from "node:child_process";
+import { request } from "node:http";
+import type { AddressInfo } from "node:net";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
+import { fileURLToPath } from "node:url";
+import { Almacen } from "../src/central/almacen.ts";
+import { crearCentral } from "../src/central/servidor.ts";
+import { validarSnapshot } from "../src/contract/snapshot.ts";
+import { checkEquipo } from "../src/contract/equipo.ts";
+
+const ejemplo = (nombre: string): unknown => JSON.parse(readFileSync(new URL(`../../frontend/ejemplos/${nombre}`, import.meta.url), "utf8"));
+
+async function levantar(estaticos = join(tmpdir(), "rastro-sin-dist")) {
+  const servidor = crearCentral({ almacen: new Almacen(mkdtempSync(join(tmpdir(), "rastro-central-"))), estaticos });
+  await new Promise<void>((resolve) => servidor.listen(0, "127.0.0.1", resolve));
+  const { port } = servidor.address() as AddressInfo;
+  return { url: `http://127.0.0.1:${port}`, port, cerrar: () => new Promise<void>((resolve) => servidor.close(() => resolve())) };
+}
+
+/** GET con la ruta tal cual: fetch normaliza "/../" y no sirve para probar recorridos de directorio. */
+function getCrudo(port: number, ruta: string): Promise<{ estado: number; cuerpo: string }> {
+  return new Promise((resolve, reject) => {
+    const req = request({ host: "127.0.0.1", port, path: ruta, method: "GET" }, (res) => {
+      let cuerpo = "";
+      res.setEncoding("utf8").on("data", (d: string) => {
+        cuerpo += d;
+      });
+      res.on("end", () => resolve({ estado: res.statusCode ?? 0, cuerpo }));
+    });
+    req.on("error", reject);
+    req.end();
+  });
+}
+
+const publicar = (url: string, cuerpo: unknown) =>
+  fetch(`${url}/api/publish`, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(cuerpo) });
+
+test("publica un snapshot válido, lo devuelve por persona y calcula la fila del equipo", async (t) => {
+  const c = await levantar();
+  t.after(c.cerrar);
+  assert.equal((await publicar(c.url, ejemplo("persona-denis.json"))).status, 201);
+  assert.deepEqual(await (await fetch(`${c.url}/api/persona/denis`)).json(), validarSnapshot(ejemplo("persona-denis.json")));
+  // Además del oráculo (el mismo validador), lo que el ejemplo traía llega intacto.
+  const crudo = ejemplo("persona-denis.json") as { persona: unknown; bitacora: unknown; plan: { tareas: { slug: string }[] } };
+  const devuelto = (await (await fetch(`${c.url}/api/persona/denis`)).json()) as typeof crudo;
+  assert.deepEqual([devuelto.persona, devuelto.bitacora], [crudo.persona, crudo.bitacora]);
+  assert.deepEqual(devuelto.plan.tareas.map((t) => t.slug), crudo.plan.tareas.map((t) => t.slug));
+  const equipo = checkEquipo(await (await fetch(`${c.url}/api/equipo`)).json(), "equipo");
+  const filaDelEjemplo = checkEquipo(ejemplo("equipo.json"), "ejemplo").equipo[0];
+  assert.deepEqual(equipo.equipo, [filaDelEjemplo]);
+});
+
+test("acepta publicar un v1 y un v2 y /api/persona devuelve siempre v3", async (t) => {
+  const c = await levantar();
+  t.after(c.cerrar);
+  const v1 = ejemplo("persona-denis.json") as { persona: { id: string } };
+  const v2 = { ...validarSnapshot(v1), persona: { id: "ana", nombre: "Ana", equipo: "AI Day" }, foco: { actual: null, siguiente: null } };
+  assert.equal((await publicar(c.url, v1)).status, 201);
+  assert.equal((await publicar(c.url, v2)).status, 201);
+  const denis = (await (await fetch(`${c.url}/api/persona/denis`)).json()) as { schemaVersion: number };
+  const ana = (await (await fetch(`${c.url}/api/persona/ana`)).json()) as { foco: unknown };
+  assert.equal(denis.schemaVersion, 3);
+  assert.deepEqual(ana.foco, { actual: null, siguiente: null });
+});
+
+test("rechaza campos no admitidos y no guarda nada", async (t) => {
+  const c = await levantar();
+  t.after(c.cerrar);
+  const res = await publicar(c.url, { ...(ejemplo("persona-denis.json") as object), extra: true });
+  assert.equal(res.status, 400);
+  assert.match(((await res.json()) as { error: string }).error, /snapshot\.extra/);
+  assert.equal((await fetch(`${c.url}/api/persona/denis`)).status, 404);
+});
+
+test("JSON roto da 400 y un cuerpo de más de 1 MB da 413", async (t) => {
+  const c = await levantar();
+  t.after(c.cerrar);
+  const json = { "content-type": "application/json" };
+  assert.equal((await fetch(`${c.url}/api/publish`, { method: "POST", headers: json, body: "{no" })).status, 400);
+  assert.equal((await fetch(`${c.url}/api/publish`, { method: "POST", headers: json, body: "x".repeat(1_100_000) })).status, 413);
+});
+
+test("rutas hostiles nunca salen de sus directorios", async (t) => {
+  const padre = mkdtempSync(join(tmpdir(), "rastro-padre-"));
+  const dist = join(padre, "dist");
+  mkdirSync(dist);
+  writeFileSync(join(dist, "index.html"), "<h1>ui</h1>");
+  writeFileSync(join(padre, "secreto.txt"), "CENTINELA-FUERA-DE-DIST");
+  symlinkSync(join(padre, "secreto.txt"), join(dist, "enlace.txt"));
+  symlinkSync(padre, join(dist, "dirlink"));
+  const c = await levantar(dist);
+  t.after(c.cerrar);
+  assert.deepEqual(await getCrudo(c.port, "/"), { estado: 200, cuerpo: "<h1>ui</h1>" });
+  for (const ruta of ["/../secreto.txt", "/../../secreto.txt", "/..%2fsecreto.txt", "/%2e%2e/secreto.txt", "/..%2f..%2fsecreto.txt", "/..%2f..%2fetc%2fpasswd", "//", "/enlace.txt", "/dirlink/secreto.txt"]) {
+    const r = await getCrudo(c.port, ruta);
+    assert.ok(!r.cuerpo.includes("CENTINELA"), `${ruta} filtró un archivo de afuera`);
+    assert.ok(!r.cuerpo.includes("root:"), `${ruta} filtró un archivo de afuera`);
+    assert.ok([400, 404].includes(r.estado) || r.cuerpo === "<h1>ui</h1>", `${ruta} dio ${r.estado}`);
+  }
+  assert.equal((await getCrudo(c.port, "/..%2fsecreto.txt")).estado, 404);
+  assert.equal((await getCrudo(c.port, "/enlace.txt")).estado, 404);
+  assert.equal((await getCrudo(c.port, "/dirlink/secreto.txt")).estado, 404);
+  assert.equal((await getCrudo(c.port, "//")).estado, 400);
+  assert.equal((await getCrudo(c.port, "/api/persona/..%2F..%2Fetc")).estado, 404);
+  assert.equal((await getCrudo(c.port, "/api/persona/..%2F..")).estado, 404);
+  assert.equal((await getCrudo(c.port, "/%E0%A4%A")).estado, 400);
+  assert.equal((await getCrudo(c.port, "/api/persona/%E0%A4%A")).estado, 400);
+});
+
+test("sin UI construida, la raíz dice dónde está el pedido", async (t) => {
+  const c = await levantar();
+  t.after(c.cerrar);
+  const res = await fetch(c.url);
+  assert.equal(res.status, 200);
+  assert.match(await res.text(), /frontend\/README\.md/);
+});
+
+test("el ejemplo de equipo de frontend cumple el contrato", () => {
+  assert.equal(checkEquipo(ejemplo("equipo.json"), "ejemplo").equipo.length, 3);
+});
+
+/** Pedido con Host y content-type a elección: fetch no permite cambiar Host. */
+function pedidoCrudo(port: number, o: { host?: string; contentType?: string; ruta?: string; metodo?: string; cuerpo?: string }): Promise<number> {
+  return new Promise((resolve, reject) => {
+    const headers: Record<string, string> = {};
+    if (o.host !== undefined) headers["host"] = o.host;
+    if (o.contentType !== undefined) headers["content-type"] = o.contentType;
+    const req = request({ host: "127.0.0.1", port, path: o.ruta ?? "/api/equipo", method: o.metodo ?? "GET", headers }, (res) => {
+      res.resume();
+      res.on("end", () => resolve(res.statusCode ?? 0));
+    });
+    req.on("error", reject);
+    req.end(o.cuerpo);
+  });
+}
+
+test("rechaza con 403 un Host que no es local (DNS rebinding)", async (t) => {
+  const c = await levantar();
+  t.after(c.cerrar);
+  assert.equal(await pedidoCrudo(c.port, { host: "evil.example.com" }), 403);
+  assert.equal(await pedidoCrudo(c.port, { host: `evil.example.com:${c.port}` }), 403);
+  assert.equal(await pedidoCrudo(c.port, { host: `127.0.0.1:${c.port}` }), 200);
+  assert.equal(await pedidoCrudo(c.port, { host: `localhost:${c.port}` }), 200);
+  assert.equal(await pedidoCrudo(c.port, { host: `[::1]:${c.port}` }), 200);
+});
+
+test("POST /api/publish exige application/json, con charset opcional", async (t) => {
+  const c = await levantar();
+  t.after(c.cerrar);
+  const cuerpo = JSON.stringify(ejemplo("persona-denis.json"));
+  const post = (contentType?: string) => pedidoCrudo(c.port, { ruta: "/api/publish", metodo: "POST", cuerpo, ...(contentType === undefined ? {} : { contentType }) });
+  assert.equal(await post("text/plain"), 415);
+  assert.equal(await post("application/x-www-form-urlencoded"), 415);
+  assert.equal(await post(), 415);
+  assert.equal(await post("application/json; charset=utf-8"), 201);
+});
+
+test("sirve los tipos MIME de los estáticos comunes", async (t) => {
+  const dist = mkdtempSync(join(tmpdir(), "rastro-dist-"));
+  const tipos = { "a.map": "application/json; charset=utf-8", "a.webp": "image/webp", "a.jpg": "image/jpeg", "a.jpeg": "image/jpeg", "a.woff": "font/woff", "a.txt": "text/plain; charset=utf-8" };
+  for (const nombre of Object.keys(tipos)) writeFileSync(join(dist, nombre), "x");
+  const c = await levantar(dist);
+  t.after(c.cerrar);
+  for (const [nombre, tipo] of Object.entries(tipos)) assert.equal((await fetch(`${c.url}/${nombre}`)).headers.get("content-type"), tipo, nombre);
+});
+
+test("rastro serve informa el puerto real, no el pedido", async () => {
+  const bin = fileURLToPath(new URL("../bin/rastro.js", import.meta.url));
+  const datos = mkdtempSync(join(tmpdir(), "rastro-serve-"));
+  const hijo = spawn(process.execPath, [bin, "serve", "--puerto", "0", "--datos", datos]);
+  try {
+    const salida = await new Promise<string>((resolve, reject) => {
+      let acumulado = "";
+      hijo.stdout.setEncoding("utf8").on("data", (d: string) => {
+        acumulado += d;
+        if (acumulado.includes("\n")) resolve(acumulado);
+      });
+      hijo.once("error", reject);
+      hijo.once("exit", () => reject(new Error(`serve terminó: ${acumulado}`)));
+    });
+    const puerto = /http:\/\/127\.0\.0\.1:(\d+)/.exec(salida)?.[1];
+    assert.ok(puerto !== undefined && Number(puerto) > 0, salida);
+  } finally {
+    hijo.kill("SIGINT");
+  }
+});

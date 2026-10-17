@@ -1,0 +1,81 @@
+import { test } from "node:test";
+import assert from "node:assert/strict";
+import { redactar } from "../src/redactar.ts";
+
+test("redacta tokens conocidos", () => {
+  const gh = `ghp_${"a".repeat(36)}`;
+  const r = redactar(`export GITHUB_TOKEN=${gh} && curl -H 'Authorization: Bearer abcdefghijklmnop' https://x`);
+  assert.ok(!r.includes(gh));
+  assert.ok(!r.includes("abcdefghijklmnop"));
+  assert.match(r, /GITHUB_TOKEN=\[redactado\]/);
+});
+
+test("redacta asignaciones de *_KEY, *_TOKEN y password", () => {
+  const r = redactar("OPENAI_API_KEY='sk-proj-abc123def456' mysql --password=hunter2 AWS=AKIAABCDEFGHIJKLMNOP");
+  assert.ok(!r.includes("sk-proj-abc123def456"));
+  assert.ok(!r.includes("hunter2"));
+  assert.ok(!r.includes("AKIAABCDEFGHIJKLMNOP"));
+});
+
+test("redacta asignaciones sin prefijo en el nombre", () => {
+  for (const entrada of ["SECRET=abc123", "TOKEN=abc123", "KEY=abc123", "--token=abc123"]) {
+    const r = redactar(entrada);
+    assert.ok(!r.includes("abc123"), entrada);
+    assert.match(r, /\[redactado\]/, entrada);
+  }
+});
+
+test("una asignación dentro de un string JSON deja el JSON válido y sin el secreto", () => {
+  const r = redactar('{"msg":"API_KEY=abc123","x":1}');
+  assert.equal(r, '{"msg":"API_KEY=[redactado]","x":1}');
+  JSON.parse(r);
+});
+
+test("comillas escapadas dentro de JSON: el resultado sigue siendo JSON y no filtra", () => {
+  const simple = redactar(JSON.stringify({ cmd: 'export TOKEN="abc123" && ls' }));
+  assert.equal(simple, '{"cmd":"export TOKEN=[redactado] && ls"}');
+  JSON.parse(simple);
+  const conEspacio = redactar(JSON.stringify({ cmd: 'export TOKEN="abc def" && ls' }));
+  assert.equal(conEspacio, '{"cmd":"export TOKEN=[redactado] && ls"}');
+  JSON.parse(conEspacio);
+});
+
+test("comilla de apertura sin cerrar redacta hasta el fin de línea", () => {
+  assert.equal(redactar('export TOKEN="abc123'), "export TOKEN=[redactado]");
+  assert.equal(redactar("KEY='abc"), "KEY=[redactado]");
+  assert.equal(redactar('TOKEN="abc def'), "TOKEN=[redactado]");
+  assert.equal(redactar('TOKEN="abc def\nok'), "TOKEN=[redactado]\nok");
+});
+
+test("una barra invertida dentro del secreto no deja cola", () => {
+  assert.equal(redactar("PASSWORD=ab\\cd"), "PASSWORD=[redactado]");
+});
+
+test("un valor entre comillas puede abarcar varias líneas", () => {
+  const pem = 'KEY="-----BEGIN PRIVATE KEY-----\nabc\ndef\n-----END PRIVATE KEY-----" ok';
+  assert.equal(redactar(pem), "KEY=[redactado] ok");
+});
+
+test("lo pegado a la comilla de cierre también se redacta", () => {
+  assert.equal(redactar('TOKEN="abc"def x'), "TOKEN=[redactado] x");
+});
+
+test("una comilla sin cerrar en varias líneas redacta solo hasta el fin de su línea", () => {
+  assert.equal(redactar('a\nTOKEN="abc def\nok\nfin'), "a\nTOKEN=[redactado]\nok\nfin");
+});
+
+test("no toca texto sin secretos", () => {
+  assert.equal(redactar("git commit -m 'arreglo el parser'"), "git commit -m 'arreglo el parser'");
+});
+
+test("redacta un bloque de clave privada PEM completo", () => {
+  const pem = "-----BEGIN RSA PRIVATE KEY-----\nMIIEabc\ndef==\n-----END RSA PRIVATE KEY-----";
+  assert.equal(redactar(`antes\n${pem}\ndespues`), "antes\n[redactado]\ndespues");
+  assert.equal(redactar("-----BEGIN PRIVATE KEY-----\nabc\n-----END PRIVATE KEY-----"), "[redactado]");
+});
+
+test("redacta las credenciales de una URL y conserva el resto", () => {
+  assert.equal(redactar("git clone https://usuario:hunter2@github.com/x/y.git"), "git clone https://[redactado]@github.com/x/y.git");
+  assert.equal(redactar("postgres://app:p@ss@db:5432/x"), "postgres://[redactado]@db:5432/x");
+  assert.equal(redactar("https://github.com/x/y y http://localhost:4317/api"), "https://github.com/x/y y http://localhost:4317/api");
+});

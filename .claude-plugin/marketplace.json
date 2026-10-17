@@ -1,0 +1,15 @@
+{
+  "name": "rastro",
+  "description": "Marketplace del plugin de Rastro: el plan de la semana, qué sigue y el aviso de atraso dentro de Claude Code.",
+  "owner": {
+    "name": "Denis Hugo Perafan",
+    "url": "https://github.com/Ranteck"
+  },
+  "plugins": [
+    {
+      "name": "rastro",
+      "source": "./plugin",
+      "description": "Copiloto personal de plan, tiempos y desvíos sobre Rastro: armá el plan de la semana, mirá qué sigue y recibí el aviso de atraso al commitear."
+    }
+  ]
+}

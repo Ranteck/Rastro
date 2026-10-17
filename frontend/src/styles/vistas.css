@@ -1,0 +1,1220 @@
+.titulo {
+  margin: 0 0 48px;
+  font-size: 40px;
+  font-weight: 500;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+}
+
+.dato {
+  font-family: var(--fuente-mono);
+  font-size: 14px;
+  letter-spacing: 0.04em;
+  overflow-wrap: anywhere;
+}
+
+.laminas {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 340px), 1fr));
+  gap: 32px;
+}
+
+/* Para proyector, los datos (la razón de las vistas) no pueden ser lo más chico de la lámina. */
+.persona-lamina .dato,
+.pendiente .dato {
+  font-size: 17px;
+}
+
+.solo-lectores {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* Equipo */
+.protagonista {
+  display: flex;
+  align-items: flex-end;
+  gap: 24px;
+  margin-bottom: 56px;
+}
+
+.protagonista .display {
+  margin: 0;
+}
+
+.protagonista-texto {
+  padding-bottom: 8px;
+}
+
+.protagonista-texto p {
+  margin: 0;
+}
+
+a.persona-lamina {
+  display: block;
+  color: inherit;
+  text-decoration: none;
+}
+
+a.persona-lamina:hover {
+  border-color: var(--tinta);
+}
+
+a.persona-lamina.placa-alerta:hover {
+  border-color: var(--placa-texto);
+}
+
+.persona-cabecera {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.persona-nombre {
+  margin: 0;
+  font-size: 28px;
+  font-weight: 500;
+  line-height: 1.2;
+}
+
+.persona-equipo {
+  margin: 4px 0 0;
+}
+
+.persona-datos {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 8px 24px;
+  margin: 24px 0 0;
+}
+
+.persona-datos dt,
+.persona-datos dd {
+  margin: 0;
+  align-self: baseline;
+}
+
+/* La placa invierte el papel: todo el texto va en color de papel, nunca en gris, y "DESVÍO" en bermellón. */
+.persona-lamina.placa-alerta {
+  color: var(--papel);
+  --cruz-trazo: linear-gradient(var(--papel), var(--papel));
+}
+
+.placa-alerta .meta {
+  color: inherit;
+}
+
+.desvio {
+  color: var(--placa-texto);
+  font-family: var(--fuente-mono);
+  font-size: 22px;
+  letter-spacing: 0.14em;
+}
+
+/* Pendientes */
+.laminas-pendientes {
+  align-items: start;
+}
+
+/* El tipo es el encabezado de la lámina: nombra de qué pendiente se trata. */
+.pendiente-tipo {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 500;
+  line-height: 1.25;
+}
+
+.pendiente-tarea {
+  margin: 4px 0 0;
+}
+
+.pendiente-texto {
+  margin: 16px 0;
+}
+
+.evidencia {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 24px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.evidencia-item {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.evidencia-item .dato {
+  margin: 0;
+}
+
+.evidencia-item a {
+  color: var(--tinta);
+  text-underline-offset: 3px;
+}
+
+.proximo-paso {
+  margin-top: 24px;
+  padding-top: 12px;
+  border-top: 1px solid var(--hairline);
+}
+
+.proximo-paso p {
+  margin: 0;
+}
+
+.proximo-paso .cuerpo {
+  font-weight: 500;
+}
+
+/* El resuelto sin cerrar es el protagonista: ocupa toda la fila y deja a la derecha el lugar del sello, que sale medio afuera del borde. */
+.pendiente-principal {
+  grid-column: 1 / -1;
+  padding: 48px 176px 48px 48px;
+  border-color: var(--tinta);
+}
+
+.pendiente-principal .proximo-paso {
+  max-width: 60ch;
+}
+
+.pendiente-principal .pendiente-tipo {
+  font-size: 28px;
+}
+
+.pendiente-principal .pendiente-texto {
+  max-width: 60ch;
+  font-size: 26px;
+  line-height: 1.35;
+}
+
+.sello-posicion {
+  position: absolute;
+  top: -24px;
+  right: -24px;
+  width: 150px;
+  height: 150px;
+}
+
+.sello-svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.sello-disco {
+  fill: var(--sello);
+}
+
+.sello-borde,
+.sello-tilde {
+  fill: none;
+  stroke: var(--sello-tinta);
+  stroke-width: 1;
+}
+
+.sello-tilde {
+  stroke-width: 3;
+  stroke-linecap: square;
+}
+
+.sello-texto {
+  fill: var(--sello-tinta);
+  font-family: var(--fuente-mono);
+  font-size: 13px;
+}
+
+.sello-giro {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: sello-giro 25s linear infinite;
+}
+
+@keyframes sello-giro {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (max-width: 720px) {
+  .pendiente-principal {
+    padding: 32px 24px 32px 24px;
+  }
+
+  .sello-posicion {
+    position: static;
+    margin: -8px 0 16px auto;
+  }
+}
+
+/* Mi día */
+.cabecera-dia {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  grid-template-areas:
+    "nombre nombre"
+    "fecha fecha"
+    "plan sello"
+    "foco foco";
+  align-items: end;
+  gap: 8px 32px;
+  margin-bottom: 64px;
+}
+
+.foco {
+  grid-area: foco;
+  margin-top: 24px;
+  padding-top: 16px;
+  border-top: 1px solid var(--tinta);
+}
+
+.foco-fila {
+  margin: 0;
+  font-size: 18px;
+}
+
+.foco-fila + .foco-fila {
+  margin-top: 4px;
+}
+
+.foco-tarea {
+  font-weight: 500;
+}
+
+.sin-plan {
+  margin: 0;
+  font-size: 28px;
+  font-weight: 500;
+  line-height: 1.2;
+}
+
+.cabecera-dia .titulo {
+  grid-area: nombre;
+  margin: 0;
+}
+
+.cabecera-fecha {
+  grid-area: fecha;
+  margin: 0 0 24px;
+}
+
+.fuera-del-plan {
+  grid-area: plan;
+  justify-self: start;
+}
+
+.fuera-del-plan.placa-alerta {
+  color: var(--papel);
+  --cruz-trazo: linear-gradient(var(--papel), var(--papel));
+}
+
+.fuera-del-plan .placa-atrasadas {
+  margin-top: 8px;
+}
+
+.fuera-del-plan .display,
+.fuera-del-plan .etiqueta {
+  margin: 0;
+}
+
+/* Lámina sobre papel: el sello estampado sobre el borde es lo que se recuerda del viewport, y el disco lavanda no puede ir sobre su mismo color. */
+.sin-cerrar {
+  grid-area: sello;
+  max-width: 520px;
+  padding: 40px 188px 40px 40px;
+  border-color: var(--tinta);
+}
+
+.sello-grande {
+  top: -36px;
+  right: -24px;
+  width: 200px;
+  height: 200px;
+}
+
+.sin-cerrar-cantidad {
+  margin: 0;
+  font-size: 26px;
+  font-weight: 500;
+  line-height: 1.25;
+}
+
+@media (max-width: 720px) {
+  .sin-cerrar {
+    padding: 32px 24px;
+  }
+
+  .sello-grande {
+    width: 160px;
+    height: 160px;
+    margin: -8px 0 16px auto;
+  }
+}
+
+.resumen {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 32px 24px;
+  margin-bottom: 64px;
+}
+
+.resumen-columna {
+  grid-column: span 3;
+  min-width: 0;
+}
+
+.resumen-titulo {
+  margin: 0 0 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--tinta);
+}
+
+.resumen-lista {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.resumen-lista li + li {
+  margin-top: 12px;
+}
+
+.resumen-columna p {
+  margin: 0;
+}
+
+.resumen-ausente {
+  margin: 0 0 64px;
+}
+
+.bitacora-titulo {
+  margin: 0 0 8px;
+}
+
+.bitacora {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border-top: 1px solid var(--tinta);
+}
+
+.entrada {
+  display: grid;
+  grid-template-columns: 72px 148px minmax(0, 1fr) minmax(0, 280px);
+  gap: 8px 24px;
+  align-items: start;
+  padding: 20px 0;
+  border-bottom: 1px solid var(--hairline);
+}
+
+.entrada-hora {
+  padding-top: 2px;
+}
+
+.entrada-marca {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding-top: 2px;
+}
+
+/* Marca de estado: un solo trazo y tamaño en Mi día y en Plan. */
+.marca-estado {
+  flex: none;
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+}
+
+.marca-lleno {
+  background: var(--tinta);
+}
+
+.marca-hueco {
+  border: 2px solid var(--tinta);
+}
+
+/* Corregido a mano: un rombo lleno, distinto del cuadrado (por nombre), el marco (inferido) y la raya (sin tarea). */
+.marca-rombo {
+  width: 10px;
+  height: 10px;
+  margin: 1px;
+  background: var(--tinta);
+  transform: rotate(45deg);
+}
+
+.marca-raya {
+  height: 2px;
+  background: var(--tinta);
+}
+
+.entrada-cuerpo p {
+  margin: 0;
+}
+
+.entrada-cuerpo .entrada-tarea {
+  margin-bottom: 4px;
+}
+
+.entrada-cuerpo .entrada-texto {
+  margin-bottom: 4px;
+  overflow-wrap: anywhere;
+  max-width: 70ch;
+}
+
+.entrada-margen .evidencia {
+  flex-direction: column;
+  gap: 4px;
+}
+
+/* La regla de 1px une la razón con la fila de la entrada inferida. */
+.razon {
+  margin: 12px 0 0;
+  padding-left: 12px;
+  border-left: 1px solid var(--tinta);
+  color: var(--tinta-secundaria);
+  font-size: 15px;
+  line-height: 1.4;
+}
+
+.costo {
+  margin: 32px 0 0;
+}
+
+@media (max-width: 960px) {
+  .resumen-columna {
+    grid-column: span 6;
+  }
+
+  .entrada {
+    grid-template-columns: 72px 1fr;
+  }
+
+  .entrada-cuerpo,
+  .entrada-margen {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 560px) {
+  .cabecera-dia {
+    grid-template-columns: 1fr;
+    grid-template-areas: "nombre" "fecha" "plan" "sello" "foco";
+    row-gap: 24px;
+  }
+
+  .resumen-columna {
+    grid-column: 1 / -1;
+  }
+}
+
+/* Plan */
+.plan-cabecera .titulo {
+  max-width: 28ch;
+  margin-bottom: 16px;
+  text-wrap: balance;
+}
+
+.plan-cabecera p {
+  margin: 0 0 48px;
+}
+
+.plan-desvio {
+  display: flex;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  gap: 16px 32px;
+  margin-bottom: 48px;
+}
+
+.plan-desvio .fuera-del-plan {
+  justify-self: auto;
+}
+
+.plan-desvio > .cuerpo {
+  margin: 0;
+}
+
+.plan-tareas {
+  margin: 0 0 64px;
+  padding: 0;
+  list-style: none;
+  border-top: 1px solid var(--tinta);
+}
+
+.plan-tarea {
+  display: grid;
+  grid-template-columns: 32px minmax(0, 1fr) auto;
+  gap: 16px;
+  align-items: baseline;
+  padding: 16px 0;
+  border-bottom: 1px solid var(--hairline);
+}
+
+.plan-tarea .marca-estado {
+  justify-self: center;
+  align-self: center;
+}
+
+.plan-tarea p {
+  margin: 0;
+}
+
+.plan-tarea-nombre {
+  font-weight: 500;
+}
+
+/* Duración y días son datos: mono con cifras tabulares, aparte de la prosa. */
+.plan-tarea-tiempos {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 16px;
+  margin-top: 4px;
+}
+
+.plan-tarea-repo {
+  margin-top: 4px;
+}
+
+.plan-no-entra {
+  margin-top: 4px;
+}
+
+.plan-tarea-estado {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: flex-end;
+  gap: 8px 16px;
+}
+
+/* Mini placa: la misma inversión que la alerta, para que "ATRASADA" se lea de lejos sin depender del color. */
+.marca-atrasada {
+  display: inline-block;
+  padding: 4px 8px;
+  background: var(--placa);
+  color: var(--placa-texto);
+}
+
+/* Gantt: una columna por día; las barras se ubican con grid-column desde los datos. */
+.gantt-titulo {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.gantt-titulo h2 {
+  margin: 0;
+  font-size: 28px;
+  font-weight: 500;
+  line-height: 1.2;
+}
+
+.gantt-recorte {
+  margin: 0 0 16px;
+}
+
+.gantt-scroll {
+  overflow-x: auto;
+  scrollbar-color: var(--tinta) var(--papel);
+}
+
+.gantt-nombre {
+  font-weight: 500;
+}
+
+.gantt-leyenda {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 32px;
+  margin: 0 0 24px;
+  padding: 0;
+  list-style: none;
+}
+
+.gantt-leyenda-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.gantt-muestra {
+  display: inline-block;
+  width: 32px;
+  height: 12px;
+}
+
+.gantt-tabla {
+  min-width: calc(var(--dias) * 56px + 264px);
+  border-top: 1px solid var(--tinta);
+}
+
+.gantt-fila {
+  display: grid;
+  grid-template-columns: minmax(160px, 240px) minmax(0, 1fr);
+  gap: 24px;
+  align-items: center;
+  padding: 16px 0;
+  border-bottom: 1px solid var(--hairline);
+}
+
+.gantt-cabecera {
+  padding: 8px 0;
+}
+
+.gantt-pista {
+  position: relative;
+  align-self: stretch;
+  align-content: center;
+  display: grid;
+  min-width: calc(var(--dias) * 56px);
+  grid-template-columns: repeat(var(--dias), minmax(0, 1fr));
+  gap: 6px 0;
+}
+
+.gantt-dia {
+  grid-row: 1;
+  white-space: nowrap;
+  font-size: 13px;
+}
+
+.gantt-tarea p {
+  margin: 0;
+}
+
+.gantt-tarea .gantt-leyenda-fantasma {
+  margin-top: 4px;
+}
+
+.gantt-barra {
+  height: 14px;
+  box-sizing: border-box;
+}
+
+.gantt-barra-plan {
+  grid-row: 1;
+  border: 1px solid var(--tinta);
+  background: transparent;
+}
+
+.gantt-barra-real {
+  grid-row: 2;
+  background: var(--tinta);
+}
+
+.gantt-barra-fantasma {
+  border: 2px dashed var(--tinta);
+  background: transparent;
+}
+
+/* Atrasada: plan rayado en diagonal y con borde doble, una forma que se distingue sin el color. */
+.gantt-barra-atrasada {
+  border: 2px solid var(--tinta);
+  background: repeating-linear-gradient(135deg, var(--tinta) 0 2px, transparent 2px 6px);
+}
+
+/* Línea de hoy: fina y continua, centrada en la columna; sale del padding de la fila para unirse con la vecina; la cabecera solo lleva la etiqueta. */
+.gantt-hoy {
+  position: absolute;
+  inset: -16px 0 -17px;
+  background: linear-gradient(var(--tinta), var(--tinta)) center / 2px 100% no-repeat;
+}
+
+.gantt-hoy-etiqueta {
+  position: relative;
+  grid-row: 2;
+  justify-self: center;
+  padding: 0 4px;
+  background: var(--papel);
+}
+
+/* El arranque de la línea sale de la etiqueta y cruza el padding y el borde de la cabecera (8px + 1px) hasta la primera fila. */
+.gantt-hoy-etiqueta::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: calc(50% - 1px);
+  width: 2px;
+  height: 9px;
+  background: var(--tinta);
+}
+
+.gantt-muestra-hoy {
+  width: 2px;
+  height: 16px;
+  background: var(--tinta);
+}
+
+.gantt-fantasma .gantt-barra-real {
+  grid-row: 1;
+}
+
+@media (max-width: 560px) {
+  .plan-tarea {
+    grid-template-columns: 32px minmax(0, 1fr);
+  }
+
+  .plan-tarea-estado {
+    grid-column: 2;
+    justify-content: flex-start;
+  }
+}
+
+@media (max-width: 720px) {
+  .gantt-fila {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+
+  /* Al desplazarse hacia hoy, el nombre de la tarea se queda a la vista: el ancho es el de la región (padding de página de 32px por lado). */
+  .gantt-tarea {
+    position: sticky;
+    left: 0;
+    max-width: calc(100vw - 64px);
+  }
+
+  /* Con la etiqueta de la tarea arriba, la línea arranca en la pista y no pisa el nombre. */
+  .gantt-hoy {
+    top: -8px;
+  }
+}
+
+/* Sugerencias */
+.laminas-sugerencias {
+  align-items: start;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 440px), 1fr));
+}
+
+.sugerencia p {
+  margin: 0;
+}
+
+.sugerencia-patron {
+  font-size: 17px;
+  font-weight: 500;
+}
+
+.sugerencia .sugerencia-tipo {
+  margin-top: 24px;
+}
+
+.sugerencia .sugerencia-porque {
+  margin-top: 4px;
+  max-width: 60ch;
+}
+
+.bloque-codigo {
+  margin: 16px 0 0;
+  padding: 12px 16px;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  border: 1px solid var(--tinta);
+  font-family: var(--fuente-mono);
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+.bloque-acciones {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+/* Edición: aparece recién cuando se pide con "Editar" o "Corregir tarea"; la vista sigue siendo un documento que se lee. */
+.boton-discreto {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 4px;
+  background: transparent;
+  border: 0;
+  color: var(--tinta-secundaria);
+  cursor: pointer;
+  font-family: var(--fuente-mono);
+  font-size: 13px;
+  letter-spacing: 0.14em;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  text-transform: uppercase;
+}
+
+.boton-discreto:hover {
+  color: var(--tinta);
+}
+
+/* Pegado bajo la barra fija: el resultado de aplicar un cambio se ve aunque la página esté scrolleada. */
+.anuncio:not(:empty) {
+  position: sticky;
+  top: var(--barra-alto);
+  z-index: 5;
+  padding: 16px 32px;
+  background: var(--papel);
+  border-bottom: 1px solid var(--hairline);
+}
+
+.anuncio p {
+  margin: 0;
+  font-family: var(--fuente-mono);
+  font-size: 14px;
+  letter-spacing: 0.04em;
+}
+
+.plan-tarea-aparte {
+  grid-column: 2 / -1;
+  min-width: 0;
+}
+
+.texto-pegar .bloque-codigo {
+  margin-top: 0;
+}
+
+.texto-pegar summary {
+  width: fit-content;
+}
+
+.entrada-correccion {
+  margin-top: 8px;
+}
+
+.edicion-form {
+  display: grid;
+  gap: 16px;
+  max-width: 560px;
+  padding-top: 8px;
+}
+
+.edicion-form[hidden] {
+  display: none;
+}
+
+.edicion-campo {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  gap: 8px 24px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  min-width: 0;
+}
+
+.edicion-campo legend {
+  padding: 0;
+  margin-bottom: 8px;
+}
+
+.edicion-etiqueta {
+  display: grid;
+  gap: 4px;
+}
+
+.edicion-form input[type="number"],
+.edicion-form select {
+  min-height: 44px;
+  padding: 0 12px;
+  background: transparent;
+  border: 1px solid var(--tinta);
+  color: var(--tinta);
+  font-family: var(--fuente-mono);
+  font-size: 15px;
+}
+
+.edicion-numero {
+  width: 8ch;
+}
+
+.edicion-casilla {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding-right: 8px;
+  font-family: var(--fuente-mono);
+  font-size: 14px;
+}
+
+.edicion-casilla input {
+  width: 20px;
+  height: 20px;
+  margin: 0;
+  accent-color: var(--tinta);
+}
+
+.edicion-form .boton,
+.ofrecimiento .boton {
+  margin-top: 0;
+}
+
+.edicion-form > .boton {
+  justify-self: start;
+}
+
+.edicion-error {
+  margin: 0;
+  font-weight: 500;
+}
+
+.edicion-error:empty {
+  display: none;
+}
+
+/* Vista previa en línea, debajo de lo que se edita: es un tramo del documento y no un modal. */
+.edicion-lugar:not(:empty) {
+  margin-top: 8px;
+}
+
+.edicion-panel {
+  max-width: 70ch;
+  padding: 16px;
+  border: 1px solid var(--tinta);
+  overflow-wrap: anywhere;
+}
+
+.edicion-panel p {
+  margin: 0;
+}
+
+.edicion-lineas {
+  margin: 8px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.edicion-lineas li + li {
+  margin-top: 4px;
+}
+
+.edicion-acciones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+  margin-top: 16px;
+}
+
+.edicion-acciones .boton {
+  margin-top: 0;
+}
+
+.edicion-acciones[hidden],
+.edicion-acciones .boton[hidden] {
+  display: none;
+}
+
+.edicion-panel .edicion-error {
+  margin-top: 8px;
+}
+
+/* Ofrecimientos */
+.ofrecimientos {
+  margin: 0 0 64px;
+}
+
+.ofrecimientos-titulo {
+  margin: 0 0 8px;
+}
+
+.ofrecimientos-lista {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border-top: 1px solid var(--tinta);
+}
+
+.ofrecimiento {
+  padding: 16px 0;
+  border-bottom: 1px solid var(--hairline);
+}
+
+.ofrecimiento p {
+  margin: 0;
+}
+
+.ofrecimiento-nombre {
+  font-weight: 500;
+}
+
+.ofrecimiento-duracion {
+  margin-top: 4px;
+}
+
+.ofrecimiento-porque {
+  max-width: 70ch;
+  margin-top: 4px;
+}
+
+.ofrecimiento .edicion-acciones {
+  margin-top: 8px;
+}
+
+@media (max-width: 560px) {
+  .plan-tarea-aparte {
+    grid-column: 1 / -1;
+  }
+
+  .anuncio:not(:empty) {
+    padding: 16px;
+  }
+}
+
+/* Chat: renglones de documento separados por la línea fina; sin burbujas, sin radios y sin colores nuevos. */
+.chat {
+  max-width: 70ch;
+  min-width: 0;
+}
+
+.chat-avisos {
+  margin: -24px 0 32px;
+}
+
+.chat-sesion {
+  display: grid;
+  gap: 8px;
+  margin-bottom: 32px;
+}
+
+.chat-sesion p {
+  margin: 0;
+}
+
+.chat-comando {
+  display: block;
+  padding: 12px 16px;
+  border: 1px solid var(--tinta);
+  font-size: 15px;
+  overflow-wrap: anywhere;
+}
+
+.chat-entradas {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border-top: 1px solid var(--tinta);
+}
+
+.chat-entrada-fila,
+.chat-vacio {
+  padding: 16px 0;
+  border-bottom: 1px solid var(--hairline);
+}
+
+.chat-entrada-fila {
+  display: grid;
+  grid-template-columns: 96px minmax(0, 1fr);
+  gap: 16px;
+}
+
+.chat-vacio {
+  margin: 0;
+}
+
+/* El modelo devuelve markdown: se ve tal cual, con sus saltos de línea. */
+.chat-texto {
+  font-size: 18px;
+  line-height: 1.5;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.chat-aviso .chat-texto {
+  font-family: var(--fuente-mono);
+  font-size: 15px;
+}
+
+.chat-entradas + .edicion-lugar:not(:empty) {
+  margin-top: 24px;
+}
+
+.chat-estado {
+  margin: 16px 0 0;
+}
+
+.chat-estado:empty {
+  display: none;
+}
+
+.chat .edicion-error {
+  margin-top: 16px;
+}
+
+.chat-formulario {
+  display: grid;
+  gap: 8px;
+  margin-top: 24px;
+}
+
+.chat-entrada {
+  width: 100%;
+  min-height: 44px;
+  padding: 12px 16px;
+  background: transparent;
+  border: 1px solid var(--tinta);
+  color: var(--tinta);
+  font-family: var(--fuente-texto);
+  font-size: 17px;
+  line-height: 1.5;
+  resize: vertical;
+}
+
+.chat-entrada:disabled {
+  border-color: var(--hairline);
+  color: var(--tinta-secundaria);
+}
+
+.chat-contador {
+  margin: 0;
+}
+
+.chat-contador-numero:not(:empty) {
+  margin-right: 12px;
+}
+
+.chat-formulario .boton {
+  justify-self: start;
+  margin-top: 8px;
+}
+
+/* Un botón en vuelo o un campo apagado no pueden parecer activos: hairline y tinta secundaria, sin colores nuevos. */
+button.boton:disabled,
+.edicion-form input:disabled,
+.edicion-form select:disabled {
+  background: transparent;
+  border-color: var(--hairline);
+  color: var(--tinta-secundaria);
+  cursor: default;
+}
+
+.anuncio:focus-visible {
+  outline-offset: -4px;
+}
+
+@media (max-width: 560px) {
+  .chat-entrada-fila {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 4px;
+  }
+}
+
+/* El repo de una barra que no es una tarea del plan va debajo del nombre; el estilo sale de las clases `dato meta`, acá solo se lo separa. */
+.gantt-tarea .gantt-repo {
+  margin-top: 4px;
+}
+
+/* Lo que se le dice a Claude: lo escribe una persona, así que va en el grotesco, con un poco más de peso que el texto que lo rodea. */
+.frase-claude {
+  font-weight: 500;
+  color: var(--tinta);
+}
+
+/* El comando de la alternativa no se parte en el "--" de sus opciones. */
+.estado code.dato {
+  white-space: nowrap;
+}

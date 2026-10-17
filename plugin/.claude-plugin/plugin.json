@@ -1,0 +1,6 @@
+{
+  "name": "rastro",
+  "description": "Copiloto personal de plan, tiempos y desvíos sobre Rastro: armá el plan de la semana, mirá qué sigue y recibí el aviso de atraso al commitear.",
+  "version": "0.2.3",
+  "author": { "name": "Denis Hugo" }
+}
